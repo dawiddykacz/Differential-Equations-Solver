@@ -1,9 +1,9 @@
 from objects.Equation import *
 
 
-class ThirdProblem(Equation):
+class ThirdbProblem(Equation):
     def __init__(self,solution:AISolution):
-        super().__init__(solution, ExactSolution(),"d^2f(x)/d^2x + 1/5 * df(x)/dx + f(x) = - 1/5 * e^-(x/5) * cos(x); f(0) = 0, f'(0) = 0")
+        super().__init__(solution, ExactSolution(),"d^2f(x)/d^2x + 1/5 * df(x)/dx + f(x) = - 1/5 * e^-(x/5) * cos(x); f(0) = 0, f(0) = x*sin(1)*e^(-1/5)")
 
 
 class Loss(LossFunction):

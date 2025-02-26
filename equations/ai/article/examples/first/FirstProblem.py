@@ -19,7 +19,6 @@ class Loss(LossFunction):
         if differential is None:
             differential = tensorflow.zeros_like(x)
 
-        x = x[0]
         return differential + (x + (1 + 3*x**2) / (1 + x + x**3) ) * y
 
     def _right_side_of_the_equation(self, function, *x):
