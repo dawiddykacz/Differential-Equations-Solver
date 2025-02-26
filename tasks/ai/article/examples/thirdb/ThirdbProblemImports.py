@@ -1,0 +1,2 @@
+from tasks.ai.article.examples.thirdb.ThirdbProblemSimpleLossTask import ThirdbProblemSimpleLossTask
+from tasks.ai.article.examples.thirdb.ThirdProblemSimpleTask import ThirdbProblemSimpleTask

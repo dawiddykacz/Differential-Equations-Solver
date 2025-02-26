@@ -17,7 +17,8 @@ class TaskService:
         self.__ms = round(time.time() * 1000)
 
     def solve(self, epochs: int, multiply_space: int = 10):
-                   
+        for task in self.__task_repository.get_tasks():
+            self.__run_task(task, epochs, multiply_space)
 
     def __run_task(self, task: TaskData, epoch: int, multiply_space: int):
         equation = task.get_equation()
@@ -37,7 +38,7 @@ class TaskService:
 
             choose_plot = ChoosePlot(test_space, exact_solution.calculate_as_numpy(test_space),
                                      self.__get_plot_path(task.get_task_name(), "Exact Solution"),
-                                     PlotData(f"Exact solution {plot_title}"))
+                                     PlotData(f"Exact solution {task.get_task_name()}"))
             choose_plot.choose().plot()
 
             abs_error_function = AbsError(ai_solution, exact_solution)

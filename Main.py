@@ -12,6 +12,8 @@ if __name__ == '__main__':
     task_repository.add_task(SecondProblemSimpleTask())
     task_repository.add_task(SecondProblemLossTask())
     task_repository.add_task(ThirdProblemSimpleTask())
+    task_repository.add_task(ThirdbProblemSimpleTask())
+    task_repository.add_task(ThirdbProblemSimpleLossTask())
 
-    task_service.solve(10000)
+    task_service.solve(20000)
 
