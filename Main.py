@@ -7,11 +7,6 @@ if __name__ == '__main__':
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
 
-    task_repository.add_task(FirstProblemSimpleTask())
-    task_repository.add_task(FirstProblemLossTask())
-    task_repository.add_task(SecondProblemSimpleTask())
-    task_repository.add_task(SecondProblemLossTask())
-    task_repository.add_task(ThirdProblemSimpleTask())
     task_repository.add_task(ThirdbProblemSimpleTask())
     task_repository.add_task(ThirdbProblemSimpleLossTask())
 
