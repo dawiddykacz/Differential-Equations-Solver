@@ -2,12 +2,7 @@ from repositories.TaskRepository import TasksRepository
 from services.TaskService import TaskService
 
 from tasks.ai.article.examples.ArticleExamplesImport import *
-#3,6,8,9 (10 spr train)
-#SecondProblemLossTask
-#ThirdProblemLossTask
-#ThirdbProblemLossTask
-#FourthProblemSimpleTask
-#FirstProblemLossWithWeightTask
+
 if __name__ == '__main__':
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
@@ -23,5 +18,5 @@ if __name__ == '__main__':
     task_repository.add_task(ThirdbProblemLossTask())
     task_repository.add_task(FourthProblemSimpleTask())
 
-    task_service.solve(5000)
+    task_service.solve(60000)
 

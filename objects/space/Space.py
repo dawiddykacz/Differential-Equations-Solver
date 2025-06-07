@@ -11,7 +11,13 @@ class Space:
         if points[0].ndim != 1:
             raise ValueError('points must be a 1-dimensional array')
 
+        self.__size = 0
         self.__points = points
+        for point in points:
+            self.__size += len(point)
+
+    def size(self):
+        return self.__size
 
     def get_numpy_array(self, index: int):
         return self.__points[index].copy()

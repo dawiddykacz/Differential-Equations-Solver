@@ -1,6 +1,6 @@
 from equations.ai.article.examples.first.FirstProblemLoss import *
 
-t = TrainableVariables([1])
+t = TrainableVariables([2])
 
 
 class FirstProblemLossWithWeight(FirstProblemLoss):
@@ -16,3 +16,6 @@ class SolutionFunctionWeight(SolutionFunction):
 class LossSimpleWeight(LossSimple):
     def _condition_weight(self):
         return t.get_variables()[0]
+
+    def _add_condition(self):
+        return 1 / t.get_variables()[0]

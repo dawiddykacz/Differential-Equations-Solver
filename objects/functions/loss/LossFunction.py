@@ -13,7 +13,8 @@ class LossFunction(Function):
         if conditions is 0:
             return tensorflow.reduce_mean(y ** 2)
 
-        return tensorflow.reduce_mean(y ** 2) + abs(self._condition_weight()) * tensorflow.reduce_mean(conditions ** 2)
+        return (tensorflow.reduce_mean(y ** 2) + abs(self._condition_weight()) * tensorflow.reduce_mean(conditions ** 2)
+                + self._add_condition())
 
     def _left_side_of_the_equation(self, function, *x):
         return 0
@@ -25,6 +26,9 @@ class LossFunction(Function):
         return 0
 
     def _condition(self, function, *x):
+        return 0
+
+    def _add_condition(self):
         return 0
 
     def _condition_weight(self):
