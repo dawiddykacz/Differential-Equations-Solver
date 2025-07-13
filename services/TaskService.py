@@ -14,6 +14,7 @@ class TaskService:
         self.__task_repository = task_repository
         import time
         self.__ms = round(time.time() * 1000)
+        self.task_dict = dict()
 
     def solve(self, epochs: int, multiply_space: int = 10):
         for task in self.__task_repository.get_tasks():
@@ -56,6 +57,12 @@ class TaskService:
                                                   ["x", "Error (%)"]))
                 choose_plot.choose().plot()
 
+            weight = task.get_weight()
+            if weight is not None:
+                k = str(weight)
+                task_name = task.get_task_name_simple()
+                self.task_dict.setdefault(task_name,dict())
+                self.task_dict[task_name][k] = self.__get_max_error(abs_error_function.calculate(test_space))
         variables_array = ai_solution.get_trainable_variables_array()
         if variables_array is not None:
             space = Space([numpy.linspace(1, epoch, epoch)])
@@ -96,6 +103,15 @@ class TaskService:
                 threshold = threshold / 10
                 intervals = self.__find_small_change_intervals(loss_array, threshold)
                 i+=1
+
+    def get_task_dict(self):
+        return self.task_dict
+
+    def __get_max_error(self, arr : []):
+        a = []
+        for b in arr:
+            a.append(max(b))
+        return max(a)
 
     def __find_small_change_intervals(self, array, change_threshold):
         intervals = []

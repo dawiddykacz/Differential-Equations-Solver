@@ -3,8 +3,8 @@ from equations.ai.article.examples.first.FirstProblemLoss import FirstProblemLos
 
 
 class FirstProblemLossTask(TaskData):
-    def __init__(self):
-        super().__init__(SpaceRanges(10, Range(0, 1)),"1 problem loss")
+    def __init__(self,weight: int = 10):
+        super().__init__(SpaceRanges(10, Range(0, 1)),"1 problem loss",weight)
 
     def get_equation(self):
-        return FirstProblemLoss(self.get_space_range().split())
+        return FirstProblemLoss(self.get_space_range().split(),weight=self.get_weight())
