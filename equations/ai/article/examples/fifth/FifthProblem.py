@@ -1,7 +1,7 @@
 from objects.Equation import *
 
 
-class FourthProblem(Equation):
+class FifthProblem(Equation):
     def __init__(self,solution:AISolution):
         super().__init__(solution, ExactSolution(),"cos")
 
@@ -14,8 +14,7 @@ class Loss(LossFunction):
             z = function(*x)
             y = x[1]
             x = x[0]
-            differential_x = g.gradient(z, x)
-            differential_y = g.gradient(z, x)
+            differential_x, differential_y = g.gradient(z, [x, y])
 
         if differential_x is None:
             differential_x = tensorflow.zeros_like(x)
@@ -35,7 +34,7 @@ class Loss(LossFunction):
     def _right_side_of_the_equation(self, function, *x):
         y = x[1]
         x = x[0]
-        return -numpy.exp(x-2+y**3+6*y)
+        return numpy.exp(-x)*(x - 2 + y ** 3 + 6 * y)
 
 class ExactSolution(Function):
     def calculate(self, *vars):

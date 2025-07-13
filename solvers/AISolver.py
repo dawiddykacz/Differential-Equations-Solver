@@ -14,7 +14,7 @@ class AISolver:
         self.__neural_network = tensorflow.keras.Sequential([
             tensorflow.keras.layers.Dense(units=10, activation='sigmoid', dtype='float64'),
             tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64')])
-        self.__optimizer = tensorflow.keras.optimizers.Adam(learning_rate=0.01)
+        self.__optimizer = tensorflow.keras.optimizers.Adam(learning_rate=0.05)
         self.__points = space.get_points_to_neural_network()
         self.__solution_function = solution_function
         self.__loss_function = loss_function
@@ -47,6 +47,8 @@ class AISolver:
             with tensorflow.GradientTape() as tape:
                 current_loss = self.__loss_function.calculate(self.__solution_function, *self.__points)
                 if self.__plots:
+                    if i == 500 or i == 100:
+                        print(current_loss.numpy())
                     self.__loss_array = numpy.append(self.__loss_array, current_loss.numpy())
 
                     for i in range(len(self.__trainable_plot)):

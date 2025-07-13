@@ -4,7 +4,7 @@ from equations.ai.article.examples.thirdb.ThirdbProblemSimple import ThirdbProbl
 
 class ThirdbProblemSimpleTask(TaskData):
     def __init__(self):
-        super().__init__(SpaceRanges(10, Range(0, 1)),"Task 7 <0;1>")
+        super().__init__(SpaceRanges(10, Range(0, 1)),"3b problem simple")
 
     def get_equation(self):
         return ThirdbProblemSimple(self.get_space_range().split())
