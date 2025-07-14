@@ -13,14 +13,14 @@ class WeightPlotService:
             x = []
             y = []
 
-            for key, value in value.items():
-                x.append(float(key))
-                y.append(value)
+            for k, v in value.items():
+                x.append(float(k))
+                y.append(v)
 
             space = Space([numpy.array(x)])
             choose_plot = ChoosePlot(space, y,
-                                     self.__get_plot_path("Weight error"),
-                                     PlotData(f'Weight error  epoches: {epochs}', ["weight", "error"]))
+                                     self.__get_plot_path(f'Weight error {key}'),
+                                     PlotData(f'Weight error {key} epoches: {epochs}', ["weight", "error"]))
             choose_plot.choose().plot()
 
     def __get_plot_path(self, plot_name: str):

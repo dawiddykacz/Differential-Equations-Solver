@@ -7,6 +7,7 @@ from plots.ChoosePlot import ChoosePlot
 from objects.plot.PlotData import PlotData
 from objects.functions.error.AbsError import AbsError
 from objects.functions.error.PercentError import PercentError
+from statistics import mean
 
 
 class TaskService:
@@ -63,8 +64,13 @@ class TaskService:
             if weight is not None:
                 k = str(weight)
                 task_name = task.get_task_name_simple()
-                self.task_dict.setdefault(task_name,dict())
-                self.task_dict[task_name][k] = self.__get_max_error(abs_error_function.calculate(test_space))
+                self.task_dict.setdefault(f'{task_name} (max)',dict())
+                self.task_dict.setdefault(f'{task_name} (min)',dict())
+                self.task_dict.setdefault(f'{task_name} (avg)',dict())
+
+                self.task_dict[f'{task_name} (max)'][k] = self.__get_max_error(abs_error_function.calculate(test_space))
+                self.task_dict[f'{task_name} (min)'][k] = self.__get_min_error(abs_error_function.calculate(test_space))
+                self.task_dict[f'{task_name} (avg)'][k] = self.__get_avg_error(abs_error_function.calculate(test_space))
         variables_array = ai_solution.get_trainable_variables_array()
         if variables_array is not None:
             space = Space([numpy.linspace(1, epoch, epoch)])
@@ -114,6 +120,18 @@ class TaskService:
         for b in arr:
             a.append(max(b))
         return max(a)
+
+    def __get_avg_error(self, arr : []):
+        a = []
+        for b in arr:
+            a.append(mean(b))
+        return mean(a)
+
+    def __get_min_error(self, arr : []):
+        a = []
+        for b in arr:
+            a.append(min(b))
+        return min(a)
 
     def __find_small_change_intervals(self, array, change_threshold):
         intervals = []

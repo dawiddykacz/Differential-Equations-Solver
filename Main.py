@@ -26,5 +26,6 @@ if __name__ == '__main__':
     task_repository.add_task(ThirdbProblemSimpleTask())
     task_repository.add_task(FifthProblemSimpleTask())
 
-    task_service.solve(10000)
+    task_service.solve(2)
+    #task_service.solve(10000)
     weight_plot_service.plots(task_service.get_task_dict(),task_service.get_epochs())
