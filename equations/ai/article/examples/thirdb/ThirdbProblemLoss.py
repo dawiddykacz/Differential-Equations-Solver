@@ -6,8 +6,11 @@ w = 1
 
 
 class ThirdbProblemLoss(ThirdbProblem):
-    def __init__(self, space: Space, weight: float = 10):
-        super().__init__(SolutionFunction(space, LossSimple()))
+    def __init__(self, space: Space,solution:AISolution = None,weight:float = 10):
+        if solution is None:
+            super().__init__(SolutionFunction(space, LossSimple()))
+        else:
+            super().__init__(solution)
         w = weight
 
 

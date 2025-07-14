@@ -24,6 +24,10 @@ if __name__ == '__main__':
     task_repository.add_task(SecondProblemSimpleTask())
     task_repository.add_task(ThirdProblemSimpleTask())
     task_repository.add_task(ThirdbProblemSimpleTask())
+
+    task_repository.add_task(SecondProblemLossWithWeightTask())
+    task_repository.add_task(ThirdProblemLossWithWeightTask())
+    task_repository.add_task(ThirdProblemLossWithWeightTask())
     task_repository.add_task(FifthProblemSimpleTask())
 
     task_service.solve(300)

@@ -1,2 +1,3 @@
 from tasks.ai.article.examples.third.ThirdProblemSimpleTask import ThirdProblemSimpleTask
 from tasks.ai.article.examples.third.ThirdProblemLossTask import ThirdProblemLossTask
+from tasks.ai.article.examples.third.ThirdProblemLossWithWeightTask import ThirdProblemLossWithWeightTask
