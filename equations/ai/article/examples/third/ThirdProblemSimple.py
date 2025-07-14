@@ -2,7 +2,7 @@ from equations.ai.article.examples.third.ThirdProblem import *
 
 
 class ThirdProblemSimple(ThirdProblem):
-    def __init__(self, space: Space):
+    def __init__(self, space: Space,weight:float = 10):
         super().__init__(SolutionFunction(space, Loss()))
 
 

@@ -1,9 +1,10 @@
 from equations.ai.article.examples.second.SecondProblem import *
 
-
+w = 1
 class SecondProblemLoss(SecondProblem):
-    def __init__(self, space: Space):
+    def __init__(self, space: Space,weight:float = 10):
         super().__init__(SolutionFunction(space, LossSimple()))
+        w = weight
 
 
 class SolutionFunction(AISolution):
@@ -18,4 +19,4 @@ class LossSimple(Loss):
         return function(x) - 1
 
     def _condition_weight(self):
-        return 10
+        return w

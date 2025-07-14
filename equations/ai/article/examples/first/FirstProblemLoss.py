@@ -2,7 +2,7 @@ from equations.ai.article.examples.first.FirstProblem import *
 
 w = 10
 class FirstProblemLoss(FirstProblem):
-    def __init__(self, space: Space,solution:AISolution = None,weight:int = 10):
+    def __init__(self, space: Space,solution:AISolution = None,weight:float = 10):
         if solution is None:
             super().__init__(SolutionFunction(space, LossSimple()))
         else:
