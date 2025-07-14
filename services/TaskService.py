@@ -1,4 +1,5 @@
 import numpy
+from tqdm import tqdm
 
 from repositories.TaskRepository import TasksRepository
 from objects.space.Space import Space
@@ -19,7 +20,10 @@ class TaskService:
         self.__epochs = 0
 
     def solve(self, epochs: int, multiply_space: int = 10):
-        for task in self.__task_repository.get_tasks():
+        all_tasks = self.__task_repository.get_tasks()
+        for i in range(len(all_tasks)):
+            print(f'{i+1}/{len(all_tasks)}')
+            task = all_tasks[i]
             self.__run_task(task, epochs, multiply_space)
         self.__epochs += epochs
 
