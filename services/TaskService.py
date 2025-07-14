@@ -15,10 +15,12 @@ class TaskService:
         import time
         self.__ms = round(time.time() * 1000)
         self.task_dict = dict()
+        self.__epochs = 0
 
     def solve(self, epochs: int, multiply_space: int = 10):
         for task in self.__task_repository.get_tasks():
             self.__run_task(task, epochs, multiply_space)
+        self.__epochs += epochs
 
     def __run_task(self, task: TaskData, epoch: int, multiply_space: int):
         equation = task.get_equation()
@@ -130,6 +132,12 @@ class TaskService:
             i += 1
 
         return intervals
+
+    def get_ms(self):
+        return self.__ms
+
+    def get_epochs(self):
+        return self.__epochs
 
     def __get_plot_path(self, task_name: str, plot_name: str):
         return f'plot/{self.__ms}/{task_name}/{plot_name}.png'
