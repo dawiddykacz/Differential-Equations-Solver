@@ -21,17 +21,8 @@ if __name__ == '__main__':
         task_repository.add_task(ThirdProblemLossTask(a))
         task_repository.add_task(ThirdbProblemLossTask(a))
 
-    task_repository.add_task(SecondProblemSimpleTask())
-    task_repository.add_task(ThirdProblemSimpleTask())
-    task_repository.add_task(ThirdbProblemSimpleTask())
-
-    task_repository.add_task(SecondProblemLossWithWeightTask())
-    task_repository.add_task(ThirdProblemLossWithWeightTask())
-    task_repository.add_task(ThirdProblemLossWithWeightTask())
-    task_repository.add_task(FifthProblemSimpleTask())
     task_repository.add_task(SixthProblemSimpleTask())
-    task_repository.add_task(SeventhProblemSimpleTask())
 
-    #task_service.solve(300)
+
     task_service.solve(10000)
     weight_plot_service.plots(task_service.get_task_dict(),task_service.get_epochs())
