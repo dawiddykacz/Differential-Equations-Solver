@@ -50,9 +50,16 @@ class TaskService:
 
             abs_error_function = AbsError(ai_solution, exact_solution)
 
+            labels = []
+            d = test_space.get_dimension()
+            if d == 1:
+                labels = ["x", "Error"]
+            if d == 2:
+                labels = ["x","y", "Error"]
+
             choose_plot = ChoosePlot(test_space, abs_error_function.calculate(test_space),
                                      self.__get_plot_path(task.get_task_name(), "Absolute error"),
-                                     PlotData(f"Absolute error {plot_title}", ["x", "Error"]))
+                                     PlotData(f"Absolute error {plot_title}", labels))
             choose_plot.choose().plot()
 
             percent_error_function = PercentError(ai_solution, exact_solution)
