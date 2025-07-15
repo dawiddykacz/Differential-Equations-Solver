@@ -1,0 +1,1 @@
+from tasks.ai.article.examples.seventh.SeventhProblemSimpleTask import SeventhProblemSimpleTask

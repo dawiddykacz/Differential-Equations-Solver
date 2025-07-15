@@ -4,3 +4,4 @@ from tasks.ai.article.examples.third.ThirdProblemImports import *
 from tasks.ai.article.examples.thirdb.ThirdbProblemImports import *
 from tasks.ai.article.examples.fifth.FifthProblemImports import *
 from tasks.ai.article.examples.sixth.SixthProblemSimpleTask import *
+from tasks.ai.article.examples.seventh.SeventhProblemSimpleTask import *
