@@ -10,7 +10,7 @@ if __name__ == '__main__':
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
 
-    task_repository.add_task(SixthProblemSimpleTask())
+    task_repository.add_task(SeventhProblemSimpleTask())
 
     #task_service.solve(300)
     task_service.solve(3000)
