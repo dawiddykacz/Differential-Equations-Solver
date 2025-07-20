@@ -3,6 +3,7 @@ from services.TaskService import TaskService
 from services.WeightPlotService import WeightPlotService
 
 from tasks.ai.article.examples.ArticleExamplesImport import *
+from solvers.AISolver import set_learning_rate
 
 if __name__ == '__main__':
     task_repository = TasksRepository()
@@ -31,6 +32,8 @@ if __name__ == '__main__':
     # task_repository.add_task(ThirdbProblemLossWithWeightTask())
     # task_repository.add_task(ThirdProblemLossWithWeightTask())
     #task_repository.add_task(FifthProblemSimpleTask())
+    set_learning_rate()
+
     task_repository.add_task(FifthProblemSimpleTask())
     task_repository.add_task(SeventhProblemSimpleTask())
     task_repository.add_task(SixthProblemSimpleTask())

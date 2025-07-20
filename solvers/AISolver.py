@@ -6,6 +6,12 @@ from objects.space.Space import Space
 from objects.functions.loss.LossFunction import LossFunction
 from objects.TrainableVariables import TrainableVariables
 
+_learning_rate = 0.01
+
+def set_learning_rate(learning_rate:float = 0.01):
+    if learning_rate <= 0.0:
+        raise ValueError("Learning rate must be greater than 0.")
+    _learning_rate= learning_rate
 
 class AISolver:
     def __init__(self, space: Space, solution_function, loss_function: LossFunction,
@@ -14,7 +20,7 @@ class AISolver:
         self.__neural_network = tensorflow.keras.Sequential([
             tensorflow.keras.layers.Dense(units=10, activation='sigmoid', dtype='float64'),
             tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64')])
-        self.__optimizer = tensorflow.keras.optimizers.Adam(learning_rate=0.05)
+        self.__optimizer = tensorflow.keras.optimizers.Adam(learning_rate=_learning_rate)
         self.__points = space.get_points_to_neural_network()
         self.__solution_function = solution_function
         self.__loss_function = loss_function
