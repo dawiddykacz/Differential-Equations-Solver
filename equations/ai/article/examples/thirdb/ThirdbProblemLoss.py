@@ -24,7 +24,7 @@ class LossSimple(Loss):
     def _condition(self, function, *x):
         x1 = tensorflow.zeros((len(x[0]), 1), dtype=tensorflow.float64)
         x2 = tensorflow.zeros((len(x[0]), 1), dtype=tensorflow.float64) + 1
-        return (function(x1) - 0) + (function(x2) - numpy.sin(1) * numpy.exp(-1 / 5))
+        return numpy.sqrt((function(x1) - 0) ** 2 + (function(x2) - numpy.sin(1) * numpy.exp(-1 / 5)) ** 2)
 
     def _condition_weight(self):
         return w
