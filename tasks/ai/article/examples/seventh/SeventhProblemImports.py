@@ -1,1 +1,2 @@
 from tasks.ai.article.examples.seventh.SeventhProblemSimpleTask import SeventhProblemSimpleTask
+from tasks.ai.article.examples.seventh.SeventhProblemLossTask import SeventhProblemLossTask
