@@ -12,7 +12,7 @@ def run_all(learning_rate:float):
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
-    for i in range(0,10):
+    for i in range(0,0):
         a = i * 10
         if a <= 0:
             a = 1
@@ -33,15 +33,18 @@ def run_all(learning_rate:float):
     task_repository.add_task(SixthProblemSimpleTask())
     task_repository.add_task(SeventhProblemSimpleTask())
 
-    task_repository.add_task(FirstProblemLossWithWeightTask())
-    task_repository.add_task(SecondProblemLossWithWeightTask())
-    task_repository.add_task(ThirdbProblemLossWithWeightTask())
-    task_repository.add_task(ThirdProblemLossWithWeightTask())
+    #task_repository.add_task(FirstProblemLossWithWeightTask())
+    #task_repository.add_task(SecondProblemLossWithWeightTask())
+    #task_repository.add_task(ThirdbProblemLossWithWeightTask())
+    #task_repository.add_task(ThirdProblemLossWithWeightTask())
 
-    task_service.solve(100000)
+    task_service.solve(1000)
     weight_plot_service.plots(task_service.get_task_dict(),task_service.get_epochs())
 
+    error_messages = task_service.get_error_messages()
+    if error_messages is not None:
+        for error_message in error_messages:
+            print(error_message)
+
 if __name__ == '__main__':
-    run_all(0.01)
-    run_all(0.05)
     run_all(0.1)

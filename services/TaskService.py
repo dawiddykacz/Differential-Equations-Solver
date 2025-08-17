@@ -18,8 +18,10 @@ class TaskService:
         self.__ms = round(time.time() * 1000)
         self.task_dict = dict()
         self.__epochs = 0
+        self.__error_messages = []
 
     def solve(self, epochs: int, multiply_space: int = 10):
+        print(f"solving {epochs} epochs")
         all_tasks = self.__task_repository.get_tasks()
         for i in range(len(all_tasks)):
             print(f'{i+1}/{len(all_tasks)}')
@@ -36,17 +38,21 @@ class TaskService:
 
         test_space = task.get_space_range().split(multiply_space)
         y = ai_solution.calculate_as_numpy(test_space)
+
         choose_plot = ChoosePlot(test_space, y, self.__get_plot_path(task.get_task_name(), "Ai Solution"),
                                  PlotData(f"Ai solution {plot_title}"))
         choose_plot.choose().plot()
 
         exact_solution = equation.get_exact_solution()
+        max_percent_error = None
         if exact_solution is not None:
 
-            choose_plot = ChoosePlot(test_space, exact_solution.calculate_as_numpy(test_space),
+            exact_y = exact_solution.calculate_as_numpy(test_space)
+            choose_plot = ChoosePlot(test_space, exact_y,
                                      self.__get_plot_path(task.get_task_name(), "Exact Solution"),
                                      PlotData(f"Exact solution {task.get_task_name()}"))
             choose_plot.choose().plot()
+            exact_y_error = numpy.abs(numpy.max(exact_y))
 
             abs_error_function = AbsError(ai_solution, exact_solution)
 
@@ -57,10 +63,12 @@ class TaskService:
             if d == 2:
                 labels = ["x","y", "Error"]
 
-            choose_plot = ChoosePlot(test_space, abs_error_function.calculate(test_space),
+            abs_error = abs_error_function.calculate(test_space)
+            choose_plot = ChoosePlot(test_space, abs_error,
                                      self.__get_plot_path(task.get_task_name(), "Absolute error"),
                                      PlotData(f"Absolute error {plot_title}", labels))
             choose_plot.choose().plot()
+            max_percent_error = numpy.max(abs_error) / exact_y_error * 100
 
             percent_error_function = PercentError(ai_solution, exact_solution)
             percent_error = percent_error_function.calculate(test_space)
@@ -70,6 +78,7 @@ class TaskService:
                                          PlotData(f"Error % {plot_title}",
                                                   ["x", "Error (%)"]))
                 choose_plot.choose().plot()
+                max_percent_error = numpy.max(percent_error)
 
             weight = task.get_weight()
             if weight is not None:
@@ -122,6 +131,12 @@ class TaskService:
                 threshold = threshold / 10
                 intervals = self.__find_small_change_intervals(loss_array, threshold)
                 i+=1
+
+        error_message = f"{task.get_task_name()} epoches: {epoch} max error ~ {max_percent_error}%"
+        self.__error_messages.append(error_message)
+
+    def get_error_messages(self):
+        return self.__error_messages
 
     def get_task_dict(self):
         return self.task_dict
