@@ -29,7 +29,7 @@ class Space:
         return points
 
     def get_mesh_numpy_array(self):
-        return tensorflow.meshgrid(*self.__points, indexing='ij')
+        return tensorflow.meshgrid(*self.__points, indexing='xy')
 
     def get_dimension(self):
         return len(self.__points)

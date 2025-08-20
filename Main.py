@@ -25,26 +25,25 @@ def run_all(learning_rate:float):
         task_repository.add_task(SixthProblemLossTask(a))
         task_repository.add_task(SeventhProblemLossTask(a))
 
-    task_repository.add_task(FirstProblemSimpleTask())
-    task_repository.add_task(SecondProblemSimpleTask())
-    task_repository.add_task(ThirdProblemSimpleTask())
-    task_repository.add_task(ThirdbProblemSimpleTask())
-    task_repository.add_task(FifthProblemSimpleTask())
+    #task_repository.add_task(FirstProblemSimpleTask())
+    #task_repository.add_task(SecondProblemSimpleTask())
+    #task_repository.add_task(ThirdProblemSimpleTask())
+    #task_repository.add_task(ThirdbProblemSimpleTask())
+    #task_repository.add_task(FifthProblemSimpleTask())
     task_repository.add_task(SixthProblemSimpleTask())
-    task_repository.add_task(SeventhProblemSimpleTask())
+    #task_repository.add_task(SeventhProblemSimpleTask())
 
     #task_repository.add_task(FirstProblemLossWithWeightTask())
     #task_repository.add_task(SecondProblemLossWithWeightTask())
     #task_repository.add_task(ThirdbProblemLossWithWeightTask())
     #task_repository.add_task(ThirdProblemLossWithWeightTask())
 
-    task_service.solve(1000)
+    task_service.solve(3000)
     weight_plot_service.plots(task_service.get_task_dict(),task_service.get_epochs())
 
     error_messages = task_service.get_error_messages()
     if error_messages is not None:
         for error_message in error_messages:
             print(error_message)
-
 if __name__ == '__main__':
     run_all(0.1)
