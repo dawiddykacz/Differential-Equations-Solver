@@ -26,23 +26,22 @@ class LossSimple(Loss):
         y = x[1]
         x = x[0]
 
-        x0 = tensorflow.zeros((len(x), 1), dtype=tensorflow.float64)
-        x1 = tensorflow.zeros((len(x), 1), dtype=tensorflow.float64) + 1
-        y1 = tensorflow.zeros((len(y), 1), dtype=tensorflow.float64) + 1
+        zero = tensorflow.zeros_like(x, dtype=tensorflow.float64)
+        one = tensorflow.ones_like(x, dtype=tensorflow.float64)
+        one_y = tensorflow.ones_like(x, dtype=tensorflow.float64)
 
         with tensorflow.GradientTape(persistent=True) as g:
-            for point in x:
-                g.watch(point)
-            z = function(x, y1)
-            differential_x, differential_y = g.gradient(z, [x, y])
+            g.watch(one_y)
+            z = function(x, one_y)
 
-        if differential_x is None:
-            differential_x = tensorflow.zeros_like(x)
+            differential_y = g.gradient(z, one_y)
+
         if differential_y is None:
-            differential_y = tensorflow.zeros_like(y)
+            differential_y = tensorflow.zeros_like(one_y)
         del g
 
-        return abs(function(x0, y) - 0) + abs(function(x1, y) - 0) + abs(differential_y - 2 * numpy.sin(numpy.pi * x))
+        return abs(function(zero, y) - zero) + abs(function(one, y) - zero) + abs(
+            differential_y - 2 * numpy.sin(numpy.pi * x))
 
     def _condition_weight(self):
         return w

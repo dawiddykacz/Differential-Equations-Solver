@@ -22,9 +22,11 @@ class SolutionFunction(AISolution):
 
 class LossSimple(Loss):
     def _condition(self, function, *x):
-        x1 = tensorflow.zeros((len(x[0]), 1), dtype=tensorflow.float64)
-        x2 = tensorflow.zeros((len(x[0]), 1), dtype=tensorflow.float64) + 1
-        return numpy.sqrt((function(x1) - 0) ** 2 + (function(x2) - numpy.sin(1) * numpy.exp(-1 / 5)) ** 2)
+        zero = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
+        one = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
+        exp_factor = tensorflow.exp(tensorflow.constant(-1 / 5, dtype=tensorflow.float64))
+
+        return tensorflow.abs(function(zero) - zero) + tensorflow.abs(function(one) - tensorflow.sin(one) * exp_factor)
 
     def _condition_weight(self):
         return w

@@ -1,3 +1,5 @@
+import tensorflow.python.keras.backend
+
 from equations.ai.article.examples.first.FirstProblem import *
 
 w = 10
@@ -18,7 +20,9 @@ class SolutionFunction(AISolution):
 class LossSimple(Loss):
     def _condition(self, function, *x):
 
-        x = tensorflow.zeros((len(x[0]), 1), dtype=tensorflow.float64)
-        return function(x) - 1
+        zero = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
+        one = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
+
+        return function(zero) - one
     def _condition_weight(self):
         return w

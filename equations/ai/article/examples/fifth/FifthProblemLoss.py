@@ -26,13 +26,12 @@ class LossSimple(Loss):
         y = x[1]
         x = x[0]
 
-        x0 = tensorflow.zeros((len(x), 1), dtype=tensorflow.float64)
-        x1 = tensorflow.zeros((len(x), 1), dtype=tensorflow.float64) + 1
-        y0 = tensorflow.zeros((len(y), 1), dtype=tensorflow.float64)
-        y1 = tensorflow.zeros((len(y), 1), dtype=tensorflow.float64) + 1
-        return abs(function(x0, y) - y ** 3) + abs(
-            function(x1, y) - (1 + y ** 3) * numpy.exp(-1)) + abs(
-            function(x, y0) - x * numpy.exp(-x)) + abs(function(x, y1) - numpy.exp(-x) * (x + 1))
+        zero = tensorflow.zeros_like(x, dtype=tensorflow.float64)
+        one = tensorflow.ones_like(x, dtype=tensorflow.float64)
+
+        return abs(function(zero, y) - y ** 3) + abs(
+            function(one, y) - (one + y ** 3) * numpy.exp(-1)) + abs(
+            function(x, zero) - x * numpy.exp(-x)) + abs(function(x, one) - numpy.exp(-x) * (x + 1))
 
     def _condition_weight(self):
         return w

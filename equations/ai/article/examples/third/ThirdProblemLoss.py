@@ -22,18 +22,19 @@ class SolutionFunction(AISolution):
 
 class LossSimple(Loss):
     def _condition(self, function, *x):
-        x = tensorflow.zeros((len(x[0]), 1), dtype=tensorflow.float64)
+        zero = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
+        one = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
 
         with tensorflow.GradientTape(persistent=True) as g:
-            g.watch(x)
-            y = function(x)
-            differential = g.gradient(y, x)
+            g.watch(zero)
+            y = function(zero)
+            differential = g.gradient(y, zero)
 
         if differential is None:
             differential = tensorflow.zeros_like(x)
         del g
 
-        return numpy.sqrt((function(x) - 0) ** 2 + (differential - 1) ** 2)
+        return tensorflow.abs(function(zero) - zero) + tensorflow.abs(differential - one)
 
     def _condition_weight(self):
         return w

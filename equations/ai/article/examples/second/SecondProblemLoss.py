@@ -18,8 +18,10 @@ class SolutionFunction(AISolution):
 
 class LossSimple(Loss):
     def _condition(self, function, *x):
-        x = tensorflow.zeros((len(x[0]), 1), dtype=tensorflow.float64)
-        return function(x) - 0
+
+        zero = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
+
+        return function(zero) - zero
 
     def _condition_weight(self):
         return w
