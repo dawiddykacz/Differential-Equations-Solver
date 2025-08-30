@@ -31,7 +31,7 @@ def run_all(learning_rate:float):
     #task_repository.add_task(ThirdbProblemSimpleTask())
     #task_repository.add_task(FifthProblemSimpleTask())
     task_repository.add_task(SixthProblemSimpleTask())
-    #task_repository.add_task(SeventhProblemSimpleTask())
+    task_repository.add_task(SeventhProblemSimpleTask())
 
     #task_repository.add_task(FirstProblemLossWithWeightTask())
     #task_repository.add_task(SecondProblemLossWithWeightTask())
