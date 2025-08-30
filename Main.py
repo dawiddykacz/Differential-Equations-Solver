@@ -38,7 +38,7 @@ def run_all(learning_rate:float):
     #task_repository.add_task(ThirdbProblemLossWithWeightTask())
     #task_repository.add_task(ThirdProblemLossWithWeightTask())
 
-    task_service.solve(3000)
+    task_service.solve(1000)
     weight_plot_service.plots(task_service.get_task_dict(),task_service.get_epochs())
 
     error_messages = task_service.get_error_messages()

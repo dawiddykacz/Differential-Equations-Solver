@@ -1,4 +1,3 @@
-import tensorflow
 from  helpers.EquationsHelper import ArticleProblemsHelper
 
 from equations.ai.article.examples.sixth.SixthProblem import *
@@ -8,8 +7,8 @@ class SixthProblemSimple(SixthProblem):
     def __init__(self, space: Space):
         super().__init__(SolutionFunction(space, Loss()))
 
-f0 = lambda x: tensorflow.zeros_like(x)
-f1 = lambda x: tensorflow.zeros_like(x)
+f0 = lambda y: tensorflow.zeros_like(y)
+f1 = lambda y: tensorflow.zeros_like(y)
 g0 = lambda x: tensorflow.zeros_like(x)
 g1 = lambda x: 2*tensorflow.sin(x*numpy.pi)
 
