@@ -4,7 +4,7 @@ from equations.ai.article.examples.sixth.SixthProblemSimple import SixthProblemS
 
 class SixthProblemSimpleTask(TaskData):
     def __init__(self):
-        super().__init__(SpaceRanges(20, Range(0, 1),Range(0, 1)),"6 problem simple")
+        super().__init__(SpaceRanges(10, Range(0, 1),Range(0, 1)),"6 problem simple")
 
     def get_equation(self):
         return SixthProblemSimple(self.get_space_range().split())

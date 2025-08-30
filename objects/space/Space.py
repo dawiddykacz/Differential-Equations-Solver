@@ -23,9 +23,12 @@ class Space:
         return self.__points[index].copy()
 
     def get_points_to_neural_network(self):
-        points = []
-        for i in range(self.get_dimension()):
-            points.append(self.__get_tensor_axis(self.get_numpy_array(i)))
+        arrays = [self.get_numpy_array(i) for i in range(self.get_dimension())]
+
+        mesh = numpy.meshgrid(*arrays, indexing='ij')
+
+        points = [tensorflow.constant(m.reshape(-1, 1), dtype='float64') for m in mesh]
+
         return points
 
     def get_mesh_numpy_array(self):
