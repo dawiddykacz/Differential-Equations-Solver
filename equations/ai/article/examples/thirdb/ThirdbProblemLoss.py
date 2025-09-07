@@ -25,9 +25,9 @@ class LossSimple(Loss):
     def _condition(self, function, *x):
         zero = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
         one = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
-        exp_factor = tensorflow.exp(tensorflow.constant(-1 / 5, dtype=tensorflow.float64))
+        exp_factor = tensorflow.math.exp(tensorflow.constant(-1 / 5, dtype=tensorflow.float64))
 
-        return tensorflow.abs(function(zero) - zero) + tensorflow.abs(function(one) - tensorflow.sin(one) * exp_factor)
+        return tensorflow.abs(function(zero) - zero) + tensorflow.abs(function(one) - tensorflow.math.sin(one) * exp_factor)
 
     def _condition_weight(self):
         return w

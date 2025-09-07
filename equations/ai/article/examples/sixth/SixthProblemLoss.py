@@ -42,7 +42,7 @@ class LossSimple(Loss):
         del g
 
         return abs(function(zero, y) - zero) + abs(function(one, y) - zero) + abs(
-            differential_y - 2 * numpy.sin(numpy.pi * x))
+            differential_y - 2 * tensorflow.math.sin(tensorflow.constant(numpy.pi, dtype=tensorflow.float64) * x))
 
     def _condition_weight(self):
         return w
