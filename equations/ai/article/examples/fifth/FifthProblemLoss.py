@@ -1,4 +1,4 @@
-import numpy
+import tensorflow
 
 from equations.ai.article.examples.fifth.FifthProblem import *
 
@@ -31,8 +31,8 @@ class LossSimple(Loss):
         one = tensorflow.ones_like(x, dtype=tensorflow.float64)
 
         return abs(function(zero, y) - y ** 3) + abs(
-            function(one, y) - (one + y ** 3) * numpy.exp(-1)) + abs(
-            function(x, zero) - x * numpy.exp(-x)) + abs(function(x, one) - numpy.exp(-x) * (x + 1))
+            function(one, y) - (one + y ** 3) * tensorflow.math.exp(tensorflow.constant(-1,dtype = tensorflow.float64))) + abs(
+            function(x, zero) - x * numpy.exp(-x)) + abs(function(x, one) - tensorflow.math.exp(-x) * (x + 1))
 
     def _condition_weight(self):
         return w

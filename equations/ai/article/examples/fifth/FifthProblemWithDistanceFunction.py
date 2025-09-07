@@ -34,7 +34,7 @@ class SolutionFunction(AISolution):
 
         dist = (x - one / 2) ** 2 + (y - one / 2) ** 2
 
-        eps = 1e-3
+        eps = 0.1
         weight = tf.exp(-(dist / eps) ** 2)
 
         A_xy = (1 - weight) * A_xy + weight * target

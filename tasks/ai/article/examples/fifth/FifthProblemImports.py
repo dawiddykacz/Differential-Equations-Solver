@@ -1,3 +1,4 @@
 from tasks.ai.article.examples.fifth.FifthProblemSimpleTask import FifthProblemSimpleTask
 from tasks.ai.article.examples.fifth.FifthProblemLossTask import FifthProblemLossTask
 from tasks.ai.article.examples.fifth.FifthWithDistanceFunctionTask import FifthProblemWithDistanceFunctionTask
+from tasks.ai.article.examples.fifth.FifthProblemLossWithPointTask import FifthProblemLossWithPointTask
