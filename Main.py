@@ -39,6 +39,9 @@ def run_all(learning_rate: float):
     task_repository.add_task(SecondProblemLossWithWeightTask())
     task_repository.add_task(ThirdbProblemLossWithWeightTask())
     task_repository.add_task(ThirdProblemLossWithWeightTask())
+    task_repository.add_task(FifthProblemLossWithWeightTask())
+    task_repository.add_task(SixthProblemLossWithWeightTask())
+    task_repository.add_task(SeventhProblemLossWithWeightTask())
 
     task_service.solve(5000)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
