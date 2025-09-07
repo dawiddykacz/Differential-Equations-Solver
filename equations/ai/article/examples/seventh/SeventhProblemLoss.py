@@ -1,5 +1,6 @@
 import tensorflow
 import numpy
+from tensorflow.math import abs
 
 from equations.ai.article.examples.seventh.SeventhProblem import *
 
@@ -42,7 +43,7 @@ class LossSimple(Loss):
             differential_y = tensorflow.zeros_like(one_y)
         del g
 
-        return abs(function(zero, y) - zero) + abs(function(one, y) - zero) + abs(
+        return abs(function(zero, y) - zero) + abs(function(one, y) - zero) + abs(function(x, zero) - zero) + abs(
             differential_y - 2 * tensorflow.math.sin(tensorflow.constant(numpy.pi, dtype=tensorflow.float64) * x))
 
     def _condition_weight(self):
