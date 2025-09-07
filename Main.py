@@ -5,14 +5,15 @@ from services.WeightPlotService import WeightPlotService
 from tasks.ai.article.examples.ArticleExamplesImport import *
 from solvers.AISolver import set_learning_rate
 
-def run_all(learning_rate:float):
+
+def run_all(learning_rate: float):
     set_learning_rate(learning_rate)
 
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
-    for i in range(0,2):
+    for i in range(0, 2):
         a = i * 10
         if a <= 0:
             a = 1
@@ -40,11 +41,13 @@ def run_all(learning_rate:float):
     task_repository.add_task(ThirdProblemLossWithWeightTask())
 
     task_service.solve(5000)
-    weight_plot_service.plots(task_service.get_task_dict(),task_service.get_epochs())
+    weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
 
     error_messages = task_service.get_error_messages()
     if error_messages is not None:
         for error_message in error_messages:
             print(error_message)
+
+
 if __name__ == '__main__':
     run_all(0.1)
