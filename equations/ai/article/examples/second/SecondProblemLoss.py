@@ -7,6 +7,7 @@ class SecondProblemLoss(SecondProblem):
             super().__init__(SolutionFunction(space, LossSimple()))
         else:
             super().__init__(solution)
+        global w
         w = weight
 
 
