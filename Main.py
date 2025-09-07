@@ -22,7 +22,6 @@ def run_all(learning_rate:float):
         task_repository.add_task(ThirdProblemLossTask(a))
         task_repository.add_task(ThirdbProblemLossTask(a))
         task_repository.add_task(FifthProblemLossTask(a))
-        task_repository.add_task(FifthProblemLossWithPointTask(a))
         task_repository.add_task(SixthProblemLossTask(a))
         task_repository.add_task(SeventhProblemLossTask(a))
 

@@ -4,8 +4,7 @@ import tensorflow as tf
 from equations.ai.article.examples.fifth.FifthProblem import *
 from helpers.EquationsHelper import ApproximationFunction
 
-approximation_function = ApproximationFunction([0, 0, 0], [0, 1, 1], [1, 0, numpy.exp(-1)], [1, 1, 2 * numpy.exp(-1)],
-                                               [0.5, 0.5, 1])
+approximation_function = ApproximationFunction([0, 0, 0], [0, 1, 1], [1, 0, numpy.exp(-1)], [1, 1, 2 * numpy.exp(-1)], [0.5,0.5,1])
 
 
 class FifthProblemWithDistanceFunction(FifthProblem):
@@ -17,7 +16,6 @@ f0 = lambda y: y ** 3
 f1 = lambda y: (1 + y ** 3) * tf.exp(tf.cast(-1., tf.float64))
 g0 = lambda x: x * tf.exp(-x)
 g1 = lambda x: tf.exp(-x) * (x + 1)
-
 
 class SolutionFunction(AISolution):
     def calculate(self, *vars):
@@ -32,7 +30,7 @@ class SolutionFunction(AISolution):
         target = tf.exp(tf.cast(-0.5, tf.float64)) * (tf.cast(0.5, tf.float64) + (tf.cast(0.5, tf.float64) ** 3))
         one = tf.ones_like(x)
 
-        dist = (x - one / 2) ** 2 + (y - one / 2) ** 2
+        dist = (x - one / 2) ** 2 + (y - one/2) ** 2
 
         eps = 0.1
         weight = tf.exp(-(dist / eps) ** 2)
