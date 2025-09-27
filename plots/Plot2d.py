@@ -2,10 +2,11 @@ import numpy
 import matplotlib.pyplot as plot
 
 from objects.plot.PlotData import PlotData
+from plots.Plot import Plot
 
 
-class Plot2D:
-    def __init__(self, x: numpy.ndarray, y: numpy.ndarray, plot_data: PlotData,save_path:str = None):
+class Plot2D(Plot):
+    def __init__(self, x: numpy.ndarray, y: numpy.ndarray, plot_data: PlotData, save_path: str = None):
         self.__x = x
         self.__y = y
         self.__plot_data = plot_data
