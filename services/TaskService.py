@@ -16,7 +16,7 @@ class TaskService:
         self.__task_repository = task_repository
         import time
         self.__ms = round(time.time() * 1000)
-        self.task_dict = dict()
+        self.__task_dict = dict()
         self.__epochs = 0
         self.__error_messages = []
 
@@ -84,13 +84,13 @@ class TaskService:
             if weight is not None:
                 k = str(weight)
                 task_name = task.get_task_name_simple()
-                self.task_dict.setdefault(f'{task_name} (max)',dict())
-                self.task_dict.setdefault(f'{task_name} (min)',dict())
-                self.task_dict.setdefault(f'{task_name} (avg)',dict())
+                self.__task_dict.setdefault(f'{task_name} (max)',dict())
+                self.__task_dict.setdefault(f'{task_name} (min)',dict())
+                self.__task_dict.setdefault(f'{task_name} (avg)',dict())
 
-                self.task_dict[f'{task_name} (max)'][k] = self.__get_max_error(abs_error_function.calculate(test_space))
-                self.task_dict[f'{task_name} (min)'][k] = self.__get_min_error(abs_error_function.calculate(test_space))
-                self.task_dict[f'{task_name} (avg)'][k] = self.__get_avg_error(abs_error_function.calculate(test_space))
+                self.__task_dict[f'{task_name} (max)'][k] = self.__get_max_error(abs_error_function.calculate(test_space))
+                self.__task_dict[f'{task_name} (min)'][k] = self.__get_min_error(abs_error_function.calculate(test_space))
+                self.__task_dict[f'{task_name} (avg)'][k] = self.__get_avg_error(abs_error_function.calculate(test_space))
         variables_array = ai_solution.get_trainable_variables_array()
         if variables_array is not None:
             space = Space([numpy.linspace(1, epoch, epoch)])
@@ -139,7 +139,7 @@ class TaskService:
         return self.__error_messages
 
     def get_task_dict(self):
-        return self.task_dict
+        return self.__task_dict
 
     def __get_max_error(self, arr : []):
         a = []
