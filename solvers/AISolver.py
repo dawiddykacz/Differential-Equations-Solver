@@ -6,9 +6,9 @@ from objects.space.Space import Space
 from objects.functions.loss.LossFunction import LossFunction
 from objects.TrainableVariables import TrainableVariables
 
-_learning_rate = 0.01
+_learning_rate = 0.1
 
-def set_learning_rate(learning_rate:float = 0.01):
+def set_learning_rate(learning_rate:float = 0.1):
     global _learning_rate
     if learning_rate <= 0.0:
         raise ValueError("Learning rate must be greater than 0.")
