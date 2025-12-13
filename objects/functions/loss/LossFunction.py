@@ -10,7 +10,7 @@ class LossFunction(Function):
              + self._condition_in_loss(function, *x))
         conditions = self._condition(function,*x)
 
-        if conditions is 0:
+        if conditions == 0:
             return tensorflow.reduce_mean(y ** 2)
 
         return (tensorflow.reduce_mean(y ** 2) + abs(self._condition_weight()) * tensorflow.reduce_mean(conditions ** 2)
