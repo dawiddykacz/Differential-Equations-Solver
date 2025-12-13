@@ -1,6 +1,5 @@
 import tensorflow
 import numpy
-from tqdm import tqdm
 
 from objects.space.Space import Space
 from objects.functions.loss.LossFunction import LossFunction
@@ -50,7 +49,7 @@ class AISolver:
     def solve(self, epochs: int):
         self.__neural_network(self.__inputs)
 
-        for i in tqdm(range(epochs)):
+        for i in range(epochs):
             with tensorflow.GradientTape() as tape:
                 current_loss = self.__loss_function.calculate(self.__solution_function, *self.__points)
                 if self.__plots:
