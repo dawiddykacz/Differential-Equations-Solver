@@ -182,8 +182,8 @@ class TaskService:
                     self.__task_dict.setdefault(f'{task_name} (avg)', dict())
 
                     self.__task_dict[f'{task_name} (max)'][k] = max_error
-                    self.__task_dict[f'{task_name} (min)'][k] = avg_error
-                    self.__task_dict[f'{task_name} (avg)'][k] = min_error
+                    self.__task_dict[f'{task_name} (avg)'][k] = avg_error
+                    self.__task_dict[f'{task_name} (min)'][k] = min_error
         if max_percent_error is not None:
             error_message = f"{task.get_task_name()} epoches: {epoch} max error ~ {max_percent_error}%"
             self.__error_messages.append(error_message)
