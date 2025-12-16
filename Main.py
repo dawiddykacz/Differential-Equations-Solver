@@ -15,8 +15,8 @@ def run_all(learning_rate: float):
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
-    for i in range(0, 50):
-        a = i * 2
+    for i in range(0, 100):
+        a = i 
         if a <= 0:
             a = 1
 
