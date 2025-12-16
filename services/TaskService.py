@@ -56,55 +56,59 @@ class TaskService:
             equations.append(eq)
             self.run_solution(eq, epoch)
 
-        y = equations[0].get_solution_function().calculate_as_numpy(test_space) * 0
-        abs_error = equations[0].get_solution_function().calculate_as_numpy(test_space) * 0
-        max_error = equations[0].get_solution_function().calculate_as_numpy(test_space) * 0
-        avg_error = equations[0].get_solution_function().calculate_as_numpy(test_space) * 0
-        min_error = equations[0].get_solution_function().calculate_as_numpy(test_space) * 0
-        percent_error = equations[0].get_solution_function().calculate_as_numpy(test_space) * 0
-        variables_array = equations[0].get_solution_function().get_trainable_variables_array()
-        loss_array = equations[0].get_solution_function().get_loss_array()
+        y = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
+        abs_error = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
+        max_error = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
+        avg_error = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
+        min_error = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
+        percent_error = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
+        variables_array = copy.deepcopy(equations[0].get_solution_function().get_trainable_variables_array())
+        for i in range(len(variables_array)):
+            for j in range(len(variables_array[i])):
+                variables_array[i][j] = 0
+        loss_array = copy.deepcopy(equations[0].get_solution_function().get_loss_array())
+        for i in range(len(loss_array)):
+            loss_array[i] = 0
 
         for eq in equations:
             y += eq.get_solution_function().calculate_as_numpy(test_space)
             if variables_array is not None:
-                variables_array_temp = eq.get_solution_function().get_trainable_variables_array()
+                variables_array_temp = copy.deepcopy(eq.get_solution_function().get_trainable_variables_array())
                 for i in range(len(variables_array)):
                     for j in range(len(variables_array[i])):
                         variables_array[i][j] += variables_array_temp[i][j]
             if loss_array is not None:
-                loss_array += eq.get_solution_function().get_loss_array()
-                if loss_array is not None:
-                    space = Space([numpy.linspace(1, epoch, epoch)])
-                    choose_plot = ChoosePlot(space, loss_array,
-                                             self.__get_plot_path(task.get_task_name(), "Convergence"),
-                                             PlotData("Convergence", ["epoch", "loss"]))
-                    choose_plot.choose().plot()
-
-                    threshold = (loss_array[0] - loss_array[len(loss_array) - 1]) / 10
-                    intervals = self.__find_small_change_intervals(loss_array, threshold)
-                    i = 0
-                    while threshold > loss_array[len(loss_array) - 1]:
-                        for interval in intervals:
-                            start = interval[0]
-                            end = epoch
-                            if len(interval) >= 2:
-                                end = interval[1]
-
-                            loss_sub_array = loss_array[start:end]
-
-                            space = Space([numpy.linspace(start, end, end - start)])
-                            choose_plot = ChoosePlot(space, loss_sub_array,
-                                                     self.__get_plot_path(task.get_task_name(), f'Convergence-{i}'),
-                                                     PlotData("Convergence", ["epoch", "loss"]))
-                            choose_plot.choose().plot()
-                            threshold = threshold / 10
-                            intervals = self.__find_small_change_intervals(loss_array, threshold)
-                            i += 1
+                loss_array += copy.deepcopy(eq.get_solution_function().get_loss_array())
 
         y /= equations_amount
         if loss_array is not None and len(loss_array) > 0:
             loss_array /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            choose_plot = ChoosePlot(space, loss_array,
+                                     self.__get_plot_path(task.get_task_name(), "Convergence"),
+                                     PlotData("Convergence", ["epoch", "loss"]))
+            choose_plot.choose().plot()
+
+            threshold = (loss_array[0] - loss_array[len(loss_array) - 1]) / 10
+            intervals = self.__find_small_change_intervals(loss_array, threshold)
+            i = 0
+            while threshold > loss_array[len(loss_array) - 1]:
+                for interval in intervals:
+                    start = interval[0]
+                    end = epoch
+                    if len(interval) >= 2:
+                        end = interval[1]
+
+                    loss_sub_array = loss_array[start:end]
+
+                    space = Space([numpy.linspace(start, end, end - start)])
+                    choose_plot = ChoosePlot(space, loss_sub_array,
+                                             self.__get_plot_path(task.get_task_name(), f'Convergence-{i}'),
+                                             PlotData("Convergence", ["epoch", "loss"]))
+                    choose_plot.choose().plot()
+                    threshold = threshold / 10
+                    intervals = self.__find_small_change_intervals(loss_array, threshold)
+                    i += 1
         if variables_array is not None and len(variables_array) > 0:
             for i in range(len(variables_array)):
                 for j in range(len(variables_array[i])):
