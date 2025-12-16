@@ -9,7 +9,7 @@ from services.TaskService import set_equations_amount
 
 def run_all(learning_rate: float):
     set_learning_rate(learning_rate)
-    set_equations_amount(10)
+    set_equations_amount(20)
 
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
