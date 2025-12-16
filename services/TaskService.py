@@ -58,9 +58,9 @@ class TaskService:
 
         y = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
         abs_error = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
-        max_error = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
-        avg_error = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
-        min_error = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
+        max_error = 0
+        avg_error = 0
+        min_error = 0
         percent_error = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
         variables_array = copy.deepcopy(equations[0].get_solution_function().get_trainable_variables_array())
         for i in range(len(variables_array)):
@@ -152,9 +152,9 @@ class TaskService:
                     percent_error = None
                 else:
                     percent_error += percent_error_1
-                    max_error = self.__get_max_error(abs_error_function.calculate(test_space))
-                    avg_error = self.__get_avg_error(abs_error_function.calculate(test_space))
-                    min_error = self.__get_min_error(abs_error_function.calculate(test_space))
+                max_error += self.__get_max_error(abs_error_function.calculate(test_space))
+                avg_error += self.__get_avg_error(abs_error_function.calculate(test_space))
+                min_error += self.__get_min_error(abs_error_function.calculate(test_space))
 
             max_error /= equations_amount
             avg_error /= equations_amount
