@@ -173,17 +173,17 @@ class TaskService:
                                                   ["x", "Error (%)"]))
                 choose_plot.choose().plot()
                 max_percent_error = numpy.max(percent_error)
-                weight = task.get_weight()
-                if weight is not None:
-                    k = str(weight)
-                    task_name = task.get_task_name_simple()
-                    self.__task_dict.setdefault(f'{task_name} (max)', dict())
-                    self.__task_dict.setdefault(f'{task_name} (min)', dict())
-                    self.__task_dict.setdefault(f'{task_name} (avg)', dict())
+            weight = task.get_weight()
+            if weight is not None:
+                k = str(weight)
+                task_name = task.get_task_name_simple()
+                self.__task_dict.setdefault(f'{task_name} (max)', dict())
+                self.__task_dict.setdefault(f'{task_name} (min)', dict())
+                self.__task_dict.setdefault(f'{task_name} (avg)', dict())
 
-                    self.__task_dict[f'{task_name} (max)'][k] = max_error
-                    self.__task_dict[f'{task_name} (avg)'][k] = avg_error
-                    self.__task_dict[f'{task_name} (min)'][k] = min_error
+                self.__task_dict[f'{task_name} (max)'][k] = max_error
+                self.__task_dict[f'{task_name} (avg)'][k] = avg_error
+                self.__task_dict[f'{task_name} (min)'][k] = min_error
         if max_percent_error is not None:
             error_message = f"{task.get_task_name()} epoches: {epoch} max error ~ {max_percent_error}%"
             self.__error_messages.append(error_message)
