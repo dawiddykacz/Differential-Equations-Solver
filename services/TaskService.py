@@ -1,6 +1,8 @@
 import numpy
 from tqdm import tqdm
 import copy
+import pickle
+import os
 
 from repositories.TaskRepository import TasksRepository
 from objects.space.Space import Space
@@ -26,7 +28,7 @@ class TaskService:
         self.__task_repository = task_repository
         import time
         self.__ms = round(time.time() * 1000)
-        self.__task_dict = dict()
+        self.__task_dict = self._load_from_file()
         self.__epochs = 0
         self.__error_messages = []
 
@@ -184,6 +186,8 @@ class TaskService:
                 self.__task_dict[f'{task_name} (max)'][k] = max_error
                 self.__task_dict[f'{task_name} (avg)'][k] = avg_error
                 self.__task_dict[f'{task_name} (min)'][k] = min_error
+
+                self.save_to_file()
         if max_percent_error is not None:
             error_message = f"{task.get_task_name()} epoches: {epoch} max error ~ {max_percent_error}%"
             self.__error_messages.append(error_message)
@@ -238,3 +242,13 @@ class TaskService:
 
     def __get_plot_path(self, task_name: str, plot_name: str):
         return f'plot/{self.__ms}/{task_name}/{plot_name}.png'
+
+    def save_to_file(self):
+        with open('save', "wb") as f:
+            pickle.dump(self.__task_dict, f)
+
+    def _load_from_file(self) -> dict:
+        if os.path.exists('save'):
+            with open('save', "rb") as f:
+                return pickle.load(f)
+        return {}
