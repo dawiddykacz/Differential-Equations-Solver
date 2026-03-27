@@ -29,5 +29,6 @@ class LossSimple(Loss):
             function(3 * one_x / 4, one_y / 4) - one_x / 2) + abs(function(3 * one_x / 4, 3 * one_y / 4) + one_x / 2)
 
 
-def _condition_weight(self):
-    return w
+    def _condition_weight(self):
+        global w
+        return w

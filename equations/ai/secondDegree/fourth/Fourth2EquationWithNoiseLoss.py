@@ -12,6 +12,7 @@ def random_0_01(shape=()):
     )
 
 
+
 class Fourth2EquationWithNoiseLoss(Fourth2Equation):
     def __init__(self, space: Space, solution: AISolution = None, weight: float = 1):
         t = TrainableVariables([1])
@@ -40,5 +41,6 @@ class LossSimple(Loss):
             function(3 * one_x / 4, 3 * one_y / 4) + one_x / 2 + random_0_01())
 
 
-def _condition_weight(self):
-    return w
+    def _condition_weight(self):
+        global w
+        return w
