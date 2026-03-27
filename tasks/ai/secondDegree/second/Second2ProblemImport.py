@@ -1,0 +1,2 @@
+from tasks.ai.secondDegree.second.Second2ProblemLossTask import Second2ProblemLossTask
+from tasks.ai.secondDegree.second.Second2ProblemLossWithNoiseTask import Second2ProblemLossWithNoiseTask
