@@ -23,11 +23,9 @@ class BasicModel(tensorflow.keras.Model):
         output = self.out_dense(x)
         return output
 
-    @tensorflow.function
-    def train_step(self,data = None    ):
+    def train_step(self, data=None):
         with tensorflow.GradientTape() as tape:
             current_loss = self._loss()
-            print(current_loss)
 
         variables_to_train = self.trainable_variables + self._custom_trainable_variables.get_variables()
         grads = tape.gradient(current_loss, variables_to_train)
