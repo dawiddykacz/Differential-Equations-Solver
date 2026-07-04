@@ -6,7 +6,6 @@ class First2Problem(Equation):
     def __init__(self,solution:AISolution):
         super().__init__(solution, ExactSolution(),"example")
 
-
 class Loss(LossFunction):
     def _left_side_of_the_equation(self, function, *x):
         with tensorflow.GradientTape(persistent=True) as g:
