@@ -1,7 +1,7 @@
 import numpy
 
 from objects.Equation import *
-
+TrainableVariables([])
 
 class First2Problem(Equation):
     def __init__(self,solution:AISolution):
