@@ -1,7 +1,8 @@
 import tensorflow
 import numpy
 
-from solvers.BasicModel import BasicModel
+from solvers.models.BasicModel import BasicModel
+from solvers.models.ModelWithOptimization import ModelWithOptimizationWrapper
 from objects.space.Space import Space
 from objects.functions.loss.LossFunction import LossFunction
 from objects.TrainableVariables import TrainableVariables
@@ -29,9 +30,8 @@ class AISolver:
             self.__trainable_variables = trainable_variables
 
         optimizer = tensorflow.keras.optimizers.Adam(learning_rate=_learning_rate)
-        self.__neural_network = BasicModel(loss=self.current_loss,
-                                           trainable_variables=trainable_variables,
-                                           optimizer=optimizer)
+        self.__neural_network = ModelWithOptimizationWrapper(loss=self.current_loss,
+                                           trainable_variables=trainable_variables)
 
         self.__trainable_plot = []
 
@@ -46,16 +46,17 @@ class AISolver:
             self.__inputs = self.__points[0]
 
     def calculate(self, *variables):
-        return self.__neural_network(tensorflow.concat(variables, axis=1))
+        inputs = tensorflow.concat(variables, axis=1)
+        return self.__neural_network(inputs)
 
     def current_loss(self):
         return self.__loss_function.calculate(self.__solution_function, *self.__points)
 
     def solve(self, epochs: int):
-        self.__neural_network(self.__inputs)
+        self.__neural_network.init(self.__inputs)
 
         for i in range(epochs):
-            current_loss = self.__neural_network.train_step()
+            current_loss = self.__neural_network.train_step()["loss"]
             if self.__plots:
                 self.__loss_array = numpy.append(self.__loss_array, current_loss.numpy())
 

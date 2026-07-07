@@ -1,0 +1,90 @@
+import tensorflow
+import keras_tuner
+
+from solvers.models.AbstractModel import AbstractModel
+from objects.TrainableVariables import TrainableVariables
+
+
+class ModelWithOptimization(AbstractModel):
+    def __init__(self,wrapper, loss, trainable_variables: TrainableVariables, hp):
+        self.__basic_loss = loss
+        self.__wrapper = wrapper
+
+        num_layers = hp.Int('num_layers', min_value=1, max_value=5)
+        dense_layers = []
+
+        for i in range(num_layers):
+            units = hp.Int('units_{}'.format(i), min_value=1, max_value=100, step=10)
+            activation = hp.Choice('activations_{}'.format(i), ['relu', 'tanh', 'sigmoid', 'swish'])
+            dense_layers.append(tensorflow.keras.layers.Dense(units=units, activation=activation, dtype='float64'))
+
+        super().__init__(
+            loss=self.loss,
+            trainable_variables=trainable_variables,
+            dense_list=dense_layers
+        )
+
+    def loss(self):
+        self.__wrapper.set_current_model(self)
+        return self.__basic_loss()
+
+
+
+class ModelWithOptimizationWrapper:
+    def __init__(self, loss, trainable_variables: TrainableVariables):
+        self.__loss = loss
+        self.__trainable_variables = trainable_variables
+        self.__model = None
+
+        self.__tuner = keras_tuner.RandomSearch(
+            self.build_model,
+            objective='loss',
+            max_trials=30,
+            directory='pinn_tuning',
+            project_name='eq',
+            overwrite=True
+        )
+
+    def init(self, inputs, epochs: int = 5000):
+        self.__tuner.search_space_summary()
+        self.__tuner.search(
+            x=inputs,
+            y=None,
+            epochs=epochs,
+            batch_size=100,
+            verbose=1
+        )
+
+        best_hps = self.__tuner.get_best_hyperparameters(num_trials=1)[0]
+
+        print(f"""
+        Najlepsza konfiguracja:
+        - Liczba warstw {best_hps.get('num_layers')}
+        - Learning rate: {best_hps.get('learning_rate'):.5f}
+        """)
+
+        self.__model = self.__tuner.hypermodel.build(best_hps)
+
+        self.__model(inputs)
+
+
+    def set_current_model(self, model):
+        self.__model = model
+
+    def __call__(self, inputs):
+        return self.__model(inputs)
+
+    def train_step(self, data=None):
+        return self.__model.train_step(data=data)
+
+    def build_model(self, hp):
+        model = ModelWithOptimization(
+            wrapper=self,
+            loss=self.__loss,
+            trainable_variables=self.__trainable_variables,
+            hp=hp
+        )
+
+        lr = hp.Float('learning_rate', min_value=1e-4, max_value=1e-1, sampling='log')
+        model.compile(optimizer=tensorflow.keras.optimizers.Adam(learning_rate=lr))
+        return model
