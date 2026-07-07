@@ -88,11 +88,18 @@ class ModelWithOptimizationWrapper:
 
         best_hps = self.__tuner.get_best_hyperparameters(num_trials=1)[0]
 
-        print(f"""
-        Najlepsza konfiguracja:
-        - Liczba warstw {best_hps.get('num_layers')}
-        - Learning rate: {best_hps.get('learning_rate'):.5f}
-        """)
+        num_layers = best_hps.get('num_layers')
+        print("=== Najlepsza konfiguracja modelu ===")
+        print(f"- Learning rate: {best_hps.get('learning_rate'):.6f}")
+        print(f"- Liczba warstw: {num_layers}")
+        print("--------------------------------------")
+
+        for i in range(num_layers):
+            units = best_hps.get(f'units_{i}')
+            act = best_hps.get(f'activations_{i}')
+            print(f"Warstwa {i}:")
+            print(f"  > Liczba neuronów: {units}")
+            print(f"  > Funkcja aktywacji: {act}")
 
         self.__model = self.__tuner.hypermodel.build(best_hps)
 
