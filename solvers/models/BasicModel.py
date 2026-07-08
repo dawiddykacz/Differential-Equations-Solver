@@ -7,6 +7,8 @@ from objects.TrainableVariables import TrainableVariables
 class BasicModel:
     def __init__(self, loss, trainable_variables: TrainableVariables, optimizer):
         dense_list = [
+            #tensorflow.keras.layers.Dense(units=11, activation='sigmoid', dtype='float64'),
+            #tensorflow.keras.layers.Dense(units=10, activation='sigmoid', dtype='float64'),
             tensorflow.keras.layers.Dense(units=10, activation='sigmoid', dtype='float64')
         ]
 

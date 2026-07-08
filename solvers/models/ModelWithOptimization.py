@@ -47,7 +47,7 @@ class ModelWithOptimization(AbstractModel):
 
         for i in range(num_layers):
             units = hp.Int('units_{}'.format(i), min_value=1, max_value=100, step=10, default=10)
-            activation = hp.Choice('activations_{}'.format(i), ['relu', 'tanh', 'sigmoid', 'swish'], default='sigmoid')
+            activation = hp.Choice('activations_{}'.format(i), [ 'tanh', 'sigmoid', 'swish'], default='sigmoid')
             dense_layers.append(tensorflow.keras.layers.Dense(units=units, activation=activation, dtype='float64'))
 
         super().__init__(
@@ -76,7 +76,7 @@ class ModelWithOptimizationWrapper:
             overwrite=True
         )
 
-    def init(self, inputs, epochs: int = 1000):
+    def init(self, inputs, epochs: int = 4000):
         self.__tuner.search_space_summary()
         self.__tuner.search(
             x=inputs,
@@ -122,6 +122,6 @@ class ModelWithOptimizationWrapper:
             hp=hp
         )
 
-        lr = hp.Float('learning_rate', min_value=5e-3, max_value=1, sampling='log', default=0.1)
+        lr = hp.Float('learning_rate', min_value=5e-3, max_value=0.1, sampling='log', default=0.1)
         model.compile(optimizer=tensorflow.keras.optimizers.Adam(learning_rate=lr))
         return model
