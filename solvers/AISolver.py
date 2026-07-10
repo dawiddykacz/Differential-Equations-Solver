@@ -1,26 +1,26 @@
 import tensorflow
 import numpy
 
+from solvers.models.ChooseModel import ModelParams, choose_model
 from objects.space.Space import Space
 from objects.functions.loss.LossFunction import LossFunction
 from objects.TrainableVariables import TrainableVariables
+from solvers.models.ModelConfiguration import ModelConfiguration
 
 _learning_rate = 0.1
 
-def set_learning_rate(learning_rate:float = 0.1):
+
+def set_learning_rate(learning_rate: float = 0.1):
     global _learning_rate
     if learning_rate <= 0.0:
         raise ValueError("Learning rate must be greater than 0.")
-    _learning_rate= learning_rate
+    _learning_rate = learning_rate
+
 
 class AISolver:
     def __init__(self, space: Space, solution_function, loss_function: LossFunction,
                  trainable_variables: TrainableVariables
                  = TrainableVariables(), plots: bool = True):
-        self.__neural_network = tensorflow.keras.Sequential([
-            tensorflow.keras.layers.Dense(units=10, activation='sigmoid', dtype='float64'),
-            tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64')])
-        self.__optimizer = tensorflow.keras.optimizers.Adam(learning_rate=_learning_rate)
         self.__points = space.get_points_to_neural_network()
         self.__solution_function = solution_function
         self.__loss_function = loss_function
@@ -30,6 +30,14 @@ class AISolver:
             self.__trainable_variables = TrainableVariables()
         else:
             self.__trainable_variables = trainable_variables
+
+        model_configuration = ModelConfiguration()
+        model_params = ModelParams(loss=self.current_loss,
+                                   trainable_variables=trainable_variables,
+                                   optimizer=model_configuration.get_optimizer(_learning_rate))
+
+        self.__neural_network = choose_model(params=model_params,
+                                             with_optimization=model_configuration.can_optimize())
 
         self.__trainable_plot = []
 
@@ -44,23 +52,22 @@ class AISolver:
             self.__inputs = self.__points[0]
 
     def calculate(self, *variables):
-        return self.__neural_network(tensorflow.concat(variables, axis=1))
+        inputs = tensorflow.concat(variables, axis=1)
+        return self.__neural_network(inputs)
+
+    def current_loss(self):
+        return self.__loss_function.calculate(self.__solution_function, *self.__points)
 
     def solve(self, epochs: int):
-        self.__neural_network(self.__inputs)
+        self.__neural_network.init(self.__inputs)
 
         for i in range(epochs):
-            with tensorflow.GradientTape() as tape:
-                current_loss = self.__loss_function.calculate(self.__solution_function, *self.__points)
-                if self.__plots:
-                    self.__loss_array = numpy.append(self.__loss_array, current_loss.numpy())
+            current_loss = self.__neural_network.train_step()["loss"]
+            if self.__plots:
+                self.__loss_array = numpy.append(self.__loss_array, current_loss.numpy())
 
-                    for i in range(len(self.__trainable_plot)):
-                        self.__trainable_plot[i].append(self.__trainable_variables.get_variables()[i].numpy())
-            grads = tape.gradient(current_loss, self.__neural_network.trainable_variables +
-                                  self.__trainable_variables.get_variables())
-            self.__optimizer.apply_gradients(zip(grads, self.__neural_network.trainable_variables +
-                                                 self.__trainable_variables.get_variables()))
+                for j in range(len(self.__trainable_plot)):
+                    self.__trainable_plot[j].append(self.__trainable_variables.get_variables()[j].numpy())
 
     def get_loss_array(self):
         if self.__plots:

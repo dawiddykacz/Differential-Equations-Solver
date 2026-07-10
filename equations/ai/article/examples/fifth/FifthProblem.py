@@ -34,7 +34,7 @@ class Loss(LossFunction):
     def _right_side_of_the_equation(self, function, *x):
         y = x[1]
         x = x[0]
-        return numpy.exp(-x)*(x - 2 + y ** 3 + 6 * y)
+        return tensorflow.math.exp(-x)*(x - 2 + y ** 3 + 6 * y)
 
 class ExactSolution(Function):
     def calculate(self, *vars):
