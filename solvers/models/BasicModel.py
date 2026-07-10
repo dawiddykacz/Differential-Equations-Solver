@@ -2,19 +2,18 @@ import tensorflow
 
 from solvers.models.AbstractModel import AbstractModel
 from objects.TrainableVariables import TrainableVariables
+from solvers.models.ModelConfiguration import ModelConfiguration
 
 
 class BasicModel:
     def __init__(self, loss, trainable_variables: TrainableVariables, optimizer):
-        dense_list = [
-            tensorflow.keras.layers.Dense(units=10, activation='sigmoid', dtype='float64')
-        ]
+        model_configuration = ModelConfiguration()
 
         self.__model = AbstractModel(
             loss=loss,
             trainable_variables=trainable_variables,
             optimizer=optimizer,
-            dense_list=dense_list
+            dense_list=model_configuration.dense_list
         )
 
     def init(self, inputs, epochs: int = 0):

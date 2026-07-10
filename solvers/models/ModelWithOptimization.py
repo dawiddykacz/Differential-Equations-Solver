@@ -5,6 +5,10 @@ from objects.TrainableVariables import TrainableVariables
 
 import keras_tuner
 
+from solvers.models.ModelConfiguration import ModelConfiguration
+
+model_configuration = ModelConfiguration()
+
 
 class MyRandomSearch(keras_tuner.RandomSearch):
 
@@ -37,17 +41,27 @@ class MyRandomSearch(keras_tuner.RandomSearch):
 
         return super().search(*args, **kwargs)
 
+
 class ModelWithOptimization(AbstractModel):
     def __init__(self, wrapper, loss, trainable_variables: TrainableVariables, hp):
         self.__basic_loss = loss
         self.__wrapper = wrapper
 
-        num_layers = hp.Int('num_layers', min_value=1, max_value=5, default=1)
+        num_layers = hp.Int('num_layers',
+                            min_value=model_configuration.model_with_optimization.number_of_layers_range.start,
+                            max_value=model_configuration.model_with_optimization.number_of_layers_range.end,
+                            default=1)
         dense_layers = []
 
         for i in range(num_layers):
-            units = hp.Int('units_{}'.format(i), min_value=1, max_value=100, step=10, default=10)
-            activation = hp.Choice('activations_{}'.format(i), [ 'tanh', 'sigmoid', 'swish'], default='sigmoid')
+            units = hp.Int('units_{}'.format(i),
+                           min_value=model_configuration.model_with_optimization.units_range.start,
+                           max_value=model_configuration.model_with_optimization.units_range.end,
+                           step=model_configuration.model_with_optimization.units_range.step,
+                           default=10)
+            activation = hp.Choice('activations_{}'.format(i),
+                                   model_configuration.model_with_optimization.activations_functions,
+                                   default='sigmoid')
             dense_layers.append(tensorflow.keras.layers.Dense(units=units, activation=activation, dtype='float64'))
 
         super().__init__(
@@ -70,18 +84,18 @@ class ModelWithOptimizationWrapper:
         self.__tuner = MyRandomSearch(
             self.build_model,
             objective='loss',
-            max_trials=40,
+            max_trials=model_configuration.model_with_optimization.number_of_trials,
             directory='pinn_tuning',
             project_name='eq',
             overwrite=True
         )
 
-    def init(self, inputs, epochs: int = 2500):
+    def init(self, inputs):
         self.__tuner.search_space_summary()
         self.__tuner.search(
             x=inputs,
             y=None,
-            epochs=epochs,
+            epochs=model_configuration.model_with_optimization.epochs,
             batch_size=100,
             verbose=1
         )

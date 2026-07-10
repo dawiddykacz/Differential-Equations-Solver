@@ -5,6 +5,7 @@ from solvers.models.ChooseModel import ModelParams, choose_model
 from objects.space.Space import Space
 from objects.functions.loss.LossFunction import LossFunction
 from objects.TrainableVariables import TrainableVariables
+from solvers.models.ModelConfiguration import ModelConfiguration
 
 _learning_rate = 0.1
 
@@ -30,12 +31,13 @@ class AISolver:
         else:
             self.__trainable_variables = trainable_variables
 
-        optimizer = tensorflow.keras.optimizers.Adam(learning_rate=_learning_rate)
+        model_configuration = ModelConfiguration()
         model_params = ModelParams(loss=self.current_loss,
                                    trainable_variables=trainable_variables,
-                                   optimizer=optimizer)
+                                   optimizer=model_configuration.get_optimizer(_learning_rate))
 
-        self.__neural_network = choose_model(params=model_params,with_optimization=True)
+        self.__neural_network = choose_model(params=model_params,
+                                             with_optimization=model_configuration.can_optimize())
 
         self.__trainable_plot = []
 
