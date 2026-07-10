@@ -35,7 +35,7 @@ class AISolver:
                                    trainable_variables=trainable_variables,
                                    optimizer=optimizer)
 
-        self.__neural_network = choose_model(params=model_params,with_optimization=False)
+        self.__neural_network = choose_model(params=model_params,with_optimization=True)
 
         self.__trainable_plot = []
 

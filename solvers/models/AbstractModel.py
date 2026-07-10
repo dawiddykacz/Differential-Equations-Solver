@@ -8,16 +8,14 @@ from objects.TrainableVariables import TrainableVariables
 class AbstractModel(tensorflow.keras.Model):
     def __init__(self, loss, trainable_variables: TrainableVariables, dense_list, optimizer = None):
         super(AbstractModel, self).__init__()
-        self.dense_list = dense_list
+        self.dense_list = tensorflow.keras.Sequential(dense_list)
         self.out_dense = tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64')
         self._loss = loss
         self._custom_trainable_variables = trainable_variables
         self.optimizer = optimizer
 
     def call(self, inputs):
-        x = inputs
-        for dense in self.dense_list:
-            x = dense(x)
+        x = self.dense_list(inputs)
         output = self.out_dense(x)
         return output
 
@@ -32,10 +30,14 @@ class AbstractModel(tensorflow.keras.Model):
         return {"loss": current_loss}
 
     def __deepcopy__(self, memo):
+        cloned_layers = [
+            layer.__class__.from_config(layer.get_config())
+            for layer in self.dense_list.layers
+        ]
         new_model = AbstractModel(loss=copy.deepcopy(self._loss, memo),
                                   trainable_variables=copy.deepcopy(self._custom_trainable_variables, memo),
                                   optimizer=copy.deepcopy(self.optimizer, memo),
-                                  dense_list=self.dense_list)
+                                  dense_list=cloned_layers)
 
         memo[id(self)] = new_model
 
