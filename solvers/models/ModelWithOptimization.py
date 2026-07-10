@@ -76,7 +76,7 @@ class ModelWithOptimizationWrapper:
             overwrite=True
         )
 
-    def init(self, inputs, epochs: int = 4000):
+    def init(self, inputs, epochs: int = 2500):
         self.__tuner.search_space_summary()
         self.__tuner.search(
             x=inputs,
