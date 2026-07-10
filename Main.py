@@ -12,9 +12,9 @@ model_configuration = None
 
 
 def configure_solver():
-    model_with_optimization_configuration = ModelWithOptimizationConfiguration()
+    model_with_optimization_configuration = ModelWithOptimizationConfiguration(epochs=1500)
     model_configuration = ModelConfiguration()
-    model_configuration.configure(model_with_optimization=model_with_optimization_configuration)
+    model_configuration.configure(model_with_optimization=None)
 
 
 def run_all(learning_rate: float):
@@ -33,7 +33,7 @@ def run_all(learning_rate: float):
     # task_repository.add_task(Second2ProblemLossTask())
     # task_repository.add_task(Second2ProblemLossWithNoiseTask())
     # task_repository.add_task(Fourth2EquationLossTask())
-    task_service.solve(5)
+    task_service.solve(2500)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
 
     error_messages = task_service.get_error_messages()
