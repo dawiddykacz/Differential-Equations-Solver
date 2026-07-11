@@ -2,7 +2,7 @@ import tensorflow
 
 from equations.ai.article.examples.first.FirstProblemLoss import *
 
-alpha = 0.1
+
 
 
 class FirstProblemLossWithWeight(FirstProblemLoss):
@@ -19,6 +19,7 @@ class SolutionFunctionWeight(SolutionFunction):
 class LossSimpleWeight(LossSimple):
     def __init__(self, t: TrainableVariables):
         self.__t = t
+        self.__alpha = 0.1
 
     def _condition_weight(self):
         return self.__t.get_variables()[0]
@@ -30,4 +31,5 @@ class LossSimpleWeight(LossSimple):
             max_grad_pde = LossFunction.max_abs_grads(grad_pde)
             mean_grad_bc = LossFunction.mean_abs_grads(grad_bc)
             w = max_grad_pde / (mean_grad_bc + 1e-8)
-            self.__t.get_variables()[0] = (1 - alpha) * self.__t.get_variables()[0] + alpha * w
+            self.__t.get_variables()[0] = (1 - self.__alpha) * self.__t.get_variables()[0] + self.__alpha * w
+            self.__alpha *= 0.9

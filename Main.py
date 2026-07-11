@@ -34,7 +34,7 @@ def run_all(learning_rate: float):
     # task_repository.add_task(Second2ProblemLossTask())
     # task_repository.add_task(Second2ProblemLossWithNoiseTask())
     # task_repository.add_task(Fourth2EquationLossTask())
-    task_service.solve(500)
+    task_service.solve(2000)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
 
     error_messages = task_service.get_error_messages()
