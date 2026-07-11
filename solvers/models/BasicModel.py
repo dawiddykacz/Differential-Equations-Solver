@@ -22,5 +22,8 @@ class BasicModel:
     def __call__(self, inputs):
         return self.__model(inputs)
 
+    def get_gradients(self):
+        return self.__model.get_gradients()
+
     def train_step(self, data=None):
         return self.__model.train_step(data=data)

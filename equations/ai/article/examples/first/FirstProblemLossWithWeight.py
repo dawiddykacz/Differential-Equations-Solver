@@ -19,7 +19,7 @@ class SolutionFunctionWeight(SolutionFunction):
 class LossSimpleWeight(LossSimple):
     def __init__(self, t: TrainableVariables):
         self.__t = t
-        self.__alpha = 0.1
+        self.__alpha = 0.05
 
     def _condition_weight(self):
         return self.__t.get_variables()[0]

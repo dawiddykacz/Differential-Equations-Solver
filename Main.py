@@ -12,14 +12,14 @@ model_configuration = None
 
 
 def configure_solver():
-    model_with_optimization_configuration = ModelWithOptimizationConfiguration(epochs=500)
+    model_with_optimization_configuration = ModelWithOptimizationConfiguration(epochs=4000)
     model_configuration = ModelConfiguration()
-    model_configuration.configure(model_with_optimization= model_with_optimization_configuration)
+    model_configuration.configure(model_with_optimization= None)
 
 
 def run_all(learning_rate: float):
     set_learning_rate(learning_rate)
-    set_equations_amount(1)
+    set_equations_amount(20)
 
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
