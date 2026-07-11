@@ -19,13 +19,14 @@ def configure_solver():
 
 def run_all(learning_rate: float):
     set_learning_rate(learning_rate)
-    set_equations_amount(1)
+    set_equations_amount(20)
 
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
-    task_repository.add_task(FirstProblemSimpleTask())
+    task_repository.add_task(FirstProblemLossWithWeightTask())
+    task_repository.add_task(FirstProblemLossTask())
     # task_repository.add_task(FirstProblemLossTask())
     # task_repository.add_task(Second2ProblemLossWithNoiseTask())
     # task_repository.add_task(FifthProblemSimpleTask())
