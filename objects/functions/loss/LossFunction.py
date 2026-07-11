@@ -48,7 +48,7 @@ class LossFunction(Function):
     def _condition_data_weight(self):
         return 1
 
-    def recalculate_weights(self, grads_dict):
+    def recalculate_weights(self, grads_dict, loss_error):
         return
 
     @staticmethod

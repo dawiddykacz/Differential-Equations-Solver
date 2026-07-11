@@ -13,6 +13,7 @@ class AbstractModel(tensorflow.keras.Model):
         self._loss = loss
         self._custom_trainable_variables = trainable_variables
         self.optimizer = optimizer
+        self.__grads = None
 
     def call(self, inputs):
         x = self.dense_list(inputs)
@@ -40,12 +41,17 @@ class AbstractModel(tensorflow.keras.Model):
 
         del tape
 
-        return {
-            'loss': current_loss,
+        self.__grads ={
             'grad_data': grad_data,
             'grad_pde': grad_pde,
             'grad_bc': grad_bc,
         }
+        return {
+            'loss': current_loss
+        }
+
+    def get_gradients(self):
+        return self.__grads
 
     def __deepcopy__(self, memo):
         cloned_layers = [
