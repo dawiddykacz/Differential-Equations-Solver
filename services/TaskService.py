@@ -64,21 +64,36 @@ class TaskService:
         avg_error = 0
         min_error = 0
         percent_error = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
+
         variables_array = copy.deepcopy(equations[0].get_solution_function().get_trainable_variables_array())
         for i in range(len(variables_array)):
             for j in range(len(variables_array[i])):
                 variables_array[i][j] = 0
+
+        non_trainable_variables_array = copy.deepcopy(
+            equations[0].get_solution_function().get_non_trainable_variables_array())
+        for i in range(len(non_trainable_variables_array)):
+            for j in range(len(non_trainable_variables_array[i])):
+                non_trainable_variables_array[i][j] = 0
+
         loss_array = copy.deepcopy(equations[0].get_solution_function().get_loss_array())
         for i in range(len(loss_array)):
             loss_array[i] = 0
 
         for eq in equations:
             y += eq.get_solution_function().calculate_as_numpy(test_space)
+
             if variables_array is not None:
                 variables_array_temp = copy.deepcopy(eq.get_solution_function().get_trainable_variables_array())
                 for i in range(len(variables_array)):
                     for j in range(len(variables_array[i])):
                         variables_array[i][j] += variables_array_temp[i][j]
+            if non_trainable_variables_array is not None:
+                variables_array_temp = copy.deepcopy(eq.get_solution_function().get_non_trainable_variables_array())
+                for i in range(len(non_trainable_variables_array)):
+                    for j in range(len(non_trainable_variables_array[i])):
+                        non_trainable_variables_array[i][j] += variables_array_temp[i][j]
+
             if loss_array is not None:
                 loss_array += copy.deepcopy(eq.get_solution_function().get_loss_array())
 
@@ -111,17 +126,17 @@ class TaskService:
                     threshold = threshold / 10
                     intervals = self.__find_small_change_intervals(loss_array, threshold)
                     i += 1
-        if variables_array is not None and len(variables_array) > 0:
-            for i in range(len(variables_array)):
-                for j in range(len(variables_array[i])):
-                    variables_array[i][j] /= equations_amount
-            space = Space([numpy.linspace(1, epoch, epoch)])
-            for i in range(len(variables_array)):
-                variable = variables_array[i]
-                choose_plot = ChoosePlot(space, variable,
-                                         self.__get_plot_path(task.get_task_name(), f"Trainable variable {i}"),
-                                         PlotData(f"Trainable variable {i}", ["epoch", "value"]))
-                choose_plot.choose().plot()
+
+        self.__handle_variables_plot(variables_array=variables_array,
+                                     task=task,
+                                     equations_amount=equations_amount,
+                                     epoch=epoch,
+                                     plot_title="Trainable variable")
+        self.__handle_variables_plot(variables_array=non_trainable_variables_array,
+                                     task=task,
+                                     equations_amount=equations_amount,
+                                     epoch=epoch,
+                                     plot_title="Non trainable variable")
 
         choose_plot = ChoosePlot(test_space, y, self.__get_plot_path(task.get_task_name(), "Ai Solution"),
                                  PlotData(f"Ai solution {plot_title}"))
@@ -191,6 +206,19 @@ class TaskService:
         if max_percent_error is not None:
             error_message = f"{task.get_task_name()} epoches: {epoch} max error ~ {max_percent_error}%"
             self.__error_messages.append(error_message)
+
+    def __handle_variables_plot(self,variables_array,task,equations_amount: int,epoch:int,plot_title:str):
+        if variables_array is not None and len(variables_array) > 0:
+            for i in range(len(variables_array)):
+                for j in range(len(variables_array[i])):
+                    variables_array[i][j] /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            for i in range(len(variables_array)):
+                variable = variables_array[i]
+                choose_plot = ChoosePlot(space, variable,
+                                         self.__get_plot_path(task.get_task_name(), f"{plot_title} {i}"),
+                                         PlotData(f"Trainable variable {i}", ["epoch", "value"]))
+                choose_plot.choose().plot()
 
     def get_error_messages(self):
         return self.__error_messages

@@ -128,6 +128,9 @@ class ModelWithOptimizationWrapper:
     def train_step(self, data=None):
         return self.__model.train_step(data=data)
 
+    def get_gradients(self):
+        return self.__model.get_gradients()
+
     def build_model(self, hp):
         model = ModelWithOptimization(
             wrapper=self,

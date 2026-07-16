@@ -6,13 +6,14 @@ from objects.TrainableVariables import TrainableVariables
 
 
 class AbstractModel(tensorflow.keras.Model):
-    def __init__(self, loss, trainable_variables: TrainableVariables, dense_list, optimizer = None):
+    def __init__(self, loss, trainable_variables: TrainableVariables, dense_list, optimizer=None):
         super(AbstractModel, self).__init__()
         self.dense_list = tensorflow.keras.Sequential(dense_list)
         self.out_dense = tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64')
         self._loss = loss
         self._custom_trainable_variables = trainable_variables
         self.optimizer = optimizer
+        self.__grads = None
 
     def call(self, inputs):
         x = self.dense_list(inputs)
@@ -20,14 +21,37 @@ class AbstractModel(tensorflow.keras.Model):
         return output
 
     def train_step(self, data=None):
-        with tensorflow.GradientTape() as tape:
-            current_loss = self._loss()
+        with tensorflow.GradientTape(persistent=True) as tape:
+            loss = self._loss()
+            current_loss = loss['loss']
+            loss_pde = loss['loss_pde']
+            conditions = loss['conditions']
+            conditions_data = loss['conditions_data']
 
         variables_to_train = self.trainable_variables + self._custom_trainable_variables.get_variables()
         grads = tape.gradient(current_loss, variables_to_train)
         self.optimizer.apply_gradients(zip(grads, variables_to_train))
 
-        return {"loss": current_loss}
+        last_layer_weights = self.trainable_variables[-2:]
+
+        grad_data = tape.gradient(tensorflow.convert_to_tensor(conditions_data, dtype=tensorflow.float64),
+                                  last_layer_weights)
+        grad_pde = tape.gradient(tensorflow.convert_to_tensor(loss_pde, dtype=tensorflow.float64), last_layer_weights)
+        grad_bc = tape.gradient(tensorflow.convert_to_tensor(conditions, dtype=tensorflow.float64), last_layer_weights)
+
+        del tape
+
+        self.__grads ={
+            'grad_data': grad_data,
+            'grad_pde': grad_pde,
+            'grad_bc': grad_bc,
+        }
+        return {
+            'loss': current_loss
+        }
+
+    def get_gradients(self):
+        return self.__grads
 
     def __deepcopy__(self, memo):
         cloned_layers = [
