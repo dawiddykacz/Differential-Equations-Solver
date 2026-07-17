@@ -14,12 +14,12 @@ model_configuration = None
 def configure_solver():
     model_with_optimization_configuration = ModelWithOptimizationConfiguration(epochs=4000)
     model_configuration = ModelConfiguration()
-    model_configuration.configure(model_with_optimization= None)
+    model_configuration.configure(model_with_optimization=None)
 
 
 def run_all(learning_rate: float):
     set_learning_rate(learning_rate)
-    set_equations_amount(20)
+    set_equations_amount(1)
 
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
@@ -34,7 +34,9 @@ def run_all(learning_rate: float):
     task_repository.add_task(FirstProblemLossTask(15))
     task_repository.add_task(FirstProblemLossTask(17))
     task_repository.add_task(FirstProblemLossTask(20))
-    task_repository.add_task(FirstProblemLossWithWeightTask())
+    for alpha in [0.05, 0.1, 0.15, 0.2]:
+        for alpha_lower in [0.9, 0.95, 1]:
+            task_repository.add_task(FirstProblemLossWithWeightTask(alpha=alpha, alpha_lower=alpha_lower))
     # task_repository.add_task(FirstProblemLossTask())
     # task_repository.add_task(Second2ProblemLossWithNoiseTask())
     # task_repository.add_task(FifthProblemSimpleTask())
@@ -42,7 +44,7 @@ def run_all(learning_rate: float):
     # task_repository.add_task(Second2ProblemLossTask())
     # task_repository.add_task(Second2ProblemLossWithNoiseTask())
     # task_repository.add_task(Fourth2EquationLossTask())
-    task_service.solve(4000)
+    task_service.solve(4)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
 
     error_messages = task_service.get_error_messages()
