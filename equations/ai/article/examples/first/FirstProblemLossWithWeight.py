@@ -33,7 +33,8 @@ class LossSimpleWeight(LossSimple):
             w = max_grad_pde / (mean_grad_bc + 1e-8)
 
             self.__t.get_variables()[0] = (1 - self.__alpha) * self.__t.get_variables()[0] + self.__alpha * w
+
             if loss_error > 1.05:
-                self.__alpha = 0.1
+                self.__alpha = 0.05
             else:
-                self.__alpha *= 0.95
+                self.__alpha *= 0.9
