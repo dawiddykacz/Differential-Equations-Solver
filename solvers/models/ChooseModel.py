@@ -1,4 +1,5 @@
 from solvers.models.BasicModel import BasicModel
+from solvers.models.ModelConfiguration import WangParams
 from solvers.models.ModelWithOptimization import ModelWithOptimizationWrapper
 
 from objects.TrainableVariables import TrainableVariables
@@ -11,7 +12,7 @@ class ModelParams:
         self.optimizer = optimizer
 
 
-def choose_model(params: ModelParams, with_optimization=False):
+def choose_model(params: ModelParams, with_optimization=False, wang_params: WangParams = None):
     if with_optimization:
         return ModelWithOptimizationWrapper(
             loss=params.loss,
@@ -21,5 +22,6 @@ def choose_model(params: ModelParams, with_optimization=False):
         return BasicModel(
             loss=params.loss,
             trainable_variables=params.trainable_variables,
-            optimizer=params.optimizer
+            optimizer=params.optimizer,
+            wang_params=wang_params
         )

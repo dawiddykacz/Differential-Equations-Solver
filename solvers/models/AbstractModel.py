@@ -6,14 +6,17 @@ from objects.TrainableVariables import TrainableVariables
 
 
 class AbstractModel(tensorflow.keras.Model):
-    def __init__(self, loss, trainable_variables: TrainableVariables, dense_list, optimizer=None):
+    def __init__(self, loss, trainable_variables: TrainableVariables, dense_list, optimizer=None, custom_layers=None):
         super(AbstractModel, self).__init__()
+        if custom_layers is None:
+            custom_layers = []
         self.dense_list = tensorflow.keras.Sequential(dense_list)
         self.out_dense = tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64')
         self._loss = loss
         self._custom_trainable_variables = trainable_variables
         self.optimizer = optimizer
         self.__grads = None
+        self._custom_layers = custom_layers
 
     def call(self, inputs):
         x = self.dense_list(inputs)
@@ -32,7 +35,7 @@ class AbstractModel(tensorflow.keras.Model):
         grads = tape.gradient(current_loss, variables_to_train)
         self.optimizer.apply_gradients(zip(grads, variables_to_train))
 
-        last_layer_weights = self.trainable_variables[-2:]
+        last_layer_weights = self.trainable_variables
 
         grad_data = tape.gradient(tensorflow.convert_to_tensor(conditions_data, dtype=tensorflow.float64),
                                   last_layer_weights)
@@ -41,7 +44,7 @@ class AbstractModel(tensorflow.keras.Model):
 
         del tape
 
-        self.__grads ={
+        self.__grads = {
             'grad_data': grad_data,
             'grad_pde': grad_pde,
             'grad_bc': grad_bc,
@@ -58,10 +61,15 @@ class AbstractModel(tensorflow.keras.Model):
             layer.__class__.from_config(layer.get_config())
             for layer in self.dense_list.layers
         ]
+        cloned_custom_layers = [
+            layer.__class__.from_config(layer.get_config())
+            for layer in self._custom_layers
+        ]
         new_model = AbstractModel(loss=copy.deepcopy(self._loss, memo),
                                   trainable_variables=copy.deepcopy(self._custom_trainable_variables, memo),
                                   optimizer=copy.deepcopy(self.optimizer, memo),
-                                  dense_list=cloned_layers)
+                                  dense_list=cloned_layers,
+                                  custom_layers=cloned_custom_layers)
 
         memo[id(self)] = new_model
 

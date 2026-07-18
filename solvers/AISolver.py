@@ -42,7 +42,8 @@ class AISolver:
                                    optimizer=model_configuration.get_optimizer(_learning_rate))
 
         self.__neural_network = choose_model(params=model_params,
-                                             with_optimization=model_configuration.can_optimize())
+                                             with_optimization=model_configuration.can_optimize(),
+                                             wang_params=model_configuration.wang_configuration)
 
         self.__trainable_plot = []
 
