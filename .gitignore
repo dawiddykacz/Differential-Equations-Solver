@@ -1,3 +1,6 @@
 /plot/
 /save
 /pinn_tuning
+/tests/plot/
+/tests/save
+/tests/pinn_tuning
