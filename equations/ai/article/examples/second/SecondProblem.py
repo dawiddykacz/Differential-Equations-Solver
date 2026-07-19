@@ -22,7 +22,7 @@ class Loss(LossFunction):
 
     def _right_side_of_the_equation(self, function, *x):
         x = x[0]
-        return numpy.exp(-x / 5) * numpy.cos(x)
+        return tensorflow.exp(-x / 5) * tensorflow.cos(x)
 
     def _condition_weight(self):
         return 2

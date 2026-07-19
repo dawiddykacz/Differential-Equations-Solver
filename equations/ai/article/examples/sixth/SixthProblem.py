@@ -1,11 +1,16 @@
+import math
+
 import numpy
+import tensorflow
 
 from objects.Equation import *
 
+pi_tensor = tensorflow.constant(math.pi, dtype=tensorflow.float64)
+
 
 class SixthProblem(Equation):
-    def __init__(self,solution:AISolution):
-        super().__init__(solution, ExactSolution(),"cos")
+    def __init__(self, solution: AISolution):
+        super().__init__(solution, ExactSolution(), "cos")
 
 
 class Loss(LossFunction):
@@ -35,11 +40,12 @@ class Loss(LossFunction):
 
     def _right_side_of_the_equation(self, function, *x):
         x, y = x
-        return (2 - numpy.pi ** 2 * y ** 2)*numpy.sin(numpy.pi*x)
+        return (2 - pi_tensor ** 2 * y ** 2) * tensorflow.sin(pi_tensor * x)
+
 
 class ExactSolution(Function):
     def calculate(self, *vars):
         x = vars[0]
         y = vars[1]
 
-        return y ** 2 * numpy.sin(numpy.pi*x)
+        return y ** 2 * tensorflow.sin(pi_tensor * x)
