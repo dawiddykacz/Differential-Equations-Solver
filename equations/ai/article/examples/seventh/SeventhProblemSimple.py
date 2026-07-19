@@ -1,4 +1,4 @@
-from  helpers.EquationsHelper import ArticleProblemsHelper
+from helpers.EquationsHelper import ArticleProblemsHelper
 
 from equations.ai.article.examples.seventh.SeventhProblem import *
 
@@ -7,12 +7,14 @@ class SeventhProblemSimple(SeventhProblem):
     def __init__(self, space: Space):
         super().__init__(SolutionFunction(space, Loss()))
 
+
 f0 = lambda y: tensorflow.zeros_like(y)
 f1 = lambda y: tensorflow.zeros_like(y)
 g0 = lambda x: tensorflow.zeros_like(x)
-g1 = lambda x: 2*tensorflow.sin(x*numpy.pi)
+g1 = lambda x: 2 * tensorflow.sin(x * numpy.pi)
 
 b = ArticleProblemsHelper(f0, f1, g0, g1)
+
 
 class SolutionFunction(AISolution):
     def calculate(self, *vars):
@@ -22,12 +24,13 @@ class SolutionFunction(AISolution):
 
         with tensorflow.GradientTape(persistent=True) as g:
             g.watch(one_y)
-            z = self._ai_solver.calculate(x,one_y)
+            z = self._ai_solver.calculate(x, one_y)
 
-            differential_y = g.gradient(z,  one_y)
+            differential_y = g.gradient(z, one_y)
 
         if differential_y is None:
             differential_y = tensorflow.zeros_like(one_y)
         del g
 
-        return b.calculate(x,y) + (x*(1-x)*y * (self._ai_solver.calculate(x,y) - self._ai_solver.calculate(x,one_y) - differential_y))
+        return b.calculate(x, y) + (x * (1 - x) * y * (
+                    self._ai_solver.calculate(x, y) - self._ai_solver.calculate(x, one_y) - differential_y))

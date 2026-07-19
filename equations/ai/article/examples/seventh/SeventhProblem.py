@@ -1,8 +1,11 @@
+import math
+
 import numpy
+import tensorflow
 
 from objects.Equation import *
 
-
+pi_tensor = tensorflow.constant(math.pi, dtype=tensorflow.float64)
 class SeventhProblem(Equation):
     def __init__(self,solution:AISolution):
         super().__init__(solution, ExactSolution(),"cos")
@@ -36,7 +39,7 @@ class Loss(LossFunction):
     def _right_side_of_the_equation(self, function, *x):
         y = x[1]
         x = x[0]
-        return numpy.sin(numpy.pi*x) * (2 - numpy.pi ** 2 * y ** 2 + 2 * y ** 3 * numpy.sin(numpy.pi*x))
+        return tensorflow.sin(pi_tensor*x) * (2 - pi_tensor ** 2 * y ** 2 + 2 * y ** 3 * tensorflow.sin(pi_tensor*x))
 
 class ExactSolution(Function):
     def calculate(self, *vars):

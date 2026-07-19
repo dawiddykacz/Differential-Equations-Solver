@@ -42,7 +42,8 @@ class AISolver:
                                    optimizer=model_configuration.get_optimizer(_learning_rate))
 
         self.__neural_network = choose_model(params=model_params,
-                                             with_optimization=model_configuration.can_optimize())
+                                             with_optimization=model_configuration.can_optimize(),
+                                             wang_params=model_configuration.wang_configuration)
 
         self.__trainable_plot = []
 
@@ -75,8 +76,7 @@ class AISolver:
             before_loss = self.current_loss()["loss"]
             loss = self.__neural_network.train_step()
             current_loss = loss["loss"]
-            loss_error = current_loss / before_loss
-            grads_data = self.__neural_network.get_gradients()
+            loss_error = tensorflow.abs((current_loss - before_loss) / before_loss)
             if self.__plots:
                 self.__loss_array = numpy.append(self.__loss_array, current_loss.numpy())
 
@@ -84,7 +84,7 @@ class AISolver:
                     self.__trainable_plot[j].append(self.__trainable_variables.get_variables()[j].numpy())
                 for j in range(len(self.__non_trainable_plot)):
                     self.__non_trainable_plot[j].append(self.__non_trainable_variables.get_variables()[j].numpy())
-            self.__loss_function.recalculate_weights(grads_data, loss_error)
+            self.__loss_function.recalculate_weights(loss, loss_error)
 
     def get_loss_array(self):
         if self.__plots:
