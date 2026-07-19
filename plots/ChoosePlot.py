@@ -5,11 +5,14 @@ from plots.Plot3d import Plot3D
 
 import matplotlib
 
-matplotlib.use('TkAgg')
+try:
+    matplotlib.use('TkAgg')
+except ImportError:
+    matplotlib.use('Agg')
 
 
 class ChoosePlot:
-    def __init__(self, space: Space,results,save_path:str = None, plot_data: PlotData = PlotData()):
+    def __init__(self, space: Space, results, save_path: str = None, plot_data: PlotData = PlotData()):
         if space is None:
             raise ValueError("Space cannot be None")
 
@@ -27,10 +30,8 @@ class ChoosePlot:
         os.makedirs(dir_path, exist_ok=True)
 
         if dimension == 1:
-            return Plot2D(mesh[0], self.__results, self.__plot_data,self.__save_path)
+            return Plot2D(mesh[0], self.__results, self.__plot_data, self.__save_path)
         elif dimension == 2:
-            return Plot3D(mesh[0], mesh[1], self.__results, self.__plot_data,self.__save_path)
+            return Plot3D(mesh[0], mesh[1], self.__results, self.__plot_data, self.__save_path)
         else:
             raise ValueError("Dimension not supported")
-
-
