@@ -31,7 +31,7 @@ def run_all(learning_rate: float):
     task_repository.add_task(FirstProblemLossTask())
     task_repository.add_task(FirstProblemLossWithWeightTask())
     task_repository.add_task(FirstProblemLossWithWeightTask(alpha_lower=1))
-    task_service.solve(500)
+    task_service.solve(5000)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
 
     error_messages = task_service.get_error_messages()
@@ -43,4 +43,3 @@ def run_all(learning_rate: float):
 if __name__ == '__main__':
     configure_solver()
     run_all(0.1)
-    # run_all(0.093201)

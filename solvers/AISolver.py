@@ -77,7 +77,7 @@ class AISolver:
             loss = self.__neural_network.train_step()
             current_loss = loss["loss"]
             loss_error = tensorflow.abs((current_loss - before_loss) / before_loss)
-            grads_data = self.__neural_network.get_gradients()
+            grads_data = loss['grads']
             if self.__plots:
                 self.__loss_array = numpy.append(self.__loss_array, current_loss.numpy())
 
