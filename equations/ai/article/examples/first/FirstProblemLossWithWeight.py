@@ -25,12 +25,10 @@ class LossSimpleWeight(LossSimple):
         return self.__t.get_variables()[0]
 
     def recalculate_weights(self, grads_dict, loss_error):
-        grad_pde = grads_dict['grad_pde']
-        grad_bc = grads_dict['grad_bc']
-        if all(g is not None for g in [grad_pde[0], grad_bc[0]]):
-            max_grad_pde = LossFunction.max_abs_grads(grad_pde)
-            mean_grad_bc = LossFunction.mean_abs_grads(grad_bc)
-            w = max_grad_pde / (mean_grad_bc + 1e-8)
+        max_grad_pde = grads_dict['grad_pde_max']
+        mean_grad_bc = grads_dict['grad_bc_mean']
+        if not tensorflow.equal(mean_grad_bc, 0):
+            w = max_grad_pde / mean_grad_bc
 
             self.__t.get_variables()[0] = (1 - self.__alpha) * self.__t.get_variables()[0] + self.__alpha * w
 

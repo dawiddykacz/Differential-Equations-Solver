@@ -3,6 +3,7 @@ import copy
 import tensorflow
 
 from objects.TrainableVariables import TrainableVariables
+from objects.functions.loss.LossFunction import LossFunction
 
 
 class AbstractModel(tensorflow.keras.Model):
@@ -10,6 +11,7 @@ class AbstractModel(tensorflow.keras.Model):
         super(AbstractModel, self).__init__()
         if custom_layers is None:
             custom_layers = []
+        self.loss_tracker = tensorflow.keras.metrics.Mean(name="loss")
         self.dense_list = tensorflow.keras.Sequential(dense_list)
         self.out_dense = tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64')
         self._loss = loss
@@ -43,16 +45,19 @@ class AbstractModel(tensorflow.keras.Model):
         grad_bc = tape.gradient(tensorflow.convert_to_tensor(conditions, dtype=tensorflow.float64), last_layer_weights)
 
         del tape
-
-        grads = {
-            'grad_data': grad_data,
-            'grad_pde': grad_pde,
-            'grad_bc': grad_bc,
-        }
+        
         return {
             'loss': current_loss,
-            'grads': grads
+            'grad_data_mean': LossFunction.mean_abs_grads(grad_data),
+            'grad_pde_max': LossFunction.max_abs_grads(grad_pde),
+            'grad_bc_mean': LossFunction.mean_abs_grads(grad_bc),
         }
+
+    @property
+    def metrics(self):
+        return [
+            self.loss_tracker
+        ]
 
     def __deepcopy__(self, memo):
         cloned_layers = [

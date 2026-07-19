@@ -1,6 +1,7 @@
 import copy
 import tensorflow
 from objects.TrainableVariables import TrainableVariables
+from objects.functions.loss.LossFunction import LossFunction
 
 
 class WangModel(tensorflow.keras.Model):
@@ -59,14 +60,11 @@ class WangModel(tensorflow.keras.Model):
 
         del tape
 
-        grads = {
-            'grad_data': grad_data,
-            'grad_pde': grad_pde,
-            'grad_bc': grad_bc,
-        }
         return {
             'loss': current_loss,
-            'grads': grads
+            'grad_data_mean': LossFunction.mean_abs_grads(grad_data),
+            'grad_pde_max': LossFunction.max_abs_grads(grad_pde),
+            'grad_bc_mean': LossFunction.mean_abs_grads(grad_bc),
         }
 
     def __deepcopy__(self, memo):
