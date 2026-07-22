@@ -5,7 +5,7 @@ from objects.Equation import *
 
 class Second2Problem(Equation):
     def __init__(self,solution:AISolution):
-        super().__init__(solution, ExactSolution(),"example")
+        super().__init__(solution, ExactSolution(),"examples")
 
 
 class Loss(LossFunction):

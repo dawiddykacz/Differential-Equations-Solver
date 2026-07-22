@@ -1,0 +1,3 @@
+from tasks.ai.secondDegree.examples.second.ExampleSecond2TaskLoss import ExampleSecond2ProblemLossTask
+from tasks.ai.secondDegree.examples.second.ExampleSecond2ProblemLossTaskWithWeight import \
+    ExampleSecond2ProblemLossTaskWithWeight

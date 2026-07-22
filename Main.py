@@ -16,7 +16,7 @@ def configure_solver():
     model_with_optimization_configuration = ModelWithOptimizationConfiguration(epochs=4000)
     model_configuration = ModelConfiguration()
     wang_params = WangParams(hidden_dim=10, activation_function='sigmoid')
-    model_configuration.configure(model_with_optimization=None, wang_configuration=None)
+    model_configuration.configure(model_with_optimization=None, wang_configuration=wang_params)
 
 
 def run_all(learning_rate: float):
@@ -27,9 +27,10 @@ def run_all(learning_rate: float):
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
-    task_repository.add_task(First2ProblemLossTask(weight=1,with_noise=False))
-    task_repository.add_task(First2ProblemLossTask(with_noise=True))
-    task_service.solve(500)
+    task_repository.add_task(ExampleSecond2ProblemLossTaskWithWeight(with_noise=False))
+    task_repository.add_task(ExampleSecond2ProblemLossTask(weight=1,with_noise=False))
+    task_repository.add_task(ExampleSecond2ProblemLossTask(with_noise=True))
+    task_service.solve(10000)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
 
     error_messages = task_service.get_error_messages()
@@ -40,4 +41,4 @@ def run_all(learning_rate: float):
 
 if __name__ == '__main__':
     configure_solver()
-    run_all(0.1)
+    run_all(0.+1)
