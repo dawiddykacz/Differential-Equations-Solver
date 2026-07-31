@@ -6,7 +6,7 @@ services:
     container_name: ai-solver-container
 
     volumes:
-      - ./plots:/app/plots
+      - ./plot:/app/plot
 
     # deploy:
     #   resources:
