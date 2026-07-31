@@ -16,7 +16,7 @@ class WangParams:
 
 class ModelWithOptimizationConfiguration:
     def __init__(self, number_of_layers_range: Range = None, units_range: Range = None,
-                 activations_functions: [str] = None, number_of_trials: int = 10, epochs: int = 500):
+                 activations_functions: [str] = None, number_of_trials: int = 40, epochs: int = 500):
         self.number_of_layers_range = number_of_layers_range if number_of_layers_range is not None else Range(
             start=1,
             end=5,

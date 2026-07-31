@@ -29,7 +29,7 @@ def condition_bc(function, x, noise):
     return tensorflow.square(function(x) - exact_solution(x) + noise)
 
 
-class AbstractFirst2Problem(Equation):
+class AbstractExampleFirst2Problem(Equation):
     def __init__(self, solution: AISolution):
         super().__init__(solution, ExactSolution(), "d^2f(x)/d^2x= -(pi^2*sin(pi*x))")
 

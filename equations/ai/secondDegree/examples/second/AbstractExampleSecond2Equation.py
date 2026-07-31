@@ -13,6 +13,9 @@ def random_0_01(shape=()):
 
 
 pi = tensorflow.constant(numpy.pi, dtype=tensorflow.float64)
+one = tensorflow.constant(1.0, dtype=tensorflow.float64)
+
+w1 = random_0_01()
 
 
 def exact_solution(x, y):
@@ -29,60 +32,68 @@ class AbstractExampleSecond2Equation(Equation):
                                                     "-pi^2*sin(pi*x)*cos(pi*x)")
 
 
+class SolutionFunction(AISolution):
+    def calculate(self, *vars):
+        x = vars[0]
+        y = vars[1]
+
+        n = super().calculate(x, y)
+        ansatz = -tensorflow.sin(pi * x)
+        return (x ** 2 - one) * (y ** 2 - one) * n + ansatz
+
+
 class Loss(LossFunction):
     def __init__(self, t: TrainableVariables, with_noise: bool):
         self.__t = t
 
+        if with_noise:
+            self.__w1 = w1
+        else:
+            self.__w1 = 0
+
     def _left_side_of_the_equation(self, function, *x):
-        with tensorflow.GradientTape(persistent=True) as g:
-            for point in x:
-                g.watch(point)
-            z = function(*x)
-            y = x[1]
-            x = x[0]
-            differential_x, differential_y = g.gradient(z, [x, y])
+        x_var = x[0]
+        y_var = x[1]
 
-        if differential_x is None:
-            differential_x = tensorflow.zeros_like(x)
-        differential_x2 = g.gradient(differential_x, x)
+        with tensorflow.GradientTape(persistent=True) as tape2:
+            tape2.watch(x_var)
+            tape2.watch(y_var)
+
+            with tensorflow.GradientTape(persistent=True) as tape1:
+                tape1.watch(x_var)
+                tape1.watch(y_var)
+                z = function(x_var, y_var)
+
+            differential_x = tape1.gradient(z, x_var)
+            differential_y = tape1.gradient(z, y_var)
+
+        differential_x2 = tape2.gradient(differential_x, x_var)
+        differential_y2 = tape2.gradient(differential_y, y_var)
+
+        del tape1
+        del tape2
+
         if differential_x2 is None:
-            differential_x2 = tensorflow.zeros_like(x)
-
-        if differential_y is None:
-            differential_y = tensorflow.zeros_like(y)
-        differential_y2 = g.gradient(differential_y, y)
+            differential_x2 = tensorflow.zeros_like(x_var)
         if differential_y2 is None:
-            differential_y2 = tensorflow.zeros_like(y)
-        del g
+            differential_y2 = tensorflow.zeros_like(y_var)
 
-        return (differential_x2 + differential_y2) * self.__t.get_variables()[0]
+        a = self.__t.get_variables()[0]
+
+        return a * (differential_x2 + differential_y2) / (pi ** 2)
 
     def _right_side_of_the_equation(self, function, *x):
         y = x[1]
         x = x[0]
 
-        return -(pi ** 2) * tensorflow.sin(pi * x) * tensorflow.cos(pi * y)
-
-    def _condition(self, function, *x):
-        y = x[1]
-        x = x[0]
-
-        one = tensorflow.ones_like(x, dtype=tensorflow.float64)
-        one_y = tensorflow.ones_like(y, dtype=tensorflow.float64)
-
-        return (condition_bc(function=function, x=one * -1, y=y) + condition_bc(function=function, x=one, y=y) +
-                condition_bc(function=function, x=x, y=one_y * -1) + condition_bc(function=function, x=x, y=one_y))
+        return -tensorflow.sin(pi * x) * tensorflow.cos(pi * y)
 
     def _condition_data(self, function, *x):
-        zero = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
-        one = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
+        anchor_x = tensorflow.ones_like(x[0], dtype=tensorflow.float64) * 0.5
+        anchor_y = tensorflow.zeros_like(x[1], dtype=tensorflow.float64)
 
-        arr = [-3 / 4, -1 / 2, -1 / 4, 0, 1 / 4, 1 / 2, 3 / 4]
-        bc = condition_bc(function=function, x=zero, y=zero)
+        bc = condition_bc(function=function, x=anchor_x, y=anchor_y, noise=self.__w1)
 
-        for multiplier_x in arr:
-            for multiplier_y in arr:
-                bc = condition_bc(function=function, x=one * multiplier_x, y=one * multiplier_y)
         return bc
 
 

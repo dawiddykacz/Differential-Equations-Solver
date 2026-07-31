@@ -1,0 +1,1 @@
+from tasks.ai.secondDegree.examples.first.ExampleFirst2ProblemLossTask import ExampleFirst2ProblemLossTask

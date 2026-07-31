@@ -4,8 +4,9 @@ from equations.ai.secondDegree.examples.second.AbstractExampleSecond2Equation im
 class ExampleSecond2EquationLoss(AbstractExampleSecond2Equation):
     def __init__(self, space: Space, with_noise: bool, weight: float = 1):
         t = TrainableVariables([1])
+
         super().__init__(
-            AISolution(space, loss_function=LossSimple(t, with_noise, weight), trainable_variables=t))
+            SolutionFunction(space, loss_function=LossSimple(t, with_noise, weight), trainable_variables=t))
 
 
 class LossSimple(Loss):
