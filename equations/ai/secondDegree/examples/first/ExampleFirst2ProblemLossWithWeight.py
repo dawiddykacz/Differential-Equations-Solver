@@ -1,7 +1,7 @@
-from equations.ai.secondDegree.examples.second.AbstractExampleSecond2Equation import *
+from equations.ai.secondDegree.examples.first.AbstractExampleFirst2Equation import *
 
 
-class ExampleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation):
+class ExampleFirst2EquationLossWithWeight(AbstractExampleFirst2Problem):
     def __init__(self, space: Space, with_noise: bool, alpha: float, alpha_lower: float):
         trainable_variables = TrainableVariables([1])
         non_trainable_variables = TrainableVariables([1])

@@ -35,6 +35,7 @@ def add_all_first_degree(task_repository: TaskRepository):
 
 def add_all_second_degree(task_repository: TaskRepository):
     task_repository.add_task(ExampleFirst2ProblemLossTask(with_noise=True))
+    task_repository.add_task(ExampleFirst2ProblemLossWithWeightTask(with_noise=True))
 
     task_repository.add_task(ExampleSecond2ProblemLossTaskWithWeight(with_noise=True))
     task_repository.add_task(ExampleSecond2ProblemLossTask(with_noise=True))
