@@ -24,3 +24,4 @@ class Plot2D(Plot):
             plot.savefig(self.__save_path)
         else:
             plot.show()
+        plot.close()
