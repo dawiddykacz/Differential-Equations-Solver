@@ -4,6 +4,7 @@ services:
   ai-solver:
     build: .
     container_name: ai-solver-container
+    user: "1001:1001"
 
     volumes:
       - ./plot:/app/plot
