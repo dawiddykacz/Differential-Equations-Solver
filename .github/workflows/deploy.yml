@@ -1,0 +1,35 @@
+name: Deploy Differential-Equations-Solver
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Deploy to VPS
+        run: |
+         ssh -o StrictHostKeyChecking=no \
+          ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+
+            set -e
+            cd /home/python/Differential-Equations-Solver
+
+            BRANCH="${{ github.ref_name }}"
+            echo "▶ Deploying branch: $BRANCH"
+            git fetch origin
+            git checkout $BRANCH
+            git reset --hard origin/$BRANCH
+
+            echo "▶ Stating Solver"
+            mkdir -p plot
+            docker compose up -d --build
