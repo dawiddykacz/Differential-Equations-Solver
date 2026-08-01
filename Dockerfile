@@ -14,4 +14,6 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 COPY . .
 
+RUN chmod -R 777 /app
+
 CMD ["python", "Main.py"]
