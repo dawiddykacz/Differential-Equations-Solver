@@ -1,2 +1,0 @@
-from tasks.ai.secondDegree.fourth.Fourth2EquationLossTask import Fourth2EquationLossTask
-from tasks.ai.secondDegree.fourth.Fourth2EquationLossWithNoiseTask import Fourth2EquationLossWithNoiseTask

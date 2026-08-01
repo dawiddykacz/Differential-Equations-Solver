@@ -217,7 +217,7 @@ class TaskService:
                 variable = variables_array[i]
                 choose_plot = ChoosePlot(space, variable,
                                          self.__get_plot_path(task.get_task_name(), f"{plot_title} {i}"),
-                                         PlotData(f"Trainable variable {i}", ["epoch", "value"]))
+                                         PlotData(f"{plot_title} {i}", ["epoch", "value"]))
                 choose_plot.choose().plot()
 
     def get_error_messages(self):

@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  ai-solver:
+    build: .
+    container_name: ai-solver-container
+
+    volumes:
+      - ./plot:/app/plot
+
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '2.0'
