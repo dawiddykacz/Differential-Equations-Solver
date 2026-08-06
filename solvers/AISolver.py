@@ -125,15 +125,26 @@ class AISolver:
 
                     # 2. Analiza imbalansu gradientów
                     grad_pde = loss_dict.get('grad_pde_max', 0.0)
-                    grad_bc = loss_dict.get('grad_bc_mean', 1e-8)
+                    grad_bc = loss_dict.get('grad_bc_mean', 0)
+                    grad_data = loss_dict.get('grad_data_mean', 1e-8)
                     if isinstance(grad_pde, tensorflow.Tensor): grad_pde = grad_pde.numpy()
-                    if isinstance(grad_bc, tensorflow.Tensor): grad_bc = grad_bc.numpy()
 
-                    grad_ratio = grad_pde / (grad_bc + 1e-8)
-                    self.diagnostics_grad_ratio.append(grad_ratio)
+                    if grad_bc != 0:
+                        if isinstance(grad_bc, tensorflow.Tensor): grad_bc = grad_bc.numpy()
 
-                    print(
-                        f"Epoka {i:05d} | Loss: {current_loss:.4e} | Grad Ratio (PDE/BC): {grad_ratio:.2f} | Sztywność (lambda_max): {lambda_max:.2f}")
+                        grad_ratio = grad_pde / (grad_bc + 1e-8)
+                        self.diagnostics_grad_ratio.append(grad_ratio)
+
+                        print(
+                            f"Epoka {i:05d} | Loss: {current_loss:.4e} | Grad Ratio (PDE/BC): {grad_ratio:.2f} | Sztywność (lambda_max): {lambda_max:.2f}")
+                    else:
+                        if isinstance(grad_data, tensorflow.Tensor): grad_data = grad_data.numpy()
+
+                        grad_ratio = grad_pde / (grad_data + 1e-8)
+                        self.diagnostics_grad_ratio.append(grad_ratio)
+
+                        print(
+                            f"Epoka {i:05d} | Loss: {current_loss:.4e} | Grad Ratio (PDE/BC): {grad_ratio:.2f} | Sztywność (lambda_max): {lambda_max:.2f}")
 
                     # 3. INTERWENCJA SYSTEMU (Aplikacja "Znieczulenia")
                     if lambda_max > stiffness_threshold or grad_ratio > 10000.0:
