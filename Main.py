@@ -15,13 +15,13 @@ model_configuration = None
 def configure_solver():
     model_with_optimization_configuration = ModelWithOptimizationConfiguration(epochs=5000)
     model_configuration = ModelConfiguration()
-    wang_params = WangParams(hidden_dim=64, activation_function='sigmoid')
+    wang_params = WangParams(hidden_dim=64, activation_function='tanh')
     model_configuration.configure(model_with_optimization=None,
                                   wang_configuration=wang_params,
                                   dense_list=[
-                                      tensorflow.keras.layers.Dense(64, activation='sigmoid', dtype='float64'),
-                                      tensorflow.keras.layers.Dense(64, activation='sigmoid', dtype='float64'),
-                                      tensorflow.keras.layers.Dense(64, activation='sigmoid', dtype='float64')
+                                      tensorflow.keras.layers.Dense(64, activation='tanh', dtype='float64'),
+                                      tensorflow.keras.layers.Dense(64, activation='tanh', dtype='float64'),
+                                      tensorflow.keras.layers.Dense(64, activation='tanh', dtype='float64')
                                   ])
 
 
