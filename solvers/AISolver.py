@@ -72,9 +72,21 @@ class AISolver:
     def solve(self, epochs: int):
         self.__neural_network.init(self.__inputs)
 
+        # Tablice do zbierania danych diagnostycznych
+        self.diagnostics_lambda_max = []
+        self.diagnostics_grad_ratio = []
+
+        # NOWE: Parametry konfiguracyjne Curriculum Learning
+        diagnostic_interval = 500
+        recovery_steps = 500  # Ile iteracji zajmuje powrót wagi PDE do 1.0
+        current_recovery_step = 0
+        in_recovery = False
+        stiffness_threshold = 100.0  # Krytyczna wartość lambda_max
+
         for i in range(epochs):
             before_loss = self.current_loss()["loss"]
             loss = self.__neural_network.train_step()
+            loss_dict = loss
             current_loss = loss["loss"]
             loss_error = tensorflow.abs((current_loss - before_loss) / before_loss)
             if self.__plots:
@@ -85,6 +97,51 @@ class AISolver:
                 for j in range(len(self.__non_trainable_plot)):
                     self.__non_trainable_plot[j].append(self.__non_trainable_variables.get_variables()[j].numpy())
             self.__loss_function.recalculate_weights(loss, loss_error)
+
+            modify = True
+            if modify:
+                # ==========================================
+                # NOWE: Logika powrotu ze "Znieczulenia"
+                # ==========================================
+                if in_recovery:
+                    # Liniowy wzrost wagi od 0.01 do 1.0
+                    progress = current_recovery_step / recovery_steps
+                    new_weight = 0.01 + progress * (1.0 - 0.01)
+                    self.__loss_function.assign_weights([new_weight])
+
+                    current_recovery_step += 1
+                    if current_recovery_step >= recovery_steps:
+                        in_recovery = False
+                        self.__loss_function.assign_weights([1.0])
+                        print(f"Epoka {i:05d} | [SYSTEM DIAGNOSTYCZNY] Zakończono rekonwalescencję. Waga PDE = 1.0.")
+
+                # ==========================================
+                # NOWE: Moduł Diagnostyczny (Uruchamiany poza rekonwalescencją)
+                # ==========================================
+                if i % diagnostic_interval == 0 and not in_recovery:
+                    # 1. Analiza sztywności
+                    lambda_max = self.__neural_network.estimate_stiffness(num_iters=3).numpy()
+                    self.diagnostics_lambda_max.append(lambda_max)
+
+                    # 2. Analiza imbalansu gradientów
+                    grad_pde = loss_dict.get('grad_pde_max', 0.0)
+                    grad_bc = loss_dict.get('grad_bc_mean', 1e-8)
+                    if isinstance(grad_pde, tensorflow.Tensor): grad_pde = grad_pde.numpy()
+                    if isinstance(grad_bc, tensorflow.Tensor): grad_bc = grad_bc.numpy()
+
+                    grad_ratio = grad_pde / (grad_bc + 1e-8)
+                    self.diagnostics_grad_ratio.append(grad_ratio)
+
+                    print(
+                        f"Epoka {i:05d} | Loss: {current_loss:.4e} | Grad Ratio (PDE/BC): {grad_ratio:.2f} | Sztywność (lambda_max): {lambda_max:.2f}")
+
+                    # 3. INTERWENCJA SYSTEMU (Aplikacja "Znieczulenia")
+                    if lambda_max > stiffness_threshold or grad_ratio > 10000.0:
+                        print(f"  [UWAGA] Sztywność przekroczyła próg ({lambda_max:.2f} > {stiffness_threshold}).")
+                        print("  [AKCJA] Aplikuję 'znieczulenie' PDE. Waga lambda_pde zredukowana do 0.01.")
+                        self.__loss_function.assign_weights([0.01])
+                        in_recovery = True
+                        current_recovery_step = 0
 
     def get_loss_array(self):
         if self.__plots:

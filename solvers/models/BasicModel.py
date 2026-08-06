@@ -37,3 +37,6 @@ class BasicModel:
 
     def train_step(self, data=None):
         return self.__model.train_step(data=data)
+
+    def estimate_stiffness(self, num_iters=3):
+        return self.__model.estimate_stiffness(num_iters=num_iters)

@@ -30,6 +30,9 @@ class LossSimple(Loss):
     def _condition_data_weight(self):
         return self.__non_trainable_variables.get_variables()[0]
 
+    def assign_weights(self, data):
+        self.__non_trainable_variables.get_variables()[0] = tensorflow.constant(data[0], dtype=tensorflow.float64)
+
     def recalculate_weights(self, grads_dict, loss_error):
         max_grad_pde = grads_dict['grad_pde_max']
         mean_grad_data = grads_dict['grad_data_mean']
