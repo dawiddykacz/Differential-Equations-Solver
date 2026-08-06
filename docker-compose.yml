@@ -3,7 +3,6 @@ version: '3.8'
 services:
   ai-solver:
     build: .
-    container_name: ai-solver-container
     user: "1007:1007"
 
     volumes:
