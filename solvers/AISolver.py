@@ -98,7 +98,7 @@ class AISolver:
                     self.__non_trainable_plot[j].append(self.__non_trainable_variables.get_variables()[j].numpy())
             self.__loss_function.recalculate_weights(loss, loss_error)
 
-            modify = True
+            modify = False
             if modify:
                 # ==========================================
                 # NOWE: Logika powrotu ze "Znieczulenia"
