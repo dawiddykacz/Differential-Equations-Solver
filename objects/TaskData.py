@@ -4,7 +4,7 @@ from equations.ExampleEquation import *
 
 
 class TaskData:
-    def __init__(self, space_range: SpaceRanges, name: str = "",weight: float = None):
+    def __init__(self, space_range: SpaceRanges, name: str = "", weight: float = None):
         self.__space_range = space_range
         self.__name = name
         self.__weight = weight
