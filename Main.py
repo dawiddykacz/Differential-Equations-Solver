@@ -15,14 +15,9 @@ model_configuration = None
 def configure_solver():
     model_with_optimization_configuration = ModelWithOptimizationConfiguration(epochs=5000)
     model_configuration = ModelConfiguration()
-    wang_params = WangParams(hidden_dim=64, activation_function='tanh')
+    wang_params = WangParams()
     model_configuration.configure(model_with_optimization=None,
-                                  wang_configuration=None,
-                                  dense_list=[
-                                      tensorflow.keras.layers.Dense(64, activation='tanh', dtype='float64'),
-                                      tensorflow.keras.layers.Dense(64, activation='tanh', dtype='float64'),
-                                      tensorflow.keras.layers.Dense(64, activation='tanh', dtype='float64')
-                                  ])
+                                  wang_configuration=None)
 
 
 def run_all(learning_rate: float):

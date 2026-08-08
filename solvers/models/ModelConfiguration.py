@@ -11,7 +11,7 @@ class Range:
 
 
 class WangParams:
-    def __init__(self, hidden_dim, activation_function='tanh'):
+    def __init__(self, hidden_dim: int = 10, activation_function: str='sigmoid'):
         self.hidden_dim = hidden_dim
         self.activation_function = activation_function
 
