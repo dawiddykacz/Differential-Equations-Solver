@@ -51,6 +51,9 @@ class LossFunction(Function):
     def recalculate_weights(self, grads_dict, loss_error):
         return
 
+    def assign_weights(self, data):
+        return
+
     @staticmethod
     def max_abs_grads(grad):
         valid_grads = [g for g in grad if g is not None]

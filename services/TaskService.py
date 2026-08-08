@@ -46,7 +46,7 @@ class TaskService:
 
     def __run_task(self, task: TaskData, epoch: int, multiply_space: int):
         equation = task.get_equation()
-        plot_title = f"{task.get_task_name()} epoches: {epoch}"
+        plot_title = f"{task.get_plot_title()} epoches: {epoch}"
         test_space = task.get_space_range().split(multiply_space)
 
         equations = []
@@ -148,7 +148,7 @@ class TaskService:
             exact_y = exact_solution.calculate_as_numpy(test_space)
             choose_plot = ChoosePlot(test_space, exact_y,
                                      self.__get_plot_path(task.get_task_name(), "Exact Solution"),
-                                     PlotData(f"Exact solution {task.get_task_name()}"))
+                                     PlotData(f"Exact solution {task.get_plot_title()}"))
             choose_plot.choose().plot()
             exact_y_error = numpy.abs(numpy.max(exact_y))
 

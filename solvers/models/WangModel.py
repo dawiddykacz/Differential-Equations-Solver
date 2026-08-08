@@ -67,6 +67,59 @@ class WangModel(tensorflow.keras.Model):
             'grad_bc_mean': LossFunction.mean_abs_grads(grad_bc),
         }
 
+    @tensorflow.function
+    def estimate_stiffness(self, num_iters=3):
+        """
+        Estymuje największą wartość własną Hessjanu (sztywność) za pomocą
+        iloczynów Hessian-Vector Product (HVP) i metody potęgowej.
+        """
+        variables_to_track = self.trainable_variables + self._custom_trainable_variables.get_variables()
+
+        # Inicjalizacja losowego wektora v o tych samych wymiarach co wagi modelu (wymagane float64)
+        v_list = [tensorflow.random.normal(shape=w.shape, dtype=tensorflow.float64) for w in variables_to_track]
+
+        for _ in range(num_iters):
+            # Normalizacja wektora
+            norm = tensorflow.sqrt(tensorflow.add_n([tensorflow.reduce_sum(tensorflow.square(v)) for v in v_list]))
+            v_list = [v / norm for v in v_list]
+
+            # Obliczenie HVP
+            with tensorflow.GradientTape() as outer_tape:
+                with tensorflow.GradientTape() as inner_tape:
+                    loss_dict = self._loss()
+                    total_loss = loss_dict['loss']
+
+                # Pierwsza pochodna
+                grads = inner_tape.gradient(total_loss, variables_to_track)
+                # Iloczyn skalarny
+                grad_v_dot = tensorflow.add_n(
+                    [tensorflow.reduce_sum(g * v) for g, v in zip(grads, v_list) if g is not None])
+
+            # Druga pochodna (H * v)
+            Hv_list = outer_tape.gradient(grad_v_dot, variables_to_track)
+
+            # Zapobiegawcze filtrowanie None (jeśli jakieś wagi nie mają wpływu na loss)
+            Hv_list = [hv if hv is not None else tensorflow.zeros_like(v) for hv, v in zip(Hv_list, v_list)]
+            v_list = Hv_list
+
+        # Iloraz Rayleigha (Rayleigh quotient) do wyciągnięcia lambda_max
+        norm = tensorflow.sqrt(tensorflow.add_n([tensorflow.reduce_sum(tensorflow.square(v)) for v in v_list]))
+        v_list_normalized = [v / norm for v in v_list]
+
+        with tensorflow.GradientTape() as outer_tape:
+            with tensorflow.GradientTape() as inner_tape:
+                loss_dict = self._loss()
+                total_loss = loss_dict['loss']
+            grads = inner_tape.gradient(total_loss, variables_to_track)
+            grad_v_dot = tensorflow.add_n(
+                [tensorflow.reduce_sum(g * v) for g, v in zip(grads, v_list_normalized) if g is not None])
+
+        Hv_final = outer_tape.gradient(grad_v_dot, variables_to_track)
+        Hv_final = [hv if hv is not None else tensorflow.zeros_like(v) for hv, v in zip(Hv_final, v_list_normalized)]
+
+        lambda_max = tensorflow.add_n([tensorflow.reduce_sum(v * Hv) for v, Hv in zip(v_list_normalized, Hv_final)])
+        return lambda_max
+
     def __deepcopy__(self, memo):
         new_model = WangModel(
             loss=copy.deepcopy(self._loss, memo),

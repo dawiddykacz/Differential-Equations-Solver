@@ -4,7 +4,7 @@ from equations.ExampleEquation import *
 
 
 class TaskData:
-    def __init__(self, space_range: SpaceRanges, name: str = "",weight: float = None):
+    def __init__(self, space_range: SpaceRanges, name: str = "", weight: float = None):
         self.__space_range = space_range
         self.__name = name
         self.__weight = weight
@@ -23,6 +23,9 @@ class TaskData:
         if self.__weight is not None:
             return f"{self.__name} n = {self.__weight}"
         return self.__name
+
+    def get_plot_title(self):
+        return self.get_task_name()
 
     def get_task_name_simple(self):
         return self.__name
