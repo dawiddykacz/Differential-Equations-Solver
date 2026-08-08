@@ -41,7 +41,7 @@ def run_all(learning_rate: float):
                     ExampleSecond2ProblemLossTaskWithWeight(alpha=alpha, alpha_lower=alpha_lower,
                                                             with_noise=with_noise))
 
-    task_service.solve(30000)
+    task_service.solve(5000)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
 
     error_messages = task_service.get_error_messages()
