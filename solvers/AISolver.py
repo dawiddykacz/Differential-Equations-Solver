@@ -8,7 +8,7 @@ from objects.TrainableVariables import TrainableVariables
 from solvers.models.ModelConfiguration import ModelConfiguration
 
 _learning_rate = 0.1
-
+model_configuration = ModelConfiguration()
 
 def set_learning_rate(learning_rate: float = 0.1):
     global _learning_rate
@@ -36,7 +36,6 @@ class AISolver:
         else:
             self.__non_trainable_variables = non_trainable_variables
 
-        model_configuration = ModelConfiguration()
         model_params = ModelParams(loss=self.current_loss,
                                    trainable_variables=trainable_variables,
                                    optimizer=model_configuration.get_optimizer(_learning_rate))
@@ -98,8 +97,7 @@ class AISolver:
                     self.__non_trainable_plot[j].append(self.__non_trainable_variables.get_variables()[j].numpy())
             self.__loss_function.recalculate_weights(loss, loss_error)
 
-            modify = False
-            if modify:
+            if model_configuration.optimize_condition_weight:
                 # ==========================================
                 # NOWE: Logika powrotu ze "Znieczulenia"
                 # ==========================================

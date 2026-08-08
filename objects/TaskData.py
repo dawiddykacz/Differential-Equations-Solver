@@ -24,6 +24,9 @@ class TaskData:
             return f"{self.__name} n = {self.__weight}"
         return self.__name
 
+    def get_plot_title(self):
+        return self.get_task_name()
+
     def get_task_name_simple(self):
         return self.__name
 

@@ -9,4 +9,7 @@ class ExampleFirst2ProblemLossTask(TaskData):
         self.with_noise = with_noise
 
     def get_equation(self):
-        return ExampleFirst2ProblemLoss(self.get_space_range().split(),self.with_noise,self.get_weight())
+        return ExampleFirst2ProblemLoss(self.get_space_range().split(), self.with_noise, self.get_weight())
+
+    def get_plot_title(self):
+        return f"1 example problem loss n = {self.__weight}"
