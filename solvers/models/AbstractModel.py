@@ -37,14 +37,42 @@ class AbstractModel(tensorflow.keras.Model):
         grads = tape.gradient(current_loss, variables_to_train)
         self.optimizer.apply_gradients(zip(grads, variables_to_train))
 
-        last_layer_weights = self.trainable_variables
+        grad_data = []
+        grad_pde = []
+        grad_bc = []
 
-        grad_data = tape.gradient(tensorflow.convert_to_tensor(conditions_data, dtype=tensorflow.float64),
-                                  last_layer_weights)
-        grad_pde = tape.gradient(tensorflow.convert_to_tensor(loss_pde, dtype=tensorflow.float64), last_layer_weights)
-        grad_bc = tape.gradient(tensorflow.convert_to_tensor(conditions, dtype=tensorflow.float64), last_layer_weights)
+        layers = list(self.dense_list.layers) + [self.out_dense]
+        for layer in layers:
+            weights = layer.kernel
+
+            grad_data.append(
+                tape.gradient(tensorflow.convert_to_tensor(conditions_data, dtype=tensorflow.float64), weights)
+            )
+
+            grad_pde.append(
+                tape.gradient(tensorflow.convert_to_tensor(loss_pde, dtype=tensorflow.float64), weights)
+            )
+
+            grad_bc.append(
+                tape.gradient(tensorflow.convert_to_tensor(conditions, dtype=tensorflow.float64), weights)
+            )
 
         del tape
+
+        grad_data = [
+            tensorflow.reshape(g, [-1]) if g is not None else None
+            for g in grad_data
+        ]
+
+        grad_pde = [
+            tensorflow.reshape(g, [-1]) if g is not None else None
+            for g in grad_pde
+        ]
+
+        grad_bc = [
+            tensorflow.reshape(g, [-1]) if g is not None else None
+            for g in grad_bc
+        ]
 
         return {
             'loss': current_loss,
