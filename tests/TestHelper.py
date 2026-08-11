@@ -12,8 +12,6 @@ def add_all_first_degree(task_repository: TaskRepository):
 
     task_repository.add_task(FifthProblemSimpleTask())
     task_repository.add_task(FifthProblemLossTask())
-    task_repository.add_task(FifthProblemWithDistanceFunctionTask())
-    task_repository.add_task(FifthProblemLossWithPointTask())
     task_repository.add_task(FifthProblemLossWithWeightTask())
 
 

@@ -55,7 +55,7 @@ class WangModel(tensorflow.keras.Model):
         grad_pde = []
         grad_bc = []
 
-        layers = list(self.dense_list.layers) + [self.out_dense]
+        layers = list(self.layers_Z) + [self.out_dense, self.layer_H1, self.encoder_U, self.encoder_V]
         for layer in layers:
             weights = layer.kernel
 
