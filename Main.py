@@ -48,7 +48,6 @@ def run_all(learning_rate: float):
             task_repository.add_task(ExampleFirst2ProblemLossTask(weight=weight, with_noise=with_noise))
             task_repository.add_task(ExampleSecond2ProblemLossTask(weight=weight, with_noise=with_noise))
 
-
     task_service.solve(5000)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
 
