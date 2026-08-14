@@ -161,7 +161,7 @@ class TaskService:
             for eq in equations:
                 ai_solution = eq.get_solution_function()
                 abs_error_function = AbsError(ai_solution, exact_solution)
-                abs_error = abs_error_function.calculate(test_space)
+                abs_error += abs_error_function.calculate(test_space)
 
                 percent_error_function = PercentError(ai_solution, exact_solution)
                 percent_error_1 = percent_error_function.calculate(test_space)
@@ -176,6 +176,7 @@ class TaskService:
             max_error /= equations_amount
             avg_error /= equations_amount
             min_error /= equations_amount
+            abs_error /= equations_amount
 
             choose_plot = ChoosePlot(test_space, abs_error,
                                      self.__get_plot_path(task.get_task_name(), "Absolute error"),
