@@ -43,15 +43,11 @@ def run_all(learning_rate: float):
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
-    for with_noise in [False]:
-        for alpha in [0.05, 0.1]:
-            for alpha_lower in [1, 0.95, 0.9, 0.85, 0.8]:
-                task_repository.add_task(
-                    ExampleFirst2ProblemLossWithWeightTask(alpha=alpha, alpha_lower=alpha_lower,
-                                                           with_noise=with_noise))
-                task_repository.add_task(
-                    ExampleSecond2ProblemLossTaskWithWeight(alpha=alpha, alpha_lower=alpha_lower,
-                                                            with_noise=with_noise))
+    for with_noise in [True]:
+        task_repository.add_task(ExampleSecond2ProblemLossTask(weight=7, with_noise=with_noise))
+        for weight in [ 10, 12, 15, 17, 20]:
+            task_repository.add_task(ExampleFirst2ProblemLossTask(weight=weight, with_noise=with_noise))
+            task_repository.add_task(ExampleSecond2ProblemLossTask(weight=weight, with_noise=with_noise))
 
     task_service.solve(5000)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
