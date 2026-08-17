@@ -43,7 +43,7 @@ def run_all(learning_rate: float):
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
-    for with_noise in [False]:
+    for with_noise in [True]:
         for alpha in [0.8, 0.9]:
             for alpha_lower in [1, 0.95, 0.9, 0.85, 0.8]:
                 task_repository.add_task(
