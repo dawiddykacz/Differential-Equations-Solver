@@ -15,7 +15,7 @@ model_configuration = None
 def configure_solver():
     model_with_optimization_configuration = ModelWithOptimizationConfiguration(epochs=5000)
     model_configuration = ModelConfiguration()
-    wang_params = WangParams(activation_function='tanh')
+    wang_params = WangParams(activation_function='tanh', hidden_dim=64)
     model_configuration.configure(model_with_optimization=None,
                                   wang_configuration=wang_params,
                                   dense_list=[
