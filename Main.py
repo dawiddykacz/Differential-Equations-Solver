@@ -48,7 +48,7 @@ def run_all(learning_rate: float):
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
-    for with_noise in [True]:
+    for with_noise in [True, False]:
         for weight in [1, 5, 20]:
             task_repository.add_task(ExampleFirst2ProblemLossTask(weight=weight, with_noise=with_noise))
             task_repository.add_task(ExampleSecond2ProblemLossTask(weight=weight, with_noise=with_noise))
@@ -64,4 +64,4 @@ def run_all(learning_rate: float):
 
 if __name__ == '__main__':
     configure_solver()
-    run_all(0.001)
+    run_all(0.005)
