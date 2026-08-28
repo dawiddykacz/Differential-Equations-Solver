@@ -17,7 +17,7 @@ def configure_solver():
     model_configuration = ModelConfiguration()
     wang_params = WangParams(activation_function='tanh', hidden_dim=64)
     model_configuration.configure(model_with_optimization=None,
-                                  wang_configuration=wang_params,
+                                  wang_configuration=None,
                                   dense_list=[
                                       tensorflow.keras.layers.Dense(64, activation='tanh', dtype='float64'),
                                       tensorflow.keras.layers.Dense(64, activation='tanh', dtype='float64'),
