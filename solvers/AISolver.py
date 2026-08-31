@@ -132,18 +132,11 @@ class AISolver:
 
                         grad_ratio = grad_pde / (grad_bc + 1e-8)
                         self.diagnostics_grad_ratio.append(grad_ratio)
-
-                        print(
-                            f"Epoka {i:05d} | Loss: {current_loss:.4e} | Grad Ratio (PDE/BC): {grad_ratio:.2f} | Sztywność (lambda_max): {lambda_max:.2f}")
                     else:
                         if isinstance(grad_data, tensorflow.Tensor): grad_data = grad_data.numpy()
 
                         grad_ratio = grad_pde / (grad_data + 1e-8)
                         self.diagnostics_grad_ratio.append(grad_ratio)
-
-                        print(
-                            f"Epoka {i:05d} | Loss: {current_loss:.4e} | Grad Ratio (PDE/BC): {grad_ratio:.2f} | Sztywność (lambda_max): {lambda_max:.2f}")
-
                     # 3. INTERWENCJA SYSTEMU (Aplikacja "Znieczulenia")
                     if lambda_max > stiffness_threshold or grad_ratio > 10000.0:
                         print(f"  [UWAGA] Sztywność przekroczyła próg ({lambda_max:.2f} > {stiffness_threshold}).")
