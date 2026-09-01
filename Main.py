@@ -17,7 +17,7 @@ def configure_solver():
     model_configuration = ModelConfiguration()
     wang_params = WangParams(activation_function='tanh', hidden_dim=64)
     model_configuration.configure(model_with_optimization=None,
-                                  wang_configuration=wang_params,
+                                  wang_configuration=None,
                                   dense_list=[
                                       tensorflow.keras.layers.Dense(64, activation='tanh', dtype='float64'),
                                       tensorflow.keras.layers.Dense(64, activation='tanh', dtype='float64'),
@@ -49,8 +49,8 @@ def run_all(learning_rate: float):
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
-    for with_noise in [False]:
-        for alpha in [0.1, 0.9]:
+    for with_noise in [True, False]:
+        for alpha in [1]:
             for alpha_lower in [1, 0.95, 0.8]:
                 task_repository.add_task(
                     ExampleFirst2ProblemLossWithWeightTask(alpha=alpha, alpha_lower=alpha_lower,
