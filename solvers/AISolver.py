@@ -76,11 +76,11 @@ class AISolver:
         self.diagnostics_grad_ratio = []
 
         # NOWE: Parametry konfiguracyjne Curriculum Learning
-        diagnostic_interval = 500
-        recovery_steps = 500  # Ile iteracji zajmuje powrót wagi PDE do 1.0
+        diagnostic_interval = 25
+        recovery_steps = 150  # Ile iteracji zajmuje powrót wagi PDE do 1.0
         current_recovery_step = 0
         in_recovery = False
-        stiffness_threshold = 100.0  # Krytyczna wartość lambda_max
+        stiffness_threshold = 10.0  # Krytyczna wartość lambda_max
 
         for i in range(epochs):
             before_loss = self.current_loss()["loss"]
@@ -102,9 +102,9 @@ class AISolver:
                 # NOWE: Logika powrotu ze "Znieczulenia"
                 # ==========================================
                 if in_recovery:
-                    # Liniowy wzrost wagi od 0.01 do 1.0
+                    # Liniowy spadek wagi od wagi do 1.0
                     progress = current_recovery_step / recovery_steps
-                    new_weight = 0.01 + progress * (1.0 - 0.01)
+                    new_weight = progress
                     self.__loss_function.assign_weights([new_weight])
 
                     current_recovery_step += 1
