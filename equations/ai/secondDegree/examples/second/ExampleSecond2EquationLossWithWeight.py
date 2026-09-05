@@ -31,7 +31,9 @@ class LossSimple(Loss):
         return self.__non_trainable_variables.get_variables()[0]
 
     def assign_weights(self, data):
-        self.__non_trainable_variables.get_variables()[0] = tensorflow.constant(data[0], dtype=tensorflow.float64)
+        a = tensorflow.constant(data[0], dtype=tensorflow.float64)
+        w = self.__non_trainable_variables.get_variables()[0]
+        self.__non_trainable_variables.get_variables()[0] = w * (1 - a) + a
 
     def recalculate_weights(self, grads_dict, loss_error):
         max_grad_pde = grads_dict['grad_pde_max']

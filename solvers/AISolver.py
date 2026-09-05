@@ -76,11 +76,11 @@ class AISolver:
         self.diagnostics_grad_ratio = []
 
         # NOWE: Parametry konfiguracyjne Curriculum Learning
-        diagnostic_interval = 500
-        recovery_steps = 500  # Ile iteracji zajmuje powrót wagi PDE do 1.0
+        diagnostic_interval = 25
+        recovery_steps = 150  # Ile iteracji zajmuje powrót wagi PDE do 1.0
         current_recovery_step = 0
         in_recovery = False
-        stiffness_threshold = 100.0  # Krytyczna wartość lambda_max
+        stiffness_threshold = 10.0  # Krytyczna wartość lambda_max
 
         for i in range(epochs):
             before_loss = self.current_loss()["loss"]
@@ -102,9 +102,9 @@ class AISolver:
                 # NOWE: Logika powrotu ze "Znieczulenia"
                 # ==========================================
                 if in_recovery:
-                    # Liniowy wzrost wagi od 0.01 do 1.0
+                    # Liniowy spadek wagi od wagi do 1.0
                     progress = current_recovery_step / recovery_steps
-                    new_weight = 0.01 + progress * (1.0 - 0.01)
+                    new_weight = progress
                     self.__loss_function.assign_weights([new_weight])
 
                     current_recovery_step += 1
@@ -132,18 +132,11 @@ class AISolver:
 
                         grad_ratio = grad_pde / (grad_bc + 1e-8)
                         self.diagnostics_grad_ratio.append(grad_ratio)
-
-                        print(
-                            f"Epoka {i:05d} | Loss: {current_loss:.4e} | Grad Ratio (PDE/BC): {grad_ratio:.2f} | Sztywność (lambda_max): {lambda_max:.2f}")
                     else:
                         if isinstance(grad_data, tensorflow.Tensor): grad_data = grad_data.numpy()
 
                         grad_ratio = grad_pde / (grad_data + 1e-8)
                         self.diagnostics_grad_ratio.append(grad_ratio)
-
-                        print(
-                            f"Epoka {i:05d} | Loss: {current_loss:.4e} | Grad Ratio (PDE/BC): {grad_ratio:.2f} | Sztywność (lambda_max): {lambda_max:.2f}")
-
                     # 3. INTERWENCJA SYSTEMU (Aplikacja "Znieczulenia")
                     if lambda_max > stiffness_threshold or grad_ratio > 10000.0:
                         print(f"  [UWAGA] Sztywność przekroczyła próg ({lambda_max:.2f} > {stiffness_threshold}).")
