@@ -6,7 +6,8 @@ class ExampleSecond2EquationLoss(AbstractExampleSecond2Equation):
         t = TrainableVariables([1])
 
         super().__init__(
-            SolutionFunction(space, loss_function=LossSimple(t, with_noise, weight), trainable_variables=t))
+            SolutionFunction(space, loss_function=LossSimple(t, with_noise, weight), trainable_variables=t,
+                             exact_trainable_variables=[0.5]))
 
 
 class LossSimple(Loss):

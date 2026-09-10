@@ -13,7 +13,8 @@ class ExampleFirst2EquationLossWithWeight(AbstractExampleFirst2Problem):
                                  with_noise=with_noise,
                                  alpha=alpha, alpha_lower=alpha_lower),
                              trainable_variables=trainable_variables,
-                             non_trainable_variables=non_trainable_variables))
+                             non_trainable_variables=non_trainable_variables,
+                             exact_trainable_variables=[0.5]))
 
 
 class LossSimple(Loss):
