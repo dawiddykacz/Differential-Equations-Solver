@@ -122,6 +122,9 @@ class TaskService:
                                  PlotData(f"Mean square error {plot_title}", ["epoch", "Mean square error"]))
         choose_plot.choose().plot()
 
+        self.plot_convergence_intervals(loss_array=mean_square_error, task=task, plot_title="Mean square error",
+                                        epoch=epoch, value_name="Mean square error")
+
         if loss_array is not None and len(loss_array) > 0:
             loss_array /= equations_amount
             space = Space([numpy.linspace(1, epoch, epoch)])
@@ -130,26 +133,8 @@ class TaskService:
                                      PlotData("Convergence", ["epoch", "loss"]))
             choose_plot.choose().plot()
 
-            threshold = (loss_array[0] - loss_array[len(loss_array) - 1]) / 10
-            intervals = self.__find_small_change_intervals(loss_array, threshold)
-            i = 0
-            while threshold > loss_array[len(loss_array) - 1]:
-                for interval in intervals:
-                    start = interval[0]
-                    end = epoch
-                    if len(interval) >= 2:
-                        end = interval[1]
-
-                    loss_sub_array = loss_array[start:end]
-
-                    space = Space([numpy.linspace(start, end, end - start)])
-                    choose_plot = ChoosePlot(space, loss_sub_array,
-                                             self.__get_plot_path(task.get_task_name(), f'Convergence-{i}'),
-                                             PlotData("Convergence", ["epoch", "loss"]))
-                    choose_plot.choose().plot()
-                    threshold = threshold / 10
-                    intervals = self.__find_small_change_intervals(loss_array, threshold)
-                    i += 1
+            self.plot_convergence_intervals(loss_array=loss_array, task=task, plot_title="Convergence", epoch=epoch,
+                                            value_name="loss")
 
         train_var_data = self.__handle_variables_plot(variables_array=variables_array,
                                                       task=task,
@@ -171,14 +156,6 @@ class TaskService:
 
         train_var_data['last_mean_square_error'] = mean_square_error[len(mean_square_error) - 1]
         converted_data = {}
-
-        for key, value in train_var_data.items():
-            if isinstance(value, tensorflow.Tensor):
-                converted_data[key] = float(value.numpy())
-            else:
-                converted_data[key] = float(value)
-        with open(self.__get_plot_path(task.get_task_name(), "data", "yml"), "w", encoding="utf-8") as file:
-            json.dump(converted_data, file, ensure_ascii=False, indent=4)
 
         exact_solution = equations[0].get_exact_solution()
         max_percent_error = None
@@ -216,6 +193,7 @@ class TaskService:
             min_error /= equations_amount
             abs_error /= equations_amount
 
+            train_var_data['last_max_abs_error'] = tensorflow.reduce_max(abs_error)
             choose_plot = ChoosePlot(test_space, abs_error,
                                      self.__get_plot_path(task.get_task_name(), "Absolute error"),
                                      PlotData(f"Absolute error {plot_title}", labels))
@@ -245,6 +223,14 @@ class TaskService:
         if max_percent_error is not None:
             error_message = f"{task.get_task_name()} epoches: {epoch} max error ~ {max_percent_error}%"
             self.__error_messages.append(error_message)
+
+        for key, value in train_var_data.items():
+            if isinstance(value, tensorflow.Tensor):
+                converted_data[key] = float(value.numpy())
+            else:
+                converted_data[key] = float(value)
+        with open(self.__get_plot_path(task.get_task_name(), "data", "yml"), "w", encoding="utf-8") as file:
+            json.dump(converted_data, file, ensure_ascii=False, indent=4)
 
     def __handle_variables_plot(self, variables_array, task, equations_amount: int, epoch: int, plot_title: str,
                                 exact_var=None):
@@ -300,6 +286,33 @@ class TaskService:
         for b in arr:
             a.append(min(b))
         return min(a)
+
+    def plot_convergence_intervals(self, loss_array, epoch, task, plot_title, value_name):
+        threshold = (loss_array[0] - loss_array[-1]) / 10
+        intervals = self.__find_small_change_intervals(loss_array, threshold)
+        i = 0
+
+        while threshold > loss_array[-1]:
+            for interval in intervals:
+                start = interval[0]
+                end = interval[1] if len(interval) >= 2 else epoch
+
+                loss_sub_array = loss_array[start:end]
+
+                space = Space([numpy.linspace(start, end, end - start)])
+                plot_path = self.__get_plot_path(task.get_task_name(), f'{plot_title}-{i}')
+
+                choose_plot = ChoosePlot(
+                    space,
+                    loss_sub_array,
+                    plot_path,
+                    PlotData(plot_title, ["epoch", value_name])
+                )
+                choose_plot.choose().plot()
+
+            threshold = threshold / 10
+            intervals = self.__find_small_change_intervals(loss_array, threshold)
+            i += 1
 
     def __find_small_change_intervals(self, array, change_threshold):
         intervals = []
