@@ -248,6 +248,9 @@ class TaskService:
                                          self.__get_plot_path(task.get_task_name(), f"{plot_title} {i}"),
                                          PlotData(f"{plot_title} {i}", ["epoch", "value"]))
                 choose_plot.choose().plot()
+                self.plot_convergence_intervals(loss_array=variable, task=task,
+                                                plot_title=f"{plot_title} {i}",
+                                                epoch=epoch, value_name="value")
 
                 if exact_var is not None:
                     e_var = exact_var[i]
@@ -260,6 +263,10 @@ class TaskService:
                                              PlotData(f"{plot_title} {i} (Absolute error)",
                                                       ["epoch", "value"]))
                     choose_plot.choose().plot()
+
+                    self.plot_convergence_intervals(loss_array=ev, task=task,
+                                                    plot_title=f"{plot_title} {i} (Absolute error)",
+                                                    epoch=epoch, value_name="value")
                     data[f'variable_{i}_last_abs_error'] = ev[len(ev) - 1]
         return data
 
