@@ -249,7 +249,7 @@ class TaskService:
                                          PlotData(f"{plot_title} {i}", ["epoch", "value"]))
                 choose_plot.choose().plot()
                 self.plot_convergence_intervals(loss_array=variable, task=task,
-                                                plot_title=f"{plot_title} {i} ",
+                                                plot_title=f"{plot_title} {i}",
                                                 epoch=epoch, value_name="value")
 
                 if exact_var is not None:
