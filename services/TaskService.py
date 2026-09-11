@@ -1,4 +1,7 @@
+import json
+
 import numpy
+import tensorflow
 from tqdm import tqdm
 import copy
 import pickle
@@ -40,9 +43,9 @@ class TaskService:
             self.__run_task(task, epochs, multiply_space)
         self.__epochs += epochs
 
-    def run_solution(self, equation, epoch):
+    def run_solution(self, equation, epoch, test_space):
         ai_solution = equation.get_solution_function()
-        ai_solution.solve(epoch)
+        ai_solution.solve(epoch, test_space)
 
     def __run_task(self, task: TaskData, epoch: int, multiply_space: int):
         equation = task.get_equation()
@@ -56,7 +59,7 @@ class TaskService:
             print(f'{i + 1} / {equations_amount}')
             eq = copy.deepcopy(equation)
             equations.append(eq)
-            self.run_solution(eq, epoch)
+            self.run_solution(eq, epoch, test_space)
 
         y = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
         abs_error = copy.deepcopy(equations[0].get_solution_function().calculate_as_numpy(test_space)) * 0
@@ -79,6 +82,9 @@ class TaskService:
         loss_array = copy.deepcopy(equations[0].get_solution_function().get_loss_array())
         for i in range(len(loss_array)):
             loss_array[i] = 0
+        mean_square_error = copy.deepcopy(equations[0].get_solution_function().get_loss_array())
+        for i in range(len(mean_square_error)):
+            mean_square_error[i] = 0
 
         for eq in equations:
             y += eq.get_solution_function().calculate_as_numpy(test_space)
@@ -97,7 +103,25 @@ class TaskService:
             if loss_array is not None:
                 loss_array += copy.deepcopy(eq.get_solution_function().get_loss_array())
 
+            exact_solution = equations[0].get_exact_solution()
+            if exact_solution is not None:
+                y_array = copy.deepcopy(equations[0].get_solution_function().get_y_by_epoch())
+                for i in range(len(y_array)):
+                    ya = y_array[i]
+                    exact_y = exact_solution.calculate_as_numpy(test_space)
+                    y_final = ya - exact_y
+
+                    mean_err = tensorflow.reduce_mean(y_final ** 2)
+                    mean_square_error[i] = mean_square_error[i] + mean_err
+
         y /= equations_amount
+        mean_square_error /= equations_amount
+        space = Space([numpy.linspace(1, epoch, epoch)])
+        choose_plot = ChoosePlot(space, mean_square_error,
+                                 self.__get_plot_path(task.get_task_name(), f"Mean square error"),
+                                 PlotData(f"Mean square error {plot_title}", ["epoch", "Mean square error"]))
+        choose_plot.choose().plot()
+
         if loss_array is not None and len(loss_array) > 0:
             loss_array /= equations_amount
             space = Space([numpy.linspace(1, epoch, epoch)])
@@ -127,11 +151,14 @@ class TaskService:
                     intervals = self.__find_small_change_intervals(loss_array, threshold)
                     i += 1
 
-        self.__handle_variables_plot(variables_array=variables_array,
-                                     task=task,
-                                     equations_amount=equations_amount,
-                                     epoch=epoch,
-                                     plot_title="Trainable variable")
+        train_var_data = self.__handle_variables_plot(variables_array=variables_array,
+                                                      task=task,
+                                                      equations_amount=equations_amount,
+                                                      epoch=epoch,
+                                                      plot_title="Trainable variable",
+                                                      exact_var=equations[0].
+                                                      get_solution_function().get_exact_trainable_variables_array())
+
         self.__handle_variables_plot(variables_array=non_trainable_variables_array,
                                      task=task,
                                      equations_amount=equations_amount,
@@ -141,6 +168,17 @@ class TaskService:
         choose_plot = ChoosePlot(test_space, y, self.__get_plot_path(task.get_task_name(), "Ai Solution"),
                                  PlotData(f"Ai solution {plot_title}"))
         choose_plot.choose().plot()
+
+        train_var_data['last_mean_square_error'] = mean_square_error[len(mean_square_error) - 1]
+        converted_data = {}
+
+        for key, value in train_var_data.items():
+            if isinstance(value, tensorflow.Tensor):
+                converted_data[key] = float(value.numpy())
+            else:
+                converted_data[key] = float(value)
+        with open(self.__get_plot_path(task.get_task_name(), "data", "yml"), "w", encoding="utf-8") as file:
+            json.dump(converted_data, file, ensure_ascii=False, indent=4)
 
         exact_solution = equations[0].get_exact_solution()
         max_percent_error = None
@@ -208,7 +246,9 @@ class TaskService:
             error_message = f"{task.get_task_name()} epoches: {epoch} max error ~ {max_percent_error}%"
             self.__error_messages.append(error_message)
 
-    def __handle_variables_plot(self,variables_array,task,equations_amount: int,epoch:int,plot_title:str):
+    def __handle_variables_plot(self, variables_array, task, equations_amount: int, epoch: int, plot_title: str,
+                                exact_var=None):
+        data = dict()
         if variables_array is not None and len(variables_array) > 0:
             for i in range(len(variables_array)):
                 for j in range(len(variables_array[i])):
@@ -216,10 +256,26 @@ class TaskService:
             space = Space([numpy.linspace(1, epoch, epoch)])
             for i in range(len(variables_array)):
                 variable = variables_array[i]
+
+                data[f'variable_{i}_last_value'] = variable[len(variable) - 1]
                 choose_plot = ChoosePlot(space, variable,
                                          self.__get_plot_path(task.get_task_name(), f"{plot_title} {i}"),
                                          PlotData(f"{plot_title} {i}", ["epoch", "value"]))
                 choose_plot.choose().plot()
+
+                if exact_var is not None:
+                    e_var = exact_var[i]
+                    ev = []
+                    for v in variable:
+                        ev.append(tensorflow.abs(v - e_var))
+                    choose_plot = ChoosePlot(space, ev,
+                                             self.__get_plot_path(task.get_task_name(),
+                                                                  f"{plot_title} {i} (Absolute error)"),
+                                             PlotData(f"{plot_title} {i} (Absolute error)",
+                                                      ["epoch", "value"]))
+                    choose_plot.choose().plot()
+                    data[f'variable_{i}_last_abs_error'] = ev[len(ev) - 1]
+        return data
 
     def get_error_messages(self):
         return self.__error_messages
@@ -269,8 +325,8 @@ class TaskService:
     def get_epochs(self):
         return self.__epochs
 
-    def __get_plot_path(self, task_name: str, plot_name: str):
-        return f'plot/{self.__ms}/{task_name}/{plot_name}.png'
+    def __get_plot_path(self, task_name: str, plot_name: str, format: str = "png"):
+        return f'plot/{self.__ms}/{task_name}/{plot_name}.{format}'
 
     def save_to_file(self):
         with open('save', "wb") as f:

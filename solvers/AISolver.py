@@ -20,11 +20,13 @@ def set_learning_rate(learning_rate: float = 0.1):
 class AISolver:
     def __init__(self, space: Space, solution_function, loss_function: LossFunction,
                  trainable_variables: TrainableVariables = TrainableVariables(),
-                 non_trainable_variables: TrainableVariables = TrainableVariables(), plots: bool = True):
+                 non_trainable_variables: TrainableVariables = TrainableVariables(), plots: bool = True,
+                 calculate_as_numpy = None):
         self.__points = space.get_points_to_neural_network()
         self.__solution_function = solution_function
         self.__loss_function = loss_function
         self.__plots = plots
+        self.__calculate_as_numpy = calculate_as_numpy
 
         if trainable_variables is None:
             self.__trainable_variables = TrainableVariables()
@@ -50,6 +52,7 @@ class AISolver:
             self.__trainable_plot.append([])
 
         self.__non_trainable_plot = []
+        self.__y_by_epoch = []
 
         for _ in self.__non_trainable_variables.get_variables():
             self.__non_trainable_plot.append([])
@@ -68,7 +71,7 @@ class AISolver:
     def current_loss(self):
         return self.__loss_function.calculate(self.__solution_function, *self.__points)
 
-    def solve(self, epochs: int):
+    def solve(self, epochs: int, test_points):
         self.__neural_network.init(self.__inputs)
 
         # Tablice do zbierania danych diagnostycznych
@@ -89,6 +92,9 @@ class AISolver:
             current_loss = loss["loss"]
             loss_error = tensorflow.abs((current_loss - before_loss) / before_loss)
             if self.__plots:
+                y = self.__calculate_as_numpy(test_points)
+                self.__y_by_epoch.append(y)
+
                 self.__loss_array = numpy.append(self.__loss_array, current_loss.numpy())
 
                 for j in range(len(self.__trainable_plot)):
@@ -165,4 +171,9 @@ class AISolver:
     def get_non_trainable_variables_array(self):
         if self.__plots:
             return self.__non_trainable_plot
+        return None
+
+    def get_y_by_epoch(self):
+        if self.__plots:
+            return self.__y_by_epoch
         return None

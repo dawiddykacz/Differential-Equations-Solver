@@ -14,9 +14,7 @@ def random_0_01(shape=()):
 
 pi = tensorflow.constant(numpy.pi, dtype=tensorflow.float64)
 one = tensorflow.constant(1.0, dtype=tensorflow.float64)
-
-w1 = random_0_01()
-
+zero = tensorflow.constant(0.0, dtype=tensorflow.float64)
 
 def exact_solution(x, y):
     return tensorflow.sin(x * pi) * tensorflow.cos(y * pi)
@@ -47,9 +45,14 @@ class Loss(LossFunction):
         self.__t = t
 
         if with_noise:
-            self.__w1 = w1
+            w = [-0.082, 0.016, 0.048, -0.066, 0.042, 0.024, 0.052, 0.067, -0.056, -0.082, 0.089, 0.097, 0.082, 0.020,
+                 0.086, 0.095, -0.042, 0.043, -0.048, -0.030, -0.063, -0.064, -0.043, -0.025, -0.031]
         else:
-            self.__w1 = 0
+            w = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                 0.0, 0.0, 0.0, 0.0, 0.0]
+        self.__w = []
+        for v in w:
+            self.__w.append(tensorflow.constant(v, dtype=tensorflow.float64))
 
     def _left_side_of_the_equation(self, function, *x):
         x_var = x[0]
@@ -89,10 +92,20 @@ class Loss(LossFunction):
         return -tensorflow.sin(pi * x) * tensorflow.cos(pi * y)
 
     def _condition_data(self, function, *x):
-        anchor_x = tensorflow.ones_like(x[0], dtype=tensorflow.float64) * 0.5
-        anchor_y = tensorflow.zeros_like(x[1], dtype=tensorflow.float64)
+        zero_x = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
+        one_x = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
+        zero_y = tensorflow.zeros_like(x[1], dtype=tensorflow.float64)
+        one_y = tensorflow.ones_like(x[1], dtype=tensorflow.float64)
 
-        bc = condition_bc(function=function, x=anchor_x, y=anchor_y, noise=self.__w1)
+        data_points_x = [-one_x, -one_x / 2, zero_x, one_x / 2, one_x]
+        data_points_y = [-one_y, -one_y / 2, zero_y, one_y / 2, one_y]
+
+        bc = 0
+        i = 0
+        for x1 in data_points_x:
+            for y1 in data_points_y:
+                bc += condition_bc(function=function, x=x1, y=y1, noise=self.__w[i])
+                i += 1
 
         return bc
 
