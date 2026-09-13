@@ -57,7 +57,7 @@ class AISolver:
         for _ in self.__non_trainable_variables.get_variables():
             self.__non_trainable_plot.append([])
 
-        self.__loss_array = numpy.array([])
+        self.__loss_array = []
 
         if len(self.__points) > 1:
             self.__inputs = tensorflow.concat(self.__points, axis=1)
@@ -85,17 +85,19 @@ class AISolver:
         in_recovery = False
         stiffness_threshold = 100.0  # Krytyczna wartość lambda_max
 
+        before_loss = self.current_loss()["loss"]
         for i in range(epochs):
-            before_loss = self.current_loss()["loss"]
             loss = self.__neural_network.train_step()
             loss_dict = loss
             current_loss = loss["loss"]
-            loss_error = tensorflow.abs((current_loss - before_loss) / before_loss)
+            loss_error = tensorflow.abs((current_loss - before_loss) / before_loss + 1e-8)
+            before_loss = current_loss
+
             if self.__plots:
                 y = self.__calculate_as_numpy(test_points)
                 self.__y_by_epoch.append(y)
 
-                self.__loss_array = numpy.append(self.__loss_array, current_loss.numpy())
+                self.__loss_array.append(current_loss.numpy())
 
                 for j in range(len(self.__trainable_plot)):
                     self.__trainable_plot[j].append(self.__trainable_variables.get_variables()[j].numpy())
@@ -160,7 +162,7 @@ class AISolver:
 
     def get_loss_array(self):
         if self.__plots:
-            return self.__loss_array
+            return numpy.array(self.__loss_array)
         return None
 
     def get_trainable_variables_array(self):
