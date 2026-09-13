@@ -82,23 +82,19 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
 def list_path(path: str):
     folder = Path(path)
 
-    # Lista na zebranie wszystkich surowych danych do Box Plotów
     all_raw_data = []
 
     for test_dir in [p for p in folder.iterdir() if p.is_dir()]:
         for architecture_dir in [p for p in test_dir.iterdir() if p.is_dir()]:
             for noise_dir in [p for p in architecture_dir.iterdir() if p.is_dir()]:
 
-                # Zbieranie lokalnych danych wewnątrz folderu (dla heatmap)
                 local_data = []
 
                 for example_dir in [p for p in noise_dir.iterdir() if p.is_dir()]:
                     example_data = parse(example_dir.name, folder_path=example_dir)
 
-                    # Zapisujemy kopię do lokalnych heatmap
                     local_data.append(example_data.copy())
 
-                    # Dodajemy brakujące wymiary dla Box Plotów
                     example_data["Test"] = test_dir.name
                     example_data["Architecture"] = architecture_dir.name
                     example_data["Noise"] = noise_dir.name
@@ -109,7 +105,6 @@ def list_path(path: str):
                     print(f"Pominięto pusty katalog: {noise_dir}")
                     continue
 
-                # 1. RYSOWANIE LOKALNYCH HEATMAP
                 df_local = pd.DataFrame(local_data)
                 for metric_key in metric_keys:
                     plot_heatmaps(df_local, path=noise_dir, value_key=metric_key)
@@ -118,7 +113,6 @@ def list_path(path: str):
         print("Nie znaleziono żadnych danych.")
         return
 
-    # 2. RYSOWANIE ZBIORCZYCH BOX PLOTÓW
     print("\n--- Generowanie zbiorczych Box Plotów ---")
     df_all = pd.DataFrame(all_raw_data)
 
