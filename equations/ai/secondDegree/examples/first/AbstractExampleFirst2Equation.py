@@ -34,9 +34,9 @@ class Loss(LossFunction):
             w = [-0.082, 0.016, 0.048, -0.066, 0.042]
         else:
             w = [0.0, 0.0, 0.0, 0.0, 0.0]
-        self.__w = []
-        for v in w:
-            self.__w.append(tensorflow.constant(v, dtype=tensorflow.float64))
+        self.__w = tensorflow.constant(w, dtype=tensorflow.float64)
+
+        self.__points = tensorflow.constant([-1.0, -0.5, 1.0, 0.5, 0.0], dtype=tensorflow.float64)
 
     def _left_side_of_the_equation(self, function, *x):
         with tensorflow.GradientTape(persistent=True) as g:
@@ -62,15 +62,16 @@ class Loss(LossFunction):
         return - (pi ** 2 * tensorflow.sin(x * pi)) / 2
 
     def _condition_data(self, function, *x):
-        zero = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
-        one = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
+        base_x = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
 
-        bc_1 = condition_bc(function=function, x=one * -1, noise=self.__w[0])
-        bc_5 = condition_bc(function=function, x=one / -2, noise=self.__w[1])
-        bc_2 = condition_bc(function=function, x=one, noise=self.__w[2])
-        bc_4 = condition_bc(function=function, x=one / 2, noise=self.__w[3])
-        bc_3 = condition_bc(function=function, x=zero, noise=self.__w[4])
-        return bc_1 + bc_2 + bc_3 + bc_4 + bc_5
+        results = []
+        for i in range(5):
+            point_val = self.__points[i] * base_x
+            noise_val = self.__w[i]
+
+            results.append(condition_bc(function, point_val, noise_val))
+
+        return tensorflow.add_n(results)
 
 
 class ExactSolution(Function):

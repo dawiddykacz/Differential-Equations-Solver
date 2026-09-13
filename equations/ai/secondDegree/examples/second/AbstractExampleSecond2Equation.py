@@ -37,7 +37,7 @@ class SolutionFunction(AISolution):
 
         n = super().calculate(x, y)
         ansatz = -tensorflow.sin(pi * x)
-        return (x ** 2 - one) * (y ** 2 - one) * n + ansatz
+        return (tensorflow.square(x) - one) * (tensorflow.square(y) - one) * n + ansatz
 
 
 class Loss(LossFunction):
@@ -50,9 +50,7 @@ class Loss(LossFunction):
         else:
             w = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                  0.0, 0.0, 0.0, 0.0, 0.0]
-        self.__w = []
-        for v in w:
-            self.__w.append(tensorflow.constant(v, dtype=tensorflow.float64))
+        self.__w = tensorflow.constant(w, dtype=tensorflow.float64)
 
     def _left_side_of_the_equation(self, function, *x):
         x_var = x[0]
@@ -62,18 +60,16 @@ class Loss(LossFunction):
             tape2.watch(x_var)
             tape2.watch(y_var)
 
-            with tensorflow.GradientTape(persistent=True) as tape1:
+            with tensorflow.GradientTape() as tape1:
                 tape1.watch(x_var)
                 tape1.watch(y_var)
                 z = function(x_var, y_var)
 
-            differential_x = tape1.gradient(z, x_var)
-            differential_y = tape1.gradient(z, y_var)
+            differential_x, differential_y = tape1.gradient(z, [x_var, y_var])
 
         differential_x2 = tape2.gradient(differential_x, x_var)
         differential_y2 = tape2.gradient(differential_y, y_var)
 
-        del tape1
         del tape2
 
         if differential_x2 is None:
@@ -92,23 +88,26 @@ class Loss(LossFunction):
         return -tensorflow.sin(pi * x) * tensorflow.cos(pi * y)
 
     def _condition_data(self, function, *x):
-        zero_x = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
-        one_x = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
-        zero_y = tensorflow.zeros_like(x[1], dtype=tensorflow.float64)
-        one_y = tensorflow.ones_like(x[1], dtype=tensorflow.float64)
+        base_x = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
+        base_y = tensorflow.ones_like(x[1], dtype=tensorflow.float64)
 
-        data_points_x = [-one_x, -one_x / 2, zero_x, one_x / 2, one_x]
-        data_points_y = [-one_y, -one_y / 2, zero_y, one_y / 2, one_y]
+        factors = [-1.0, -0.5, 0.0, 0.5, 1.0]
 
-        bc = 0
+        results = []
         i = 0
-        for x1 in data_points_x:
-            for y1 in data_points_y:
-                bc += condition_bc(function=function, x=x1, y=y1, noise=self.__w[i])
+        for f_x in factors:
+            for f_y in factors:
+                point_x = f_x * base_x
+                point_y = f_y * base_y
+
+                noise_val = self.__w[i]
+
+                results.append(
+                    condition_bc(function=function, x=point_x, y=point_y, noise=noise_val)
+                )
                 i += 1
 
-        return bc
-
+        return tensorflow.reduce_sum(tensorflow.add_n(results))
 
 class ExactSolution(Function):
     def calculate(self, *vars):
