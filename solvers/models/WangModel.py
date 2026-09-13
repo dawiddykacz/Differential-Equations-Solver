@@ -43,33 +43,22 @@ class WangModel(tensorflow.keras.Model):
         with tensorflow.GradientTape(persistent=True) as tape:
             loss = self._loss()
             current_loss = loss['loss']
-            loss_pde = loss['loss_pde']
-            conditions = loss['conditions']
-            conditions_data = loss['conditions_data']
+
+            loss_pde = tensorflow.convert_to_tensor(loss['loss_pde'], dtype=tensorflow.float64)
+            conditions = tensorflow.convert_to_tensor(loss['conditions'], dtype=tensorflow.float64)
+            conditions_data = tensorflow.convert_to_tensor(loss['conditions_data'], dtype=tensorflow.float64)
 
         variables_to_train = self.trainable_variables + self._custom_trainable_variables.get_variables()
+
         grads = tape.gradient(current_loss, variables_to_train)
         self.optimizer.apply_gradients(zip(grads, variables_to_train))
 
-        grad_data = []
-        grad_pde = []
-        grad_bc = []
-
         layers = list(self.layers_Z) + [self.out_dense, self.layer_H1, self.encoder_U, self.encoder_V]
-        for layer in layers:
-            weights = layer.kernel
+        kernels = [layer.kernel for layer in layers if hasattr(layer, 'kernel')]
 
-            grad_data.append(
-                tape.gradient(tensorflow.convert_to_tensor(conditions_data, dtype=tensorflow.float64), weights)
-            )
-
-            grad_pde.append(
-                tape.gradient(tensorflow.convert_to_tensor(loss_pde, dtype=tensorflow.float64), weights)
-            )
-
-            grad_bc.append(
-                tape.gradient(tensorflow.convert_to_tensor(conditions, dtype=tensorflow.float64), weights)
-            )
+        grad_data = tape.gradient(conditions_data, kernels)
+        grad_pde = tape.gradient(loss_pde, kernels)
+        grad_bc = tape.gradient(conditions, kernels)
 
         del tape
 
