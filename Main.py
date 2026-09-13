@@ -22,6 +22,9 @@ def configure_solver():
 
 def basic_rep(task_repository):
     for with_noise in [True, False]:
+        for weight in [1, 5, 20]:
+            task_repository.add_task(ExampleFirst2ProblemLossTask(weight=weight, with_noise=with_noise))
+            task_repository.add_task(ExampleSecond2ProblemLossTask(weight=weight, with_noise=with_noise))
         for alpha in [0.1, 0.9, 1]:
             for alpha_lower in [1, 0.95, 0.8]:
                 task_repository.add_task(
@@ -34,23 +37,18 @@ def basic_rep(task_repository):
 
 def run_all(learning_rate: float):
     set_learning_rate(learning_rate)
-    set_equations_amount(3)
+    set_equations_amount(20)
 
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
     for with_noise in [True]:
-        for alpha in [0.1]:
-            for alpha_lower in [0.8]:
-                task_repository.add_task(
-                    ExampleFirst2ProblemLossWithWeightTask(alpha=alpha, alpha_lower=alpha_lower,
-                                                           with_noise=with_noise))
-                task_repository.add_task(
-                    ExampleSecond2ProblemLossTaskWithWeight(alpha=alpha, alpha_lower=alpha_lower,
-                                                            with_noise=with_noise))
+        for weight in [1, 3, 5, 7, 10, 12, 15, 17, 20]:
+            task_repository.add_task(ExampleFirst2ProblemLossTask(weight=weight, with_noise=with_noise))
+            task_repository.add_task(ExampleSecond2ProblemLossTask(weight=weight, with_noise=with_noise))
 
-    task_service.solve(30)
+    task_service.solve(5000)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
 
     error_messages = task_service.get_error_messages()
