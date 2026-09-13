@@ -39,7 +39,6 @@ def parse(text: str, folder_path: Path):
 
 
 def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_square_error"):
-    """Generuje i zapisuje lokalne heatmapy w danym folderze."""
     if value_key not in df.columns:
         return
 
