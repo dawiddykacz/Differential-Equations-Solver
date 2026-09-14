@@ -112,37 +112,72 @@ def list_path(path: str):
         print("Nie znaleziono żadnych danych.")
         return
 
-    print("\n--- Generowanie zbiorczych Box Plotów ---")
+    print("\n--- Generowanie zbiorczych wykresów ---")
     df_all = pd.DataFrame(all_raw_data)
+
+    # 3. Usuwanie pustych wymiarów z siatki, jeśli jest tylko 1 test lub 1 problem (name)
+    has_multiple_tests = df_all["Test"].nunique() > 1
+    has_multiple_names = df_all["name"].nunique() > 1
 
     for metric in metric_keys:
         if metric not in df_all.columns:
             print(f"Brak danych dla metryki: {metric}")
             continue
 
-        print(f"Generowanie Box Plot dla: {metric}...")
+        print(f"Generowanie wykresu dla: {metric}...")
+
+        # 1. Zliczanie max elementów w grupie.
+        # Jeśli = 1, rysujemy barplot. Jeśli > 1 rysujemy prawdziwy boxplot.
+        max_samples = df_all.groupby(["Test", "Architecture", "Noise", "name"])[metric].count().max()
+        current_kind = "box" if max_samples > 1 else "bar"
+
+        # Delikatna przezroczystość boxplotów (aby było widać kropki pod spodem)
+        plot_kwargs = {"boxprops": {'alpha': 0.6}} if current_kind == "box" else {}
 
         g = sns.catplot(
             data=df_all,
             x="Architecture",
             y=metric,
             hue="Noise",
-            col="name",
-            row="Test",
-            kind="box",
+            col="name" if has_multiple_names else None,
+            row="Test" if has_multiple_tests else None,
+            kind=current_kind,
             sharey=False,
             palette="Set2",
             height=5,
-            aspect=1.2
+            aspect=1.2,
+            **plot_kwargs
         )
 
-        g.fig.suptitle(f"Zbiorczy Box Plot: {metric}", y=1.03, fontsize=16)
+        # 2. Nakładanie kropek (stripplot) z wynikami
+        if current_kind == "box":
+            g.map_dataframe(
+                sns.stripplot,
+                x="Architecture",
+                y=metric,
+                hue="Noise",
+                dodge=True,
+                palette="dark:black",  # Ustawia kolor kropek na czarny
+                alpha=0.6,
+                size=5,
+                legend=False
+            )
 
-        out_file = folder / f"global_boxplot_{metric}.png"
+        # Dopracowanie estetyczne tytułu
+        title_parts = [f"Metryka: {metric}"]
+        if not has_multiple_tests:
+            title_parts.append(f"Test: {df_all['Test'].iloc[0]}")
+        if not has_multiple_names:
+            title_parts.append(f"Problem: {df_all['name'].iloc[0]}")
+
+        g.fig.suptitle(" | ".join(title_parts), y=1.05, fontsize=14)
+
+        # Zapis pod nazwą uwzględniającą typ wykresu (bar albo box)
+        out_file = folder / f"global_{current_kind}plot_{metric}.png"
         plt.savefig(out_file, dpi=300, bbox_inches="tight")
         plt.close()
 
-        print(f"Zapisano Box Plot -> {out_file}")
+        print(f"Zapisano wykres -> {out_file}")
 
 
 if __name__ == "__main__":
