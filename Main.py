@@ -15,9 +15,14 @@ model_configuration = None
 def configure_solver():
     model_with_optimization_configuration = ModelWithOptimizationConfiguration(epochs=5000)
     model_configuration = ModelConfiguration()
-    wang_params = WangParams()
+    wang_params = WangParams(hidden_dim=50, activation_function='tanh')
     model_configuration.configure(model_with_optimization=None,
-                                  wang_configuration=None)
+                                  wang_configuration=None,
+                                  dense_list=[
+                                      tensorflow.keras.layers.Dense(units=50, activation='tanh', dtype='float64'),
+                                      tensorflow.keras.layers.Dense(units=50, activation='tanh', dtype='float64'),
+                                      tensorflow.keras.layers.Dense(units=50, activation='tanh', dtype='float64'),
+                                  ])
 
 
 def basic_rep(task_repository):
@@ -37,18 +42,26 @@ def basic_rep(task_repository):
 
 def run_all(learning_rate: float):
     set_learning_rate(learning_rate)
-    set_equations_amount(2)
+    set_equations_amount(10)
 
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
+    range_weight = 1 / (0.1 ** 4)
     for with_noise in [True]:
-        for weight in [1, 3, 5, 7, 10, 12, 15, 17, 20]:
+        for weight in [1, range_weight]:
             task_repository.add_task(ExampleFirst2ProblemLossTask(weight=weight, with_noise=with_noise))
-            task_repository.add_task(ExampleSecond2ProblemLossTask(weight=weight, with_noise=with_noise))
+        for alpha in [0.9]:
+            for alpha_lower in [1]:
+                task_repository.add_task(
+                    ExampleFirst2ProblemLossWithWeightTask(alpha=alpha, alpha_lower=alpha_lower,
+                                                           with_noise=with_noise))
+                task_repository.add_task(
+                    ExampleFirst2ProblemLossWithWeightTask(alpha=alpha, alpha_lower=alpha_lower,
+                                                           with_noise=with_noise, weight=range_weight))
 
-    task_service.solve(5)
+    task_service.solve(5000)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
 
     error_messages = task_service.get_error_messages()
@@ -59,4 +72,4 @@ def run_all(learning_rate: float):
 
 if __name__ == '__main__':
     configure_solver()
-    run_all(0.1)
+    run_all(10 ** -3)
