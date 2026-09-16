@@ -14,18 +14,33 @@ metric_keys = [
 
 
 def parse(text: str, folder_path: Path):
-    name_match = re.search(r"^(.*?)\s*\(", text)
+    name_match = re.search(r"^(.*?)(?:\s*\(|\s+with noise\b|\s+n\s*=|\s+weight\s*=|\s+alpha\s*=|$)",
+                           text, flags=re.IGNORECASE)
+
     alpha_match = re.search(r"\balpha\s*=\s*([0-9.]+)", text)
     alpha_lower_match = re.search(r"\balpha_lower\s*=\s*([0-9.]+)", text)
+    weight_match = re.search(r"\bweight\s*=\s*([0-9.]+)", text)
+    n_match = re.search(r"\bn\s*=\s*([0-9.]+)", text)
+    wang_flag = bool(re.search(r"\bwang\b", text, flags=re.IGNORECASE))
 
-    name = name_match.group(1).strip() if name_match else None
+    name = name_match.group(1).strip() if name_match else text.strip()
     alpha = float(alpha_match.group(1)) if alpha_match else None
     alpha_lower = float(alpha_lower_match.group(1)) if alpha_lower_match else None
+
+    weight = round(float(weight_match.group(1)), 1) if weight_match else None
+    n_param = round(float(n_match.group(1)), 1) if n_match else None
+    if weight is None:
+        weight = n_param
+    if weight is None:
+        return None
+    print(name)
 
     d = {
         "name": name,
         "alpha": alpha,
         "betta": alpha_lower,
+        "weight": weight,
+        "is_wang_dynamic_weight": wang_flag,
     }
 
     data_file = folder_path / "data.yml"
@@ -49,11 +64,14 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
         file = path / f"{safe_name}_{value_key}.png"
         print(f"Zapisywanie heatmapy: {file}")
 
-        subset = df[df["name"] == name]
+        subset = df[df["name"] == name].copy()
+
+        if subset.empty:
+            continue
 
         heatmap_matrix = subset.pivot_table(
-            index="betta",
-            columns="alpha",
+            index="is_wang_dynamic_weight",
+            columns="weight",
             values=value_key,
             aggfunc="mean",
         )
@@ -64,14 +82,15 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
         sns.heatmap(
             heatmap_matrix,
             annot=True,
-            fmt=".4f",
+            fmt=".4g",
             cmap="viridis",
             cbar_kws={"label": value_key},
         )
 
         plt.title(f"{name}\nMetric: {value_key}")
-        plt.xlabel("alpha")
-        plt.ylabel("betta")
+
+        plt.xlabel("Waga (weight)")
+        plt.ylabel("Czy zastosowano Wang?")
         plt.tight_layout()
 
         plt.savefig(file, dpi=300)
@@ -91,6 +110,8 @@ def list_path(path: str):
 
                 for example_dir in [p for p in noise_dir.iterdir() if p.is_dir()]:
                     example_data = parse(example_dir.name, folder_path=example_dir)
+                    if example_data is None:
+                        continue
 
                     local_data.append(example_data.copy())
 
