@@ -1,4 +1,4 @@
-name: Deploy Differential-Equations-Solver
+name: Create stats plots
 
 on:
   workflow_dispatch:

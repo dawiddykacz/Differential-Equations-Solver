@@ -144,8 +144,12 @@ def list_path(path: str):
         print("Nie znaleziono żadnych danych.")
         return
 
-    print("\n--- Generowanie zbiorczych Box Plotów ---")
+    print("\n--- Generowanie zbiorczych wykresów ---")
     df_all = pd.DataFrame(all_raw_data)
+
+    # 3. Usuwanie pustych wymiarów z siatki, jeśli jest tylko 1 test lub 1 problem (name)
+    has_multiple_tests = df_all["Test"].nunique() > 1
+    has_multiple_names = df_all["name"].nunique() > 1
 
     for metric in metric_keys:
         if metric not in df_all.columns:
@@ -161,13 +165,14 @@ def list_path(path: str):
             x="Architecture",
             y=metric,
             hue="Noise",
-            col="name",
-            row="Test",
-            kind="box",
+            col="name" if has_multiple_names else None,
+            row="Test" if has_multiple_tests else None,
+            kind=current_kind,
             sharey=False,
             palette="Set2",
             height=5,
-            aspect=1.2
+            aspect=1.2,
+            **plot_kwargs
         )
 
         g.fig.suptitle(f"Zbiorczy Box Plot: {metric}", y=1.03, fontsize=16)
@@ -176,7 +181,7 @@ def list_path(path: str):
         plt.savefig(out_file, dpi=300, bbox_inches="tight")
         plt.close()
 
-        print(f"Zapisano Box Plot -> {out_file}")
+        print(f"Zapisano wykres -> {out_file}")
 
 
 if __name__ == "__main__":
