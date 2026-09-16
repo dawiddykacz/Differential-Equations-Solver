@@ -23,36 +23,59 @@ metric_keys = [
     "last_max_abs_error"
 ]
 
+import re
 
-def parse(text: str, folder_path: Path):
-    name_match = re.search(r"^(.*?)(?:\s*\(|\s+with noise\b|\s+n\s*=|\s+weight\s*=|\s+alpha\s*=|$)",
-                           text, flags=re.IGNORECASE)
 
-    alpha_match = re.search(r"\balpha\s*=\s*([0-9.]+)", text)
-    alpha_lower_match = re.search(r"\balpha_lower\s*=\s*([0-9.]+)", text)
-    weight_match = re.search(r"\bweight\s*=\s*([0-9.]+)", text)
-    n_match = re.search(r"\bn\s*=\s*([0-9.]+)", text)
+def parse_name(text: str) -> dict:
+    name_match = re.search(
+        r"^(.*?)(?:\s*\(|\s+with noise\b|\s+wang\b|\s+n\s*=|\s+weight\s*=|\s+weight_conditions\b|\s+weight_data\b|\s+alpha(?:_lower)?\s*=|$)",
+        text, flags=re.IGNORECASE
+    )
+
+    num_pattern = r"([-+]?[0-9]*\.?[0-9]+)"
+
+    alpha_match = re.search(rf"\balpha\s*=\s*{num_pattern}", text, flags=re.IGNORECASE)
+    alpha_lower_match = re.search(rf"\balpha_lower\s*=\s*{num_pattern}", text, flags=re.IGNORECASE)
+
+    weight_match = re.search(rf"\bweight\s*=\s*{num_pattern}", text, flags=re.IGNORECASE)
+    n_match = re.search(rf"\bn\s*=\s*{num_pattern}", text, flags=re.IGNORECASE)
+    weight_cond_match = re.search(rf"\bweight_conditions\s*=?\s*{num_pattern}", text, flags=re.IGNORECASE)
+    weight_data_match = re.search(rf"\bweight_data\s*=?\s*{num_pattern}", text, flags=re.IGNORECASE)
+
     wang_flag = bool(re.search(r"\bwang\b", text, flags=re.IGNORECASE))
 
     name = name_match.group(1).strip() if name_match else text.strip()
+
     alpha = float(alpha_match.group(1)) if alpha_match else None
     alpha_lower = float(alpha_lower_match.group(1)) if alpha_lower_match else None
 
-    weight = round(float(weight_match.group(1)), 1) if weight_match else None
-    n_param = round(float(n_match.group(1)), 1) if n_match else None
-    if weight is None:
-        weight = n_param
+    weight = None
+    if weight_match:
+        weight = round(float(weight_match.group(1)), 1)
+    elif n_match:
+        weight = round(float(n_match.group(1)), 1)
+    elif weight_cond_match:
+        weight = round(float(weight_cond_match.group(1)), 1)
+    elif weight_data_match:
+        weight = round(float(weight_data_match.group(1)), 1)
+
     if weight is None:
         return None
-    print(name)
 
-    d = {
+    if weight == int(weight):
+        weight = int(weight)
+
+    return {
         "name": name,
         "alpha": alpha,
         "betta": alpha_lower,
         "weight": weight,
         "is_wang_dynamic_weight": wang_flag,
     }
+
+
+def parse(text: str, folder_path: Path):
+    d = parse_name(text)
 
     data_file = folder_path / "data.yml"
     if data_file.is_file():
@@ -147,7 +170,6 @@ def list_path(path: str):
     print("\n--- Generowanie zbiorczych wykresów ---")
     df_all = pd.DataFrame(all_raw_data)
 
-    # 3. Usuwanie pustych wymiarów z siatki, jeśli jest tylko 1 test lub 1 problem (name)
     has_multiple_tests = df_all["Test"].nunique() > 1
     has_multiple_names = df_all["name"].nunique() > 1
 
@@ -160,6 +182,10 @@ def list_path(path: str):
         boxplot_folder.mkdir(parents=True, exist_ok=True)
         print(f"Generowanie Box Plot dla: {metric}...")
 
+        max_samples = df_all.groupby(["Test", "Architecture", "Noise", "name"])[metric].count().max()
+        current_kind = "box" if max_samples > 1 else "bar"
+
+        plot_kwargs = {"boxprops": {'alpha': 0.6}} if current_kind == "box" else {}
         g = sns.catplot(
             data=df_all,
             x="Architecture",
