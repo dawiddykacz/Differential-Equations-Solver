@@ -19,7 +19,6 @@ class AbstractExampleFirst2Problem(Equation):
     def __init__(self, solution: AISolution):
         super().__init__(solution, ExactSolution(), "d^2f(x)/d^2x= -(pi^2*sin(pi*x))")
 
-
 class SolutionFunction(AISolution):
     def calculate(self, *vars):
         x = vars[0]
@@ -36,7 +35,7 @@ class Loss(LossFunction):
             w = [0.0, 0.0, 0.0, 0.0, 0.0]
         self.__w = tensorflow.constant(w, dtype=tensorflow.float64)
 
-        self.__points = tensorflow.constant([-1.0, -0.5, 1.0, 0.5, 0.0], dtype=tensorflow.float64)
+        self.__points = tensorflow.constant([-1.0, -0.5, 1.0, 0.5, 0.1], dtype=tensorflow.float64)
 
     def _left_side_of_the_equation(self, function, *x):
         with tensorflow.GradientTape(persistent=True) as g:

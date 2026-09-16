@@ -140,12 +140,12 @@ class AISolver:
                     # Liniowy wzrost wagi od 0.01 do 1.0
                     progress = current_recovery_step / recovery_steps
                     new_weight = 0.01 + progress * (1.0 - 0.01)
-                    self.__loss_function.assign_weights([new_weight])
+                    self.__loss_function.assign_weights([new_weight, new_weight])
 
                     current_recovery_step += 1
                     if current_recovery_step >= recovery_steps:
                         in_recovery = False
-                        self.__loss_function.assign_weights([1.0])
+                        self.__loss_function.assign_weights([1.0, 1.0])
                         print(f"Epoka {i:05d} | [SYSTEM DIAGNOSTYCZNY] Zakończono rekonwalescencję. Waga PDE = 1.0.")
 
                 # ==========================================
@@ -182,7 +182,7 @@ class AISolver:
                     if lambda_max > stiffness_threshold or grad_ratio > 10000.0:
                         print(f"  [UWAGA] Sztywność przekroczyła próg ({lambda_max:.2f} > {stiffness_threshold}).")
                         print("  [AKCJA] Aplikuję 'znieczulenie' PDE. Waga lambda_pde zredukowana do 0.01.")
-                        self.__loss_function.assign_weights([0.01])
+                        self.__loss_function.assign_weights([0.01, 0.01])
                         in_recovery = True
                         current_recovery_step = 0
 
