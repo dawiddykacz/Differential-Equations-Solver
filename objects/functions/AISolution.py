@@ -34,3 +34,33 @@ class AISolution(Function):
 
     def get_exact_trainable_variables_array(self):
         return self._exact_trainable_variables
+
+    def get_network_stiffness_array(self):
+        return self._ai_solver.get_network_stiffness_array()
+
+    def get_loss_pde_array(self):
+        return self._ai_solver.get_loss_pde_array()
+
+    def get_loss_conditions_array(self):
+        return self._ai_solver.get_loss_conditions_array()
+
+    def get_loss_conditions_data_array(self):
+        return self._ai_solver.get_loss_conditions_data_array()
+
+    def get_grad_pde_max_array(self):
+        return self._ai_solver.get_grad_pde_max_array()
+
+    def get_grad_bc_max_array(self):
+        return self._ai_solver.get_grad_bc_max_array()
+
+    def get_grad_data_max_array(self):
+        return self._ai_solver.get_grad_data_max_array()
+
+    def get_grad_pde_mean_array(self):
+        return self._ai_solver.get_grad_pde_mean_array()
+
+    def get_grad_data_mean_array(self):
+        return self._ai_solver.get_grad_data_mean_array()
+
+    def get_grad_bc_mean_array(self):
+        return self._ai_solver.get_grad_bc_mean_array()

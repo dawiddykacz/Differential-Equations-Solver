@@ -4,7 +4,7 @@ from equations.ai.secondDegree.examples.first.ExampleFirst2EquationLoss import E
 
 class ExampleFirst2ProblemLossTask(TaskData):
     def __init__(self, with_noise: bool, weight: float = 1):
-        super().__init__(SpaceRanges(10, Range(-1, 1)), f"1 second problem loss "
+        super().__init__(SpaceRanges(10, Range(-1, 1)), f"1 example problem loss "
                                                         f"with noise {with_noise}", weight)
         self.with_noise = with_noise
 

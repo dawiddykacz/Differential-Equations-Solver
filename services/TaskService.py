@@ -80,8 +80,61 @@ class TaskService:
                 non_trainable_variables_array[i][j] = 0
 
         loss_array = copy.deepcopy(equations[0].get_solution_function().get_loss_array())
-        for i in range(len(loss_array)):
-            loss_array[i] = 0
+        if loss_array is not None:
+            for i in range(len(loss_array)):
+                loss_array[i] = 0
+
+        network_stiffness_array = copy.deepcopy(equations[0].get_solution_function().get_network_stiffness_array())
+        if network_stiffness_array is not None:
+            for i in range(len(network_stiffness_array)):
+                network_stiffness_array[i] = 0
+
+        loss_pde_array = copy.deepcopy(equations[0].get_solution_function().get_loss_pde_array())
+        if loss_pde_array is not None:
+            for i in range(len(loss_pde_array)):
+                loss_pde_array[i] = 0
+
+        loss_conditions_array = copy.deepcopy(equations[0].get_solution_function().get_loss_conditions_array())
+        if loss_conditions_array is not None:
+            for i in range(len(loss_conditions_array)):
+                loss_conditions_array[i] = 0
+
+        loss_conditions_data_array = copy.deepcopy(
+            equations[0].get_solution_function().get_loss_conditions_data_array())
+        if loss_conditions_data_array is not None:
+            for i in range(len(loss_conditions_data_array)):
+                loss_conditions_data_array[i] = 0
+
+        grad_pde_max_array = copy.deepcopy(equations[0].get_solution_function().get_grad_pde_max_array())
+        if grad_pde_max_array is not None:
+            for i in range(len(grad_pde_max_array)):
+                grad_pde_max_array[i] = 0
+
+        grad_bc_max_array = copy.deepcopy(equations[0].get_solution_function().get_grad_bc_max_array())
+        if grad_bc_max_array is not None:
+            for i in range(len(grad_bc_max_array)):
+                grad_bc_max_array[i] = 0
+
+        grad_data_max_array = copy.deepcopy(equations[0].get_solution_function().get_grad_data_max_array())
+        if grad_data_max_array is not None:
+            for i in range(len(grad_data_max_array)):
+                grad_data_max_array[i] = 0
+
+        grad_pde_mean_array = copy.deepcopy(equations[0].get_solution_function().get_grad_pde_mean_array())
+        if grad_pde_mean_array is not None:
+            for i in range(len(grad_pde_mean_array)):
+                grad_pde_mean_array[i] = 0
+
+        grad_data_mean_array = copy.deepcopy(equations[0].get_solution_function().get_grad_data_mean_array())
+        if grad_data_mean_array is not None:
+            for i in range(len(grad_data_mean_array)):
+                grad_data_mean_array[i] = 0
+
+        grad_bc_mean_array = copy.deepcopy(equations[0].get_solution_function().get_grad_bc_mean_array())
+        if grad_bc_mean_array is not None:
+            for i in range(len(grad_bc_mean_array)):
+                grad_bc_mean_array[i] = 0
+
         mean_square_error = copy.deepcopy(equations[0].get_solution_function().get_loss_array())
         for i in range(len(mean_square_error)):
             mean_square_error[i] = 0
@@ -102,6 +155,36 @@ class TaskService:
 
             if loss_array is not None:
                 loss_array += copy.deepcopy(eq.get_solution_function().get_loss_array())
+
+            if network_stiffness_array is not None:
+                network_stiffness_array += copy.deepcopy(eq.get_solution_function().get_network_stiffness_array())
+
+            if loss_pde_array is not None:
+                loss_pde_array += copy.deepcopy(eq.get_solution_function().get_loss_pde_array())
+
+            if loss_conditions_array is not None:
+                loss_conditions_array += copy.deepcopy(eq.get_solution_function().get_loss_conditions_array())
+
+            if loss_conditions_data_array is not None:
+                loss_conditions_data_array += copy.deepcopy(eq.get_solution_function().get_loss_conditions_data_array())
+
+            if grad_pde_max_array is not None:
+                grad_pde_max_array += copy.deepcopy(eq.get_solution_function().get_grad_pde_max_array())
+
+            if grad_bc_max_array is not None:
+                grad_bc_max_array += copy.deepcopy(eq.get_solution_function().get_grad_bc_max_array())
+
+            if grad_data_max_array is not None:
+                grad_data_max_array += copy.deepcopy(eq.get_solution_function().get_grad_data_max_array())
+
+            if grad_pde_mean_array is not None:
+                grad_pde_mean_array += copy.deepcopy(eq.get_solution_function().get_grad_pde_mean_array())
+
+            if grad_data_mean_array is not None:
+                grad_data_mean_array += copy.deepcopy(eq.get_solution_function().get_grad_data_mean_array())
+
+            if grad_bc_mean_array is not None:
+                grad_bc_mean_array += copy.deepcopy(eq.get_solution_function().get_grad_bc_mean_array())
 
             exact_solution = equations[0].get_exact_solution()
             if exact_solution is not None:
@@ -136,6 +219,125 @@ class TaskService:
             self.plot_convergence_intervals(loss_array=loss_array, task=task, plot_title="Convergence", epoch=epoch,
                                             value_name="loss")
 
+        if network_stiffness_array is not None and len(network_stiffness_array) > 0:
+            network_stiffness_array /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            choose_plot = ChoosePlot(space, network_stiffness_array,
+                                     self.__get_plot_path(task.get_task_name(), "Network_Stiffness"),
+                                     PlotData("Network Stiffness", ["epoch", "stiffness"]))
+            choose_plot.choose().plot()
+
+            self.plot_convergence_intervals(loss_array=network_stiffness_array, task=task,
+                                            plot_title="Network Stiffness", epoch=epoch,
+                                            value_name="stiffness")
+
+        if loss_pde_array is not None and len(loss_pde_array) > 0:
+            loss_pde_array /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            choose_plot = ChoosePlot(space, loss_pde_array,
+                                     self.__get_plot_path(task.get_task_name(), "Loss_PDE"),
+                                     PlotData("Loss PDE", ["epoch", "loss_pde"]))
+            choose_plot.choose().plot()
+
+            self.plot_convergence_intervals(loss_array=loss_pde_array, task=task, plot_title="Loss PDE", epoch=epoch,
+                                            value_name="loss_pde")
+
+        if loss_conditions_array is not None and len(loss_conditions_array) > 0:
+            loss_conditions_array /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            choose_plot = ChoosePlot(space, loss_conditions_array,
+                                     self.__get_plot_path(task.get_task_name(), "Loss_Conditions"),
+                                     PlotData("Loss Conditions", ["epoch", "loss_conditions"]))
+            choose_plot.choose().plot()
+
+            self.plot_convergence_intervals(loss_array=loss_conditions_array, task=task, plot_title="Loss Conditions",
+                                            epoch=epoch,
+                                            value_name="loss_conditions")
+
+        if loss_conditions_data_array is not None and len(loss_conditions_data_array) > 0:
+            loss_conditions_data_array /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            choose_plot = ChoosePlot(space, loss_conditions_data_array,
+                                     self.__get_plot_path(task.get_task_name(), "Loss_Conditions_Data"),
+                                     PlotData("Loss Conditions Data", ["epoch", "loss_conditions_data"]))
+            choose_plot.choose().plot()
+
+            self.plot_convergence_intervals(loss_array=loss_conditions_data_array, task=task,
+                                            plot_title="Loss Conditions Data", epoch=epoch,
+                                            value_name="loss_conditions_data")
+
+        if grad_pde_max_array is not None and len(grad_pde_max_array) > 0:
+            grad_pde_max_array /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            choose_plot = ChoosePlot(space, grad_pde_max_array,
+                                     self.__get_plot_path(task.get_task_name(), "Grad_PDE_Max"),
+                                     PlotData("Grad PDE Max", ["epoch", "grad_pde_max"]))
+            choose_plot.choose().plot()
+
+            self.plot_convergence_intervals(loss_array=grad_pde_max_array, task=task, plot_title="Grad PDE Max",
+                                            epoch=epoch,
+                                            value_name="grad_pde_max")
+
+        if grad_bc_max_array is not None and len(grad_bc_max_array) > 0:
+            grad_bc_max_array /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            choose_plot = ChoosePlot(space, grad_bc_max_array,
+                                     self.__get_plot_path(task.get_task_name(), "Grad_BC_Max"),
+                                     PlotData("Grad BC Max", ["epoch", "grad_bc_max"]))
+            choose_plot.choose().plot()
+
+            self.plot_convergence_intervals(loss_array=grad_bc_max_array, task=task, plot_title="Grad BC Max",
+                                            epoch=epoch,
+                                            value_name="grad_bc_max")
+
+        if grad_data_max_array is not None and len(grad_data_max_array) > 0:
+            grad_data_max_array /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            choose_plot = ChoosePlot(space, grad_data_max_array,
+                                     self.__get_plot_path(task.get_task_name(), "Grad_Data_Max"),
+                                     PlotData("Grad Data Max", ["epoch", "grad_data_max"]))
+            choose_plot.choose().plot()
+
+            self.plot_convergence_intervals(loss_array=grad_data_max_array, task=task, plot_title="Grad Data Max",
+                                            epoch=epoch,
+                                            value_name="grad_data_max")
+
+        if grad_pde_mean_array is not None and len(grad_pde_mean_array) > 0:
+            grad_pde_mean_array /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            choose_plot = ChoosePlot(space, grad_pde_mean_array,
+                                     self.__get_plot_path(task.get_task_name(), "Grad_PDE_Mean"),
+                                     PlotData("Grad PDE Mean", ["epoch", "grad_pde_mean"]))
+            choose_plot.choose().plot()
+
+            self.plot_convergence_intervals(loss_array=grad_pde_mean_array, task=task, plot_title="Grad PDE Mean",
+                                            epoch=epoch,
+                                            value_name="grad_pde_mean")
+
+        if grad_data_mean_array is not None and len(grad_data_mean_array) > 0:
+            grad_data_mean_array /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            choose_plot = ChoosePlot(space, grad_data_mean_array,
+                                     self.__get_plot_path(task.get_task_name(), "Grad_Data_Mean"),
+                                     PlotData("Grad Data Mean", ["epoch", "grad_data_mean"]))
+            choose_plot.choose().plot()
+
+            self.plot_convergence_intervals(loss_array=grad_data_mean_array, task=task, plot_title="Grad Data Mean",
+                                            epoch=epoch,
+                                            value_name="grad_data_mean")
+
+        if grad_bc_mean_array is not None and len(grad_bc_mean_array) > 0:
+            grad_bc_mean_array /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            choose_plot = ChoosePlot(space, grad_bc_mean_array,
+                                     self.__get_plot_path(task.get_task_name(), "Grad_BC_Mean"),
+                                     PlotData("Grad BC Mean", ["epoch", "grad_bc_mean"]))
+            choose_plot.choose().plot()
+
+            self.plot_convergence_intervals(loss_array=grad_bc_mean_array, task=task, plot_title="Grad BC Mean",
+                                            epoch=epoch,
+                                            value_name="grad_bc_mean")
+
         train_var_data = self.__handle_variables_plot(variables_array=variables_array,
                                                       task=task,
                                                       equations_amount=equations_amount,
@@ -155,6 +357,39 @@ class TaskService:
         choose_plot.choose().plot()
 
         train_var_data['last_mean_square_error'] = mean_square_error[len(mean_square_error) - 1]
+        if loss_array is not None and len(loss_array) > 0:
+            train_var_data['last_loss'] = loss_array[len(loss_array) - 1]
+
+        if network_stiffness_array is not None and len(network_stiffness_array) > 0:
+            train_var_data['last_network_stiffness'] = network_stiffness_array[len(network_stiffness_array) - 1]
+
+        if loss_pde_array is not None and len(loss_pde_array) > 0:
+            train_var_data['last_loss_pde'] = loss_pde_array[len(loss_pde_array) - 1]
+
+        if loss_conditions_array is not None and len(loss_conditions_array) > 0:
+            train_var_data['last_loss_conditions'] = loss_conditions_array[len(loss_conditions_array) - 1]
+
+        if loss_conditions_data_array is not None and len(loss_conditions_data_array) > 0:
+            train_var_data['last_loss_conditions_data'] = loss_conditions_data_array[
+                len(loss_conditions_data_array) - 1]
+
+        if grad_pde_max_array is not None and len(grad_pde_max_array) > 0:
+            train_var_data['last_grad_pde_max'] = grad_pde_max_array[len(grad_pde_max_array) - 1]
+
+        if grad_bc_max_array is not None and len(grad_bc_max_array) > 0:
+            train_var_data['last_grad_bc_max'] = grad_bc_max_array[len(grad_bc_max_array) - 1]
+
+        if grad_data_max_array is not None and len(grad_data_max_array) > 0:
+            train_var_data['last_grad_data_max'] = grad_data_max_array[len(grad_data_max_array) - 1]
+
+        if grad_pde_mean_array is not None and len(grad_pde_mean_array) > 0:
+            train_var_data['last_grad_pde_mean'] = grad_pde_mean_array[len(grad_pde_mean_array) - 1]
+
+        if grad_data_mean_array is not None and len(grad_data_mean_array) > 0:
+            train_var_data['last_grad_data_mean'] = grad_data_mean_array[len(grad_data_mean_array) - 1]
+
+        if grad_bc_mean_array is not None and len(grad_bc_mean_array) > 0:
+            train_var_data['last_grad_bc_mean'] = grad_bc_mean_array[len(grad_bc_mean_array) - 1]
         converted_data = {}
 
         exact_solution = equations[0].get_exact_solution()

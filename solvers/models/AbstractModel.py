@@ -64,60 +64,70 @@ class AbstractModel(tensorflow.keras.Model):
 
         return {
             'loss': current_loss,
-            'grad_data_mean': LossFunction.mean_abs_grads(grad_data),
+            'loss_pde': loss_pde,
+            'loss_conditions': conditions,
+            'loss_conditions_data': conditions_data,
             'grad_pde_max': LossFunction.max_abs_grads(grad_pde),
+            'grad_bc_max': LossFunction.max_abs_grads(grad_bc),
+            'grad_data_max': LossFunction.max_abs_grads(grad_data),
+            'grad_pde_mean': LossFunction.mean_abs_grads(grad_pde),
+            'grad_data_mean': LossFunction.mean_abs_grads(grad_data),
             'grad_bc_mean': LossFunction.mean_abs_grads(grad_bc),
         }
 
     @tensorflow.function
     def estimate_stiffness(self, num_iters=3):
         """
-        Estymuje największą wartość własną Hessjanu (sztywność) za pomocą
-        iloczynów Hessian-Vector Product (HVP) i metody potęgowej.
+        Zoptymalizowana estymacja największej wartości własnej Hessjanu.
+        Forward pass i pierwsza pochodna są liczone tylko RAZ.
         """
         variables_to_track = self.trainable_variables + self._custom_trainable_variables.get_variables()
 
-        # Inicjalizacja losowego wektora v o tych samych wymiarach co wagi modelu (wymagane float64)
+        # Inicjalizacja losowego wektora v
         v_list = [tensorflow.random.normal(shape=w.shape, dtype=tensorflow.float64) for w in variables_to_track]
+
+        # =========================================================
+        # OPTYMALIZACJA 1: Liczymy stratę i 1. gradient TYLKO RAZ!
+        # =========================================================
+        loss_dict = self._loss()
+        total_loss = loss_dict['loss']
+        grads = tensorflow.gradients(total_loss, variables_to_track)
 
         for _ in range(num_iters):
             # Normalizacja wektora
             norm = tensorflow.sqrt(tensorflow.add_n([tensorflow.reduce_sum(tensorflow.square(v)) for v in v_list]))
             v_list = [v / norm for v in v_list]
 
-            # Obliczenie HVP
-            with tensorflow.GradientTape() as outer_tape:
-                with tensorflow.GradientTape() as inner_tape:
-                    loss_dict = self._loss()
-                    total_loss = loss_dict['loss']
+            # =========================================================
+            # OPTYMALIZACJA 2: Zatrzymujemy śledzenie gradientu dla v
+            # Gwarantuje to, że TF nie będzie liczył pochodnych "wstecz przez pętlę"
+            # =========================================================
+            v_list_stopped = [tensorflow.stop_gradient(v) for v in v_list]
 
-                # Pierwsza pochodna
-                grads = inner_tape.gradient(total_loss, variables_to_track)
-                # Iloczyn skalarny
-                grad_v_dot = tensorflow.add_n(
-                    [tensorflow.reduce_sum(g * v) for g, v in zip(grads, v_list) if g is not None])
+            # Iloczyn skalarny z wektorem v (używa już policzonego 'grads')
+            grad_v_dot = tensorflow.add_n([
+                tensorflow.reduce_sum(g * v) for g, v in zip(grads, v_list_stopped) if g is not None
+            ])
 
-            # Druga pochodna (H * v)
-            Hv_list = outer_tape.gradient(grad_v_dot, variables_to_track)
+            # Druga pochodna (tylko to musi się liczyć w pętli)
+            Hv_list = tensorflow.gradients(grad_v_dot, variables_to_track)
 
-            # Zapobiegawcze filtrowanie None (jeśli jakieś wagi nie mają wpływu na loss)
-            Hv_list = [hv if hv is not None else tensorflow.zeros_like(v) for hv, v in zip(Hv_list, v_list)]
-            v_list = Hv_list
+            # Filtrowanie None
+            v_list = [hv if hv is not None else tensorflow.zeros_like(v) for hv, v in zip(Hv_list, v_list_stopped)]
 
-        # Iloraz Rayleigha (Rayleigh quotient) do wyciągnięcia lambda_max
+        # --- Faza końcowa: Wyliczenie dokładnej wartości (Iloraz Rayleigha) ---
         norm = tensorflow.sqrt(tensorflow.add_n([tensorflow.reduce_sum(tensorflow.square(v)) for v in v_list]))
         v_list_normalized = [v / norm for v in v_list]
+        v_list_normalized_stopped = [tensorflow.stop_gradient(v) for v in v_list_normalized]
 
-        with tensorflow.GradientTape() as outer_tape:
-            with tensorflow.GradientTape() as inner_tape:
-                loss_dict = self._loss()
-                total_loss = loss_dict['loss']
-            grads = inner_tape.gradient(total_loss, variables_to_track)
-            grad_v_dot = tensorflow.add_n(
-                [tensorflow.reduce_sum(g * v) for g, v in zip(grads, v_list_normalized) if g is not None])
+        # Znów korzystamy z wyliczonego wcześniej 'grads'
+        grad_v_dot = tensorflow.add_n([
+            tensorflow.reduce_sum(g * v) for g, v in zip(grads, v_list_normalized_stopped) if g is not None
+        ])
 
-        Hv_final = outer_tape.gradient(grad_v_dot, variables_to_track)
-        Hv_final = [hv if hv is not None else tensorflow.zeros_like(v) for hv, v in zip(Hv_final, v_list_normalized)]
+        Hv_final = tensorflow.gradients(grad_v_dot, variables_to_track)
+        Hv_final = [hv if hv is not None else tensorflow.zeros_like(v) for hv, v in
+                    zip(Hv_final, v_list_normalized_stopped)]
 
         lambda_max = tensorflow.add_n([tensorflow.reduce_sum(v * Hv) for v, Hv in zip(v_list_normalized, Hv_final)])
         return lambda_max

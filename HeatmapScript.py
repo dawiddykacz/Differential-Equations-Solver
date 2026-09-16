@@ -9,23 +9,49 @@ metric_keys = [
     "variable_0_last_value",
     "variable_0_last_abs_error",
     "last_mean_square_error",
-    "last_max_abs_error",
+    "last_loss",
+    "last_network_stiffness",
+    "last_loss_pde",
+    "last_loss_conditions",
+    "last_loss_conditions_data",
+    "last_grad_pde_max",
+    "last_grad_bc_max",
+    "last_grad_data_max",
+    "last_grad_pde_mean",
+    "last_grad_data_mean",
+    "last_grad_bc_mean",
+    "last_max_abs_error"
 ]
 
 
 def parse(text: str, folder_path: Path):
-    name_match = re.search(r"^(.*?)\s*\(", text)
+    name_match = re.search(r"^(.*?)(?:\s*\(|\s+with noise\b|\s+n\s*=|\s+weight\s*=|\s+alpha\s*=|$)",
+                           text, flags=re.IGNORECASE)
+
     alpha_match = re.search(r"\balpha\s*=\s*([0-9.]+)", text)
     alpha_lower_match = re.search(r"\balpha_lower\s*=\s*([0-9.]+)", text)
+    weight_match = re.search(r"\bweight\s*=\s*([0-9.]+)", text)
+    n_match = re.search(r"\bn\s*=\s*([0-9.]+)", text)
+    wang_flag = bool(re.search(r"\bwang\b", text, flags=re.IGNORECASE))
 
-    name = name_match.group(1).strip() if name_match else None
+    name = name_match.group(1).strip() if name_match else text.strip()
     alpha = float(alpha_match.group(1)) if alpha_match else None
     alpha_lower = float(alpha_lower_match.group(1)) if alpha_lower_match else None
+
+    weight = round(float(weight_match.group(1)), 1) if weight_match else None
+    n_param = round(float(n_match.group(1)), 1) if n_match else None
+    if weight is None:
+        weight = n_param
+    if weight is None:
+        return None
+    print(name)
 
     d = {
         "name": name,
         "alpha": alpha,
         "betta": alpha_lower,
+        "weight": weight,
+        "is_wang_dynamic_weight": wang_flag,
     }
 
     data_file = folder_path / "data.yml"
@@ -49,11 +75,14 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
         file = path / f"{safe_name}_{value_key}.png"
         print(f"Zapisywanie heatmapy: {file}")
 
-        subset = df[df["name"] == name]
+        subset = df[df["name"] == name].copy()
+
+        if subset.empty:
+            continue
 
         heatmap_matrix = subset.pivot_table(
-            index="betta",
-            columns="alpha",
+            index="is_wang_dynamic_weight",
+            columns="weight",
             values=value_key,
             aggfunc="mean",
         )
@@ -64,14 +93,15 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
         sns.heatmap(
             heatmap_matrix,
             annot=True,
-            fmt=".4f",
+            fmt=".4g",
             cmap="viridis",
             cbar_kws={"label": value_key},
         )
 
         plt.title(f"{name}\nMetric: {value_key}")
-        plt.xlabel("alpha")
-        plt.ylabel("betta")
+
+        plt.xlabel("static weight value")
+        plt.ylabel("dynamic weight")
         plt.tight_layout()
 
         plt.savefig(file, dpi=300)
@@ -91,6 +121,8 @@ def list_path(path: str):
 
                 for example_dir in [p for p in noise_dir.iterdir() if p.is_dir()]:
                     example_data = parse(example_dir.name, folder_path=example_dir)
+                    if example_data is None:
+                        continue
 
                     local_data.append(example_data.copy())
 
@@ -124,15 +156,9 @@ def list_path(path: str):
             print(f"Brak danych dla metryki: {metric}")
             continue
 
-        print(f"Generowanie wykresu dla: {metric}...")
-
-        # 1. Zliczanie max elementów w grupie.
-        # Jeśli = 1, rysujemy barplot. Jeśli > 1 rysujemy prawdziwy boxplot.
-        max_samples = df_all.groupby(["Test", "Architecture", "Noise", "name"])[metric].count().max()
-        current_kind = "box" if max_samples > 1 else "bar"
-
-        # Delikatna przezroczystość boxplotów (aby było widać kropki pod spodem)
-        plot_kwargs = {"boxprops": {'alpha': 0.6}} if current_kind == "box" else {}
+        boxplot_folder = folder / "boxplots"
+        boxplot_folder.mkdir(parents=True, exist_ok=True)
+        print(f"Generowanie Box Plot dla: {metric}...")
 
         g = sns.catplot(
             data=df_all,
@@ -149,31 +175,9 @@ def list_path(path: str):
             **plot_kwargs
         )
 
-        # 2. Nakładanie kropek (stripplot) z wynikami
-        if current_kind == "box":
-            g.map_dataframe(
-                sns.stripplot,
-                x="Architecture",
-                y=metric,
-                hue="Noise",
-                dodge=True,
-                palette="dark:black",  # Ustawia kolor kropek na czarny
-                alpha=0.6,
-                size=5,
-                legend=False
-            )
+        g.fig.suptitle(f"Zbiorczy Box Plot: {metric}", y=1.03, fontsize=16)
 
-        # Dopracowanie estetyczne tytułu
-        title_parts = [f"Metryka: {metric}"]
-        if not has_multiple_tests:
-            title_parts.append(f"Test: {df_all['Test'].iloc[0]}")
-        if not has_multiple_names:
-            title_parts.append(f"Problem: {df_all['name'].iloc[0]}")
-
-        g.fig.suptitle(" | ".join(title_parts), y=1.05, fontsize=14)
-
-        # Zapis pod nazwą uwzględniającą typ wykresu (bar albo box)
-        out_file = folder / f"global_{current_kind}plot_{metric}.png"
+        out_file = boxplot_folder / f"global_boxplot_{metric}.png"
         plt.savefig(out_file, dpi=300, bbox_inches="tight")
         plt.close()
 
