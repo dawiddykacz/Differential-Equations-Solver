@@ -9,7 +9,18 @@ metric_keys = [
     "variable_0_last_value",
     "variable_0_last_abs_error",
     "last_mean_square_error",
-    "last_max_abs_error",
+    "last_loss",
+    "last_network_stiffness",
+    "last_loss_pde",
+    "last_loss_conditions",
+    "last_loss_conditions_data",
+    "last_grad_pde_max",
+    "last_grad_bc_max",
+    "last_grad_data_max",
+    "last_grad_pde_mean",
+    "last_grad_data_mean",
+    "last_grad_bc_mean",
+    "last_max_abs_error"
 ]
 
 
@@ -89,8 +100,8 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
 
         plt.title(f"{name}\nMetric: {value_key}")
 
-        plt.xlabel("Waga (weight)")
-        plt.ylabel("Czy zastosowano Wang?")
+        plt.xlabel("static weight value")
+        plt.ylabel("dynamic weight")
         plt.tight_layout()
 
         plt.savefig(file, dpi=300)
@@ -141,6 +152,8 @@ def list_path(path: str):
             print(f"Brak danych dla metryki: {metric}")
             continue
 
+        boxplot_folder = folder / "boxplots"
+        boxplot_folder.mkdir(parents=True, exist_ok=True)
         print(f"Generowanie Box Plot dla: {metric}...")
 
         g = sns.catplot(
@@ -159,7 +172,7 @@ def list_path(path: str):
 
         g.fig.suptitle(f"Zbiorczy Box Plot: {metric}", y=1.03, fontsize=16)
 
-        out_file = folder / f"global_boxplot_{metric}.png"
+        out_file = boxplot_folder / f"global_boxplot_{metric}.png"
         plt.savefig(out_file, dpi=300, bbox_inches="tight")
         plt.close()
 
