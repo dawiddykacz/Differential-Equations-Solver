@@ -3,13 +3,17 @@ from equations.ai.secondDegree.examples.first.ExampleFirst2EquationLoss import E
 
 
 class ExampleFirst2ProblemLossTask(TaskData):
-    def __init__(self, with_noise: bool, weight: float = 1):
+    def __init__(self, with_noise: bool, weight_conditions: float = 1, weight_data: float = 1):
         super().__init__(SpaceRanges(10, Range(-1, 1)), f"1 example problem loss "
-                                                        f"with noise {with_noise}", weight)
+                                                        f"with noise {with_noise} weight_conditions {weight_conditions},"
+                                                        f" weight_data {weight_data}")
         self.with_noise = with_noise
+        self.weight_conditions = weight_conditions
+        self.weight_data = weight_data
 
     def get_equation(self):
-        return ExampleFirst2ProblemLoss(self.get_space_range().split(), self.with_noise, self.get_weight())
+        return ExampleFirst2ProblemLoss(self.get_space_range().split(), self.with_noise,
+                                        weight_conditions=self.weight_conditions, weight_data=self.weight_data)
 
     def get_plot_title(self):
-        return f"1 example problem loss n = {self.get_weight()}"
+        return f"1 example problem loss"

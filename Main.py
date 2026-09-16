@@ -42,7 +42,7 @@ def basic_rep(task_repository):
 
 def run_all(learning_rate: float):
     set_learning_rate(learning_rate)
-    set_equations_amount(10)
+    set_equations_amount(2)
 
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
@@ -51,17 +51,19 @@ def run_all(learning_rate: float):
     range_weight = 1 / (0.1 ** 4)
     for with_noise in [False, True]:
         for weight in [1, range_weight]:
-            task_repository.add_task(ExampleFirst2ProblemLossTask(weight=weight, with_noise=with_noise))
-        for alpha in [0.9]:
-            for alpha_lower in [1]:
+            task_repository.add_task(ExampleFirst2ProblemLossTask(weight_data=weight, weight_conditions=weight,
+                                                                  with_noise=with_noise))
+            task_repository.add_task(ExampleSimpleFirst2ProblemLossTask(weight_data=weight,
+                                                                        with_noise=with_noise))
+            for alpha in [0.9]:
                 task_repository.add_task(
-                    ExampleFirst2ProblemLossWithWeightTask(alpha=alpha, alpha_lower=alpha_lower,
-                                                           with_noise=with_noise))
+                    ExampleFirst2ProblemLossWithWeightTask(alpha=alpha, weight_conditions=weight,
+                                                           weight_data=weight, with_noise=with_noise))
                 task_repository.add_task(
-                    ExampleFirst2ProblemLossWithWeightTask(alpha=alpha, alpha_lower=alpha_lower,
-                                                           with_noise=with_noise, weight=range_weight))
+                    ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=alpha, weight_data=weight,
+                                                                 with_noise=with_noise))
 
-    task_service.solve(5000)
+    task_service.solve(50)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
 
     error_messages = task_service.get_error_messages()
