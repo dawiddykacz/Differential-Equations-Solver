@@ -93,52 +93,56 @@ class WangModel(tensorflow.keras.Model):
     @tensorflow.function
     def estimate_stiffness(self, num_iters=3):
         """
-        Estymuje największą wartość własną Hessjanu (sztywność)
-        używając składni tf.gradients (jak w TF 1.x), bez użycia GradientTape.
+        Zoptymalizowana estymacja największej wartości własnej Hessjanu.
+        Forward pass i pierwsza pochodna są liczone tylko RAZ.
         """
         variables_to_track = self.trainable_variables + self._custom_trainable_variables.get_variables()
 
-        # Inicjalizacja losowego wektora v o tych samych wymiarach co wagi modelu
+        # Inicjalizacja losowego wektora v
         v_list = [tensorflow.random.normal(shape=w.shape, dtype=tensorflow.float64) for w in variables_to_track]
 
+        # =========================================================
+        # OPTYMALIZACJA 1: Liczymy stratę i 1. gradient TYLKO RAZ!
+        # =========================================================
+        loss_dict = self._loss()
+        total_loss = loss_dict['loss']
+        grads = tensorflow.gradients(total_loss, variables_to_track)
+
         for _ in range(num_iters):
-            # 1. Normalizacja wektora
+            # Normalizacja wektora
             norm = tensorflow.sqrt(tensorflow.add_n([tensorflow.reduce_sum(tensorflow.square(v)) for v in v_list]))
             v_list = [v / norm for v in v_list]
 
-            # 2. Pobranie straty
-            loss_dict = self._loss()
-            total_loss = loss_dict['loss']
+            # =========================================================
+            # OPTYMALIZACJA 2: Zatrzymujemy śledzenie gradientu dla v
+            # Gwarantuje to, że TF nie będzie liczył pochodnych "wstecz przez pętlę"
+            # =========================================================
+            v_list_stopped = [tensorflow.stop_gradient(v) for v in v_list]
 
-            # 3. Pierwsza pochodna (Gradient po wagach - odpowiednik u_x)
-            grads = tensorflow.gradients(total_loss, variables_to_track)
-
-            # 4. Iloczyn skalarny z wektorem v
+            # Iloczyn skalarny z wektorem v (używa już policzonego 'grads')
             grad_v_dot = tensorflow.add_n([
-                tensorflow.reduce_sum(g * v) for g, v in zip(grads, v_list) if g is not None
+                tensorflow.reduce_sum(g * v) for g, v in zip(grads, v_list_stopped) if g is not None
             ])
 
-            # 5. Druga pochodna (Gradient z gradientu - odpowiednik u_xx)
+            # Druga pochodna (tylko to musi się liczyć w pętli)
             Hv_list = tensorflow.gradients(grad_v_dot, variables_to_track)
 
             # Filtrowanie None
-            Hv_list = [hv if hv is not None else tensorflow.zeros_like(v) for hv, v in zip(Hv_list, v_list)]
-            v_list = Hv_list
+            v_list = [hv if hv is not None else tensorflow.zeros_like(v) for hv, v in zip(Hv_list, v_list_stopped)]
 
         # --- Faza końcowa: Wyliczenie dokładnej wartości (Iloraz Rayleigha) ---
         norm = tensorflow.sqrt(tensorflow.add_n([tensorflow.reduce_sum(tensorflow.square(v)) for v in v_list]))
         v_list_normalized = [v / norm for v in v_list]
+        v_list_normalized_stopped = [tensorflow.stop_gradient(v) for v in v_list_normalized]
 
-        loss_dict = self._loss()
-        total_loss = loss_dict['loss']
-
-        grads = tensorflow.gradients(total_loss, variables_to_track)
+        # Znów korzystamy z wyliczonego wcześniej 'grads'
         grad_v_dot = tensorflow.add_n([
-            tensorflow.reduce_sum(g * v) for g, v in zip(grads, v_list_normalized) if g is not None
+            tensorflow.reduce_sum(g * v) for g, v in zip(grads, v_list_normalized_stopped) if g is not None
         ])
 
         Hv_final = tensorflow.gradients(grad_v_dot, variables_to_track)
-        Hv_final = [hv if hv is not None else tensorflow.zeros_like(v) for hv, v in zip(Hv_final, v_list_normalized)]
+        Hv_final = [hv if hv is not None else tensorflow.zeros_like(v) for hv, v in
+                    zip(Hv_final, v_list_normalized_stopped)]
 
         lambda_max = tensorflow.add_n([tensorflow.reduce_sum(v * Hv) for v, Hv in zip(v_list_normalized, Hv_final)])
         return lambda_max
