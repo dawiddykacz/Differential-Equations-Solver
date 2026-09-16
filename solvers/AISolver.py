@@ -10,6 +10,7 @@ from solvers.models.ModelConfiguration import ModelConfiguration
 _learning_rate = 0.1
 model_configuration = ModelConfiguration()
 
+
 def set_learning_rate(learning_rate: float = 0.1):
     global _learning_rate
     if learning_rate <= 0.0:
@@ -21,7 +22,7 @@ class AISolver:
     def __init__(self, space: Space, solution_function, loss_function: LossFunction,
                  trainable_variables: TrainableVariables = TrainableVariables(),
                  non_trainable_variables: TrainableVariables = TrainableVariables(), plots: bool = True,
-                 calculate_as_numpy = None):
+                 calculate_as_numpy=None):
         self.__points = space.get_points_to_neural_network()
         self.__solution_function = solution_function
         self.__loss_function = loss_function
@@ -58,6 +59,18 @@ class AISolver:
             self.__non_trainable_plot.append([])
 
         self.__loss_array = []
+        self.__loss_pde_array = []
+        self.__loss_conditions_array = []
+        self.__loss_conditions_data_array = []
+
+        self.__grad_pde_max_array = []
+        self.__grad_bc_max_array = []
+        self.__grad_data_max_array = []
+
+        self.__grad_pde_mean_array = []
+        self.__grad_data_mean_array = []
+        self.__grad_bc_mean_array = []
+        self.__network_stiffness_array = []
 
         if len(self.__points) > 1:
             self.__inputs = tensorflow.concat(self.__points, axis=1)
@@ -93,11 +106,25 @@ class AISolver:
             loss_error = tensorflow.abs((current_loss - before_loss) / before_loss + 1e-8)
             before_loss = current_loss
 
+            lambda_max = self.__neural_network.estimate_stiffness(num_iters=3).numpy()
+
             if self.__plots:
                 y = self.__calculate_as_numpy(test_points)
                 self.__y_by_epoch.append(y)
 
+                self.__network_stiffness_array.append(lambda_max)
                 self.__loss_array.append(current_loss.numpy())
+                self.__loss_pde_array.append(loss['loss_pde'].numpy())
+                self.__loss_conditions_array.append(loss['loss_conditions'].numpy())
+                self.__loss_conditions_data_array.append(loss['loss_conditions_data'].numpy())
+
+                self.__grad_pde_max_array.append(loss['grad_pde_max'].numpy())
+                self.__grad_bc_max_array.append(loss['grad_bc_max'].numpy())
+                self.__grad_data_max_array.append(loss['grad_data_max'].numpy())
+
+                self.__grad_pde_mean_array.append(loss['grad_pde_mean'].numpy())
+                self.__grad_data_mean_array.append(loss['grad_data_mean'].numpy())
+                self.__grad_bc_mean_array.append(loss['grad_bc_mean'].numpy())
 
                 for j in range(len(self.__trainable_plot)):
                     self.__trainable_plot[j].append(self.__trainable_variables.get_variables()[j].numpy())
@@ -126,7 +153,6 @@ class AISolver:
                 # ==========================================
                 if i % diagnostic_interval == 0 and not in_recovery:
                     # 1. Analiza sztywności
-                    lambda_max = self.__neural_network.estimate_stiffness(num_iters=3).numpy()
                     self.diagnostics_lambda_max.append(lambda_max)
 
                     # 2. Analiza imbalansu gradientów
@@ -163,6 +189,56 @@ class AISolver:
     def get_loss_array(self):
         if self.__plots:
             return numpy.array(self.__loss_array)
+        return None
+
+    def get_network_stiffness_array(self):
+        if self.__plots:
+            return numpy.array(self.__network_stiffness_array)
+        return None
+
+    def get_loss_pde_array(self):
+        if self.__plots:
+            return numpy.array(self.__loss_pde_array)
+        return None
+
+    def get_loss_conditions_array(self):
+        if self.__plots:
+            return numpy.array(self.__loss_conditions_array)
+        return None
+
+    def get_loss_conditions_data_array(self):
+        if self.__plots:
+            return numpy.array(self.__loss_conditions_data_array)
+        return None
+
+    def get_grad_pde_max_array(self):
+        if self.__plots:
+            return numpy.array(self.__grad_pde_max_array)
+        return None
+
+    def get_grad_bc_max_array(self):
+        if self.__plots:
+            return numpy.array(self.__grad_bc_max_array)
+        return None
+
+    def get_grad_data_max_array(self):
+        if self.__plots:
+            return numpy.array(self.__grad_data_max_array)
+        return None
+
+    def get_grad_pde_mean_array(self):
+        if self.__plots:
+            return numpy.array(self.__grad_pde_mean_array)
+        return None
+
+    def get_grad_data_mean_array(self):
+        if self.__plots:
+            return numpy.array(self.__grad_data_mean_array)
+        return None
+
+    def get_grad_bc_mean_array(self):
+        if self.__plots:
+            return numpy.array(self.__grad_bc_mean_array)
         return None
 
     def get_trainable_variables_array(self):
