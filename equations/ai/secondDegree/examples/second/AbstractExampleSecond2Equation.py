@@ -16,6 +16,7 @@ pi = tensorflow.constant(numpy.pi, dtype=tensorflow.float64)
 one = tensorflow.constant(1.0, dtype=tensorflow.float64)
 zero = tensorflow.constant(0.0, dtype=tensorflow.float64)
 
+
 def exact_solution(x, y):
     return tensorflow.sin(x * pi) * tensorflow.cos(y * pi)
 
@@ -35,9 +36,7 @@ class SolutionFunction(AISolution):
         x = vars[0]
         y = vars[1]
 
-        n = super().calculate(x, y)
-        ansatz = -tensorflow.sin(pi * x)
-        return (tensorflow.square(x) - one) * (tensorflow.square(y) - one) * n + ansatz
+        return super().calculate(x, y)
 
 
 class Loss(LossFunction):
@@ -91,7 +90,7 @@ class Loss(LossFunction):
         base_x = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
         base_y = tensorflow.ones_like(x[1], dtype=tensorflow.float64)
 
-        factors = [-1.0, -0.5, 0.0, 0.5, 1.0]
+        factors = [-0.9, -0.5, 0.0, 0.5, 0.9]
 
         results = []
         i = 0
@@ -108,6 +107,7 @@ class Loss(LossFunction):
                 i += 1
 
         return tensorflow.reduce_sum(tensorflow.add_n(results))
+
 
 class ExactSolution(Function):
     def calculate(self, *vars):
