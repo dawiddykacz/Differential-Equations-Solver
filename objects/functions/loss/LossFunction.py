@@ -12,7 +12,7 @@ class LossFunction(Function):
         conditions = self._condition(function, *x)
         conditions_data = self._condition_data(function, *x)
 
-        y = tensorflow.reduce_mean(y ** 2)
+        y = abs(self._pde_weight()) * tensorflow.reduce_mean(y ** 2)
         loss = y + self._add_condition()
         if conditions is not 0:
             conditions = tensorflow.reduce_mean(conditions ** 2)
@@ -43,6 +43,9 @@ class LossFunction(Function):
         return 0
 
     def _condition_weight(self):
+        return 1
+
+    def _pde_weight(self):
         return 1
 
     def _condition_data_weight(self):
