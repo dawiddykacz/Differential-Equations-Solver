@@ -1,57 +1,55 @@
+import math
+
 from objects.functions.Function import Function
 import tensorflow
+import numpy
 
 
 class LossFunction(Function):
-
-    @tensorflow.function(jit_compile=True)
     def calculate(self, function, *x):
         y = (self._left_side_of_the_equation(function, *x) - self._right_side_of_the_equation(function, *x)
              + self._condition_in_loss(function, *x))
         conditions = self._condition(function, *x)
         conditions_data = self._condition_data(function, *x)
 
-        pde_weight = tensorflow.abs(tensorflow.cast(self._pde_weight(), tensorflow.float64))
-        y = pde_weight * tensorflow.reduce_mean(tensorflow.square(y))
+        y = abs(self._pde_weight()) * tensorflow.reduce_mean(tensorflow.square(y))
         loss = y + self._add_condition()
-        if not (isinstance(conditions, (int, float)) and conditions == 0):
+        if conditions is not 0:
             conditions = tensorflow.reduce_mean(tensorflow.square(conditions))
-            cond_weight = tensorflow.abs(tensorflow.cast(self._condition_weight(), tensorflow.float64))
-            loss += cond_weight * conditions
+            loss += abs(self._condition_weight()) * conditions
 
-        if not (isinstance(conditions_data, (int, float)) and conditions_data == 0):
+        if conditions_data is not 0:
             conditions_data = tensorflow.reduce_mean(tensorflow.square(conditions_data))
-            data_weight = tensorflow.abs(tensorflow.cast(self._condition_data_weight(), tensorflow.float64))
-            loss += data_weight * conditions_data
+            loss += abs(self._condition_data_weight()) * conditions_data
 
         return {'loss': loss, 'loss_pde': y, 'conditions': conditions, 'conditions_data': conditions_data}
 
     def _left_side_of_the_equation(self, function, *x):
-        return 0.0
+        return 0
 
     def _right_side_of_the_equation(self, function, *x):
-        return 0.0
+        return 0
 
     def _condition_in_loss(self, function, *x):
-        return 0.0
+        return 0
 
     def _condition(self, function, *x):
-        return 0.0
+        return 0
 
     def _condition_data(self, function, *x):
-        return 0.0
+        return 0
 
     def _add_condition(self):
-        return 0.0
+        return 0
 
     def _condition_weight(self):
-        return 1.0
+        return 1
 
     def _pde_weight(self):
-        return 1.0
+        return 1
 
     def _condition_data_weight(self):
-        return 1.0
+        return 1
 
     def recalculate_weights(self, grads_dict, loss_error):
         return
@@ -60,7 +58,6 @@ class LossFunction(Function):
         return
 
     @staticmethod
-    @tensorflow.function
     def max_abs_grads(grad):
         valid_grads = [g for g in grad if g is not None]
 
@@ -71,7 +68,6 @@ class LossFunction(Function):
         return tensorflow.reduce_max(tensorflow.stack(max_values))
 
     @staticmethod
-    @tensorflow.function
     def mean_abs_grads(grad):
         valid_grads = [g for g in grad if g is not None]
 
