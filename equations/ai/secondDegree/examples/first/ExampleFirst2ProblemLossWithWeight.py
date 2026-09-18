@@ -3,7 +3,7 @@ from equations.ai.secondDegree.examples.first.AbstractExampleFirst2Equation impo
 
 class ExampleFirst2EquationLossWithWeight(AbstractExampleFirst2Problem):
     def __init__(self, space: Space, with_noise: bool, alpha: float, weight_conditions: float = 1,
-                 weight_data: float = 1):
+                 weight_pde: float = 1, weight_data: float = 1):
         trainable_variables = TrainableVariables([1])
         non_trainable_variables = TrainableVariables([1, 1])
         super().__init__(
@@ -13,6 +13,7 @@ class ExampleFirst2EquationLossWithWeight(AbstractExampleFirst2Problem):
                                  non_trainable_variables=non_trainable_variables,
                                  with_noise=with_noise,
                                  alpha=alpha, weight_conditions=weight_conditions,
+                                 weight_pde=weight_pde,
                                  weight_data=weight_data),
                              trainable_variables=trainable_variables,
                              non_trainable_variables=non_trainable_variables,
@@ -22,7 +23,8 @@ class ExampleFirst2EquationLossWithWeight(AbstractExampleFirst2Problem):
 class LossSimple(Loss):
     def __init__(self, trainable_variables: TrainableVariables,
                  non_trainable_variables: TrainableVariables, with_noise: bool,
-                 alpha: float, weight_conditions: float = 1, weight_data: float = 1):
+                 alpha: float, weight_pde: float = 1, weight_conditions: float = 1,
+                 weight_data: float = 1):
         super().__init__(trainable_variables, with_noise)
 
         self.__non_trainable_variables = non_trainable_variables
@@ -30,6 +32,7 @@ class LossSimple(Loss):
         self.__first_alpha = alpha
         self.weight_conditions = weight_conditions
         self.weight_data = weight_data
+        self.weight_pde = weight_pde
 
     def _condition(self, function, *x):
 
@@ -42,6 +45,9 @@ class LossSimple(Loss):
 
     def _condition_weight(self):
         return self.weight_conditions * self.__non_trainable_variables.get_variables()[0]
+
+    def _pde_weight(self):
+        return self.weight_pde
 
     def assign_weights(self, data):
         self.__non_trainable_variables.get_variables()[0] = tensorflow.constant(data[0], dtype=tensorflow.float64)
