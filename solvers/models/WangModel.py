@@ -44,9 +44,9 @@ class WangModel(tensorflow.keras.Model):
             loss = self._loss()
             current_loss = loss['loss']
 
-            loss_pde = tensorflow.convert_to_tensor(loss['loss_pde'], dtype=tensorflow.float64)
-            conditions = tensorflow.convert_to_tensor(loss['conditions'], dtype=tensorflow.float64)
-            conditions_data = tensorflow.convert_to_tensor(loss['conditions_data'], dtype=tensorflow.float64)
+            loss_pde = tensorflow.cast(loss['loss_pde'], dtype=tensorflow.float64)
+            conditions = tensorflow.cast(loss['conditions'], dtype=tensorflow.float64)
+            conditions_data = tensorflow.cast(loss['conditions_data'], dtype=tensorflow.float64)
 
         variables_to_train = self.trainable_variables + self._custom_trainable_variables.get_variables()
 
