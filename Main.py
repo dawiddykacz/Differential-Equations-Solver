@@ -61,7 +61,7 @@ def run_all(learning_rate: float):
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
-    d_min = 0.1 ** 4
+    d_min = 0.0001
     range_weight = 10 ** 4
     for with_noise in [False, True]:
         task_repository.add_task(ExampleFirst2ProblemLossTask(weight_data=1,

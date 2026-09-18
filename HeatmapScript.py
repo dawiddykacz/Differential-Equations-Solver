@@ -23,53 +23,59 @@ metric_keys = [
     "last_max_abs_error"
 ]
 
-import re
+
+def format_weight(val):
+    if val is None:
+        return None
+    if val.is_integer():
+        return int(val)
+    return round(val, 6)
 
 
 def parse_name(text: str) -> dict:
     name_match = re.search(
-        r"^(.*?)(?:\s*\(|\s+with noise\b|\s+wang\b|\s+n\s*=|\s+weight\s*=|\s+weight_conditions\b|\s+weight_data\b|\s+alpha(?:_lower)?\s*=|$)",
+        r"^(.*?)(?:\s*\(|\s+with noise\b|\s+wang\b|\s+weight_pde\b|\s+weight_conditions\b|\s+weight_data\b|\s+alpha(?:_lower)?\s*=|$)",
         text, flags=re.IGNORECASE
     )
+
+    name = name_match.group(1).strip().rstrip(',') if name_match else text.strip()
 
     num_pattern = r"([-+]?[0-9]*\.?[0-9]+)"
 
     alpha_match = re.search(rf"\balpha\s*=\s*{num_pattern}", text, flags=re.IGNORECASE)
     alpha_lower_match = re.search(rf"\balpha_lower\s*=\s*{num_pattern}", text, flags=re.IGNORECASE)
 
-    weight_match = re.search(rf"\bweight\s*=\s*{num_pattern}", text, flags=re.IGNORECASE)
-    n_match = re.search(rf"\bn\s*=\s*{num_pattern}", text, flags=re.IGNORECASE)
-    weight_cond_match = re.search(rf"\bweight_conditions\s*=?\s*{num_pattern}", text, flags=re.IGNORECASE)
-    weight_data_match = re.search(rf"\bweight_data\s*=?\s*{num_pattern}", text, flags=re.IGNORECASE)
+    w_pde_match = re.search(rf"\bweight_pde\s*=?\s*{num_pattern}", text, flags=re.IGNORECASE)
+    w_cond_match = re.search(rf"\bweight_conditions\s*=?\s*{num_pattern}", text, flags=re.IGNORECASE)
+    w_data_match = re.search(rf"\bweight_data\s*=?\s*{num_pattern}", text, flags=re.IGNORECASE)
 
     wang_flag = bool(re.search(r"\bwang\b", text, flags=re.IGNORECASE))
-
-    name = name_match.group(1).strip() if name_match else text.strip()
 
     alpha = float(alpha_match.group(1)) if alpha_match else None
     alpha_lower = float(alpha_lower_match.group(1)) if alpha_lower_match else None
 
-    weight = None
-    if weight_match:
-        weight = round(float(weight_match.group(1)), 1)
-    elif n_match:
-        weight = round(float(n_match.group(1)), 1)
-    elif weight_cond_match:
-        weight = round(float(weight_cond_match.group(1)), 1)
-    elif weight_data_match:
-        weight = round(float(weight_data_match.group(1)), 1)
+    w_pde = float(w_pde_match.group(1)) if w_pde_match else None
+    w_cond = float(w_cond_match.group(1)) if w_cond_match else None
+    w_data = float(w_data_match.group(1)) if w_data_match else None
 
-    if weight is None:
+    weights_parts = []
+    if w_pde is not None: weights_parts.append(f"pde: {format_weight(w_pde)}")
+    if w_cond is not None: weights_parts.append(f"cond: {format_weight(w_cond)}")
+    if w_data is not None: weights_parts.append(f"data: {format_weight(w_data)}")
+
+    if not weights_parts:
         return None
 
-    if weight == int(weight):
-        weight = int(weight)
+    weights_combo = "\n".join(weights_parts)
 
     return {
         "name": name,
         "alpha": alpha,
         "betta": alpha_lower,
-        "weight": weight,
+        "weight_pde": w_pde,
+        "weight_conditions": w_cond,
+        "weight_data": w_data,
+        "weights_combo": weights_combo,
         "is_wang_dynamic_weight": wang_flag,
     }
 
@@ -78,7 +84,7 @@ def parse(text: str, folder_path: Path):
     d = parse_name(text)
 
     data_file = folder_path / "data.yml"
-    if data_file.is_file():
+    if d is not None and data_file.is_file():
         with open(data_file, "r", encoding="utf-8") as file:
             data = yaml.safe_load(file)
             if isinstance(data, dict):
@@ -105,14 +111,17 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
 
         heatmap_matrix = subset.pivot_table(
             index="is_wang_dynamic_weight",
-            columns="weight",
+            columns="weights_combo",
             values=value_key,
             aggfunc="mean",
         )
 
+        if heatmap_matrix.empty:
+            continue
+
         heatmap_matrix = heatmap_matrix.sort_index(ascending=False)
 
-        plt.figure(figsize=(8, 6))
+        plt.figure(figsize=(10, 6))
         sns.heatmap(
             heatmap_matrix,
             annot=True,
@@ -123,8 +132,8 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
 
         plt.title(f"{name}\nMetric: {value_key}")
 
-        plt.xlabel("static weight value")
-        plt.ylabel("dynamic weight")
+        plt.xlabel("Weights Configuration")
+        plt.ylabel("Dynamic weight (Wang)")
         plt.tight_layout()
 
         plt.savefig(file, dpi=300)
@@ -159,6 +168,10 @@ def list_path(path: str):
                     print(f"Pominięto pusty katalog: {noise_dir}")
                     continue
 
+                for png_file in noise_dir.glob("*.png"):
+                    if png_file.is_file():
+                        png_file.unlink()
+
                 df_local = pd.DataFrame(local_data)
                 for metric_key in metric_keys:
                     plot_heatmaps(df_local, path=noise_dir, value_key=metric_key)
@@ -172,6 +185,13 @@ def list_path(path: str):
 
     has_multiple_tests = df_all["Test"].nunique() > 1
     has_multiple_names = df_all["name"].nunique() > 1
+
+    boxplot_folder = folder / "boxplots"
+    boxplot_folder.mkdir(parents=True, exist_ok=True)
+
+    for png_file in boxplot_folder.glob("*.png"):
+        if png_file.is_file():
+            png_file.unlink()
 
     for metric in metric_keys:
         if metric not in df_all.columns:
