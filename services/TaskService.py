@@ -48,6 +48,8 @@ class TaskService:
         ai_solution.solve(epoch, test_space)
 
     def __run_task(self, task: TaskData, epoch: int, multiply_space: int):
+        save_data = dict()
+
         equation = task.get_equation()
         plot_title = f"{task.get_plot_title()} epoches: {epoch}"
         test_space = task.get_space_range().split(multiply_space)
@@ -204,6 +206,10 @@ class TaskService:
                                  self.__get_plot_path(task.get_task_name(), f"Mean square error"),
                                  PlotData(f"Mean square error {plot_title}", ["epoch", "Mean square error"]))
         choose_plot.choose().plot()
+        self.save_to_data(data=save_data,
+                          title="Mean square error",
+                          x=numpy.linspace(1, epoch, epoch),
+                          y=mean_square_error)
 
         self.plot_convergence_intervals(loss_array=mean_square_error, task=task, plot_title="Mean square error",
                                         epoch=epoch, value_name="Mean square error")
@@ -218,6 +224,10 @@ class TaskService:
 
             self.plot_convergence_intervals(loss_array=loss_array, task=task, plot_title="Convergence", epoch=epoch,
                                             value_name="loss")
+            self.save_to_data(data=save_data,
+                              title="Convergence",
+                              x=numpy.linspace(1, epoch, epoch),
+                              y=loss_array)
 
         if network_stiffness_array is not None and len(network_stiffness_array) > 0:
             network_stiffness_array /= equations_amount
@@ -230,6 +240,10 @@ class TaskService:
             self.plot_convergence_intervals(loss_array=network_stiffness_array, task=task,
                                             plot_title="Network Stiffness", epoch=epoch,
                                             value_name="stiffness")
+            self.save_to_data(data=save_data,
+                              title="Network Stiffness",
+                              x=numpy.linspace(1, epoch, epoch),
+                              y=network_stiffness_array)
 
         if loss_pde_array is not None and len(loss_pde_array) > 0:
             loss_pde_array /= equations_amount
@@ -241,6 +255,10 @@ class TaskService:
 
             self.plot_convergence_intervals(loss_array=loss_pde_array, task=task, plot_title="Loss PDE", epoch=epoch,
                                             value_name="loss_pde")
+            self.save_to_data(data=save_data,
+                              title="loss_pde",
+                              x=numpy.linspace(1, epoch, epoch),
+                              y=loss_pde_array)
 
         if loss_conditions_array is not None and len(loss_conditions_array) > 0:
             loss_conditions_array /= equations_amount
@@ -249,6 +267,10 @@ class TaskService:
                                      self.__get_plot_path(task.get_task_name(), "Loss_Conditions"),
                                      PlotData("Loss Conditions", ["epoch", "loss_conditions"]))
             choose_plot.choose().plot()
+            self.save_to_data(data=save_data,
+                              title="loss_bc",
+                              x=numpy.linspace(1, epoch, epoch),
+                              y=loss_conditions_array)
 
             self.plot_convergence_intervals(loss_array=loss_conditions_array, task=task, plot_title="Loss Conditions",
                                             epoch=epoch,
@@ -265,6 +287,10 @@ class TaskService:
             self.plot_convergence_intervals(loss_array=loss_conditions_data_array, task=task,
                                             plot_title="Loss Conditions Data", epoch=epoch,
                                             value_name="loss_conditions_data")
+            self.save_to_data(data=save_data,
+                              title="loss_data",
+                              x=numpy.linspace(1, epoch, epoch),
+                              y=loss_conditions_data_array)
 
         if grad_pde_max_array is not None and len(grad_pde_max_array) > 0:
             grad_pde_max_array /= equations_amount
@@ -277,6 +303,10 @@ class TaskService:
             self.plot_convergence_intervals(loss_array=grad_pde_max_array, task=task, plot_title="Grad PDE Max",
                                             epoch=epoch,
                                             value_name="grad_pde_max")
+            self.save_to_data(data=save_data,
+                              title="grad_pde_max",
+                              x=numpy.linspace(1, epoch, epoch),
+                              y=grad_pde_max_array)
 
         if grad_bc_max_array is not None and len(grad_bc_max_array) > 0:
             grad_bc_max_array /= equations_amount
@@ -289,6 +319,10 @@ class TaskService:
             self.plot_convergence_intervals(loss_array=grad_bc_max_array, task=task, plot_title="Grad BC Max",
                                             epoch=epoch,
                                             value_name="grad_bc_max")
+            self.save_to_data(data=save_data,
+                              title="grad_bc_max",
+                              x=numpy.linspace(1, epoch, epoch),
+                              y=grad_bc_max_array)
 
         if grad_data_max_array is not None and len(grad_data_max_array) > 0:
             grad_data_max_array /= equations_amount
@@ -301,6 +335,10 @@ class TaskService:
             self.plot_convergence_intervals(loss_array=grad_data_max_array, task=task, plot_title="Grad Data Max",
                                             epoch=epoch,
                                             value_name="grad_data_max")
+            self.save_to_data(data=save_data,
+                              title="grad_data_max",
+                              x=numpy.linspace(1, epoch, epoch),
+                              y=grad_data_max_array)
 
         if grad_pde_mean_array is not None and len(grad_pde_mean_array) > 0:
             grad_pde_mean_array /= equations_amount
@@ -313,6 +351,10 @@ class TaskService:
             self.plot_convergence_intervals(loss_array=grad_pde_mean_array, task=task, plot_title="Grad PDE Mean",
                                             epoch=epoch,
                                             value_name="grad_pde_mean")
+            self.save_to_data(data=save_data,
+                              title="grad_pde_mean",
+                              x=numpy.linspace(1, epoch, epoch),
+                              y=grad_pde_mean_array)
 
         if grad_data_mean_array is not None and len(grad_data_mean_array) > 0:
             grad_data_mean_array /= equations_amount
@@ -325,6 +367,10 @@ class TaskService:
             self.plot_convergence_intervals(loss_array=grad_data_mean_array, task=task, plot_title="Grad Data Mean",
                                             epoch=epoch,
                                             value_name="grad_data_mean")
+            self.save_to_data(data=save_data,
+                              title="grad_data_mean",
+                              x=numpy.linspace(1, epoch, epoch),
+                              y=grad_data_mean_array)
 
         if grad_bc_mean_array is not None and len(grad_bc_mean_array) > 0:
             grad_bc_mean_array /= equations_amount
@@ -337,11 +383,16 @@ class TaskService:
             self.plot_convergence_intervals(loss_array=grad_bc_mean_array, task=task, plot_title="Grad BC Mean",
                                             epoch=epoch,
                                             value_name="grad_bc_mean")
+            self.save_to_data(data=save_data,
+                              title="grad_bc_mean",
+                              x=numpy.linspace(1, epoch, epoch),
+                              y=grad_bc_mean_array)
 
         train_var_data = self.__handle_variables_plot(variables_array=variables_array,
                                                       task=task,
                                                       equations_amount=equations_amount,
                                                       epoch=epoch,
+                                                      save_data=save_data,
                                                       plot_title="Trainable variable",
                                                       exact_var=equations[0].
                                                       get_solution_function().get_exact_trainable_variables_array())
@@ -350,6 +401,7 @@ class TaskService:
                                      task=task,
                                      equations_amount=equations_amount,
                                      epoch=epoch,
+                                     save_data=save_data,
                                      plot_title="Non trainable variable")
 
         choose_plot = ChoosePlot(test_space, y, self.__get_plot_path(task.get_task_name(), "Ai Solution"),
@@ -432,6 +484,7 @@ class TaskService:
             choose_plot = ChoosePlot(test_space, abs_error,
                                      self.__get_plot_path(task.get_task_name(), "Absolute error"),
                                      PlotData(f"Absolute error {plot_title}", labels))
+
             choose_plot.choose().plot()
             max_percent_error = numpy.max(abs_error) / exact_y_error * 100
             if percent_error is not None:
@@ -467,8 +520,40 @@ class TaskService:
         with open(self.__get_plot_path(task.get_task_name(), "data", "yml"), "w", encoding="utf-8") as file:
             json.dump(converted_data, file, ensure_ascii=False, indent=4)
 
+        converted_data = self.make_json_serializable(data=save_data)
+        with open(self.__get_plot_path(task.get_task_name(), "save_data", "yml"), "w", encoding="utf-8") as file:
+            json.dump(converted_data, file, ensure_ascii=False, indent=4)
+
+    def make_json_serializable(self, data):
+        if isinstance(data, dict):
+            return {k: self.make_json_serializable(v) for k, v in data.items()}
+
+        if hasattr(data, 'numpy'):
+            data = data.numpy()
+
+        if isinstance(data, (numpy.ndarray, numpy.generic)):
+            if data.size == 1:
+                return float(data)
+            else:
+                data = data.flatten().tolist()
+
+        if isinstance(data, (list, tuple)):
+            flat_list = []
+            for item in data:
+                processed = self.make_json_serializable(item)
+                if isinstance(processed, list):
+                    flat_list.extend(processed)
+                else:
+                    flat_list.append(processed)
+            return flat_list
+
+        if isinstance(data, (int, float, str, bool)) or data is None:
+            return data
+        else:
+            return str(data)
+
     def __handle_variables_plot(self, variables_array, task, equations_amount: int, epoch: int, plot_title: str,
-                                exact_var=None):
+                                save_data: dict, exact_var=None):
         data = dict()
         if variables_array is not None and len(variables_array) > 0:
             for i in range(len(variables_array)):
@@ -486,6 +571,10 @@ class TaskService:
                 self.plot_convergence_intervals(loss_array=variable, task=task,
                                                 plot_title=f"{plot_title} {i}",
                                                 epoch=epoch, value_name="value")
+                self.save_to_data(data=save_data,
+                                  title=f"{plot_title}_variable_{i}_value",
+                                  x=numpy.linspace(1, epoch, epoch),
+                                  y=variable)
 
                 if exact_var is not None:
                     e_var = exact_var[i]
@@ -498,6 +587,10 @@ class TaskService:
                                              PlotData(f"{plot_title} {i} (Absolute error)",
                                                       ["epoch", "value"]))
                     choose_plot.choose().plot()
+                    self.save_to_data(data=save_data,
+                                      title=f"{plot_title}_abs_error_variable_{i}_value",
+                                      x=numpy.linspace(1, epoch, epoch),
+                                      y=ev)
 
                     self.plot_convergence_intervals(loss_array=ev, task=task,
                                                     plot_title=f"{plot_title} {i} (Absolute error)",
@@ -528,6 +621,13 @@ class TaskService:
         for b in arr:
             a.append(min(b))
         return min(a)
+
+    def save_to_data(self, data: dict, title: str, x, y):
+        new_data = dict()
+        new_data['x'] = x
+        new_data['y'] = y
+
+        data[title] = new_data
 
     def plot_convergence_intervals(self, loss_array, epoch, task, plot_title, value_name):
         threshold = (loss_array[0] - loss_array[-1]) / 10
