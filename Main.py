@@ -28,7 +28,7 @@ def configure_solver():
 def basic_rep(task_repository):
     range_weight = 1 / (0.1 ** 4)
 
-    for with_noise in [False]:
+    for with_noise in [True]:
         for weight in [1, range_weight]:
             task_repository.add_task(ExampleFirst2ProblemLossTask(weight_data=weight, weight_conditions=weight,
                                                                   with_noise=with_noise))
