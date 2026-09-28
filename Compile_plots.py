@@ -21,6 +21,11 @@ NAME_MAPPED = {
     "Mean square error": "Blad sredniokwadratowy vs l epok"
 }
 
+PLOT_GROUPS = {
+    "Podejscie_1": ["1a", "1b", "1c", "1d"],
+    "Podejscie_2": ["2a", "2b", "2c", "2d"]
+}
+
 
 def clear_and_create_folder(folder_path):
     if os.path.exists(folder_path):
@@ -89,7 +94,7 @@ def get_mapped_name(stat_name):
 
 def plot_merged_statistics(data, output_folder="wykresy", max_zooms=3):
     if not data:
-        print("Brak danych do wygenerowania wykresów.")
+        print(f"Brak danych do wygenerowania wykresów w folderze: {output_folder}")
         return
 
     clear_and_create_folder(output_folder)
@@ -173,7 +178,17 @@ def plot_merged_statistics(data, output_folder="wykresy", max_zooms=3):
 
 if __name__ == "__main__":
     target_folder = "wysyl/bez szumów"
-    output_folder = "wykresy_wynikowe"
+    base_output_folder = "wykresy_wynikowe"
 
     collected_data = dir_data(target_folder)
-    plot_merged_statistics(collected_data, output_folder, max_zooms=4)
+
+    for group_name, allowed_ids in PLOT_GROUPS.items():
+        print(f"\n--- Przetwarzanie grupy: {group_name} ---")
+
+        grouped_data = {folder_id: stats for folder_id, stats in collected_data.items() if folder_id in allowed_ids}
+
+        if grouped_data:
+            group_output_folder = os.path.join(base_output_folder, group_name)
+            plot_merged_statistics(grouped_data, group_output_folder, max_zooms=4)
+        else:
+            print(f"Brak pasujących katalogów dla ID zdefiniowanych w grupie {group_name}")
