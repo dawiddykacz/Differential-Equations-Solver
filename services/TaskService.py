@@ -407,6 +407,10 @@ class TaskService:
         choose_plot = ChoosePlot(test_space, y, self.__get_plot_path(task.get_task_name(), "Ai Solution"),
                                  PlotData(f"Ai solution {plot_title}"))
         choose_plot.choose().plot()
+        self.save_to_data(data=save_data,
+                          title="Ai solution",
+                          x=test_space.get_mesh_numpy_array(),
+                          y=y)
 
         train_var_data['last_mean_square_error'] = mean_square_error[len(mean_square_error) - 1]
         if loss_array is not None and len(loss_array) > 0:
@@ -484,6 +488,10 @@ class TaskService:
             choose_plot = ChoosePlot(test_space, abs_error,
                                      self.__get_plot_path(task.get_task_name(), "Absolute error"),
                                      PlotData(f"Absolute error {plot_title}", labels))
+            self.save_to_data(data=save_data,
+                              title="Absolute error",
+                              x=test_space.get_mesh_numpy_array(),
+                              y=abs_error)
 
             choose_plot.choose().plot()
             max_percent_error = numpy.max(abs_error) / exact_y_error * 100
@@ -495,6 +503,10 @@ class TaskService:
                                                   ["x", "Error (%)"]))
                 choose_plot.choose().plot()
                 max_percent_error = numpy.max(percent_error)
+                self.save_to_data(data=save_data,
+                                  title="Percent error",
+                                  x=test_space.get_mesh_numpy_array(),
+                                  y=percent_error)
             weight = task.get_weight()
             if weight is not None:
                 k = str(weight)
@@ -624,7 +636,12 @@ class TaskService:
 
     def save_to_data(self, data: dict, title: str, x, y):
         new_data = dict()
-        new_data['x'] = x
+        if len(x) == 2:
+            new_data['x1'] = x[0]
+            new_data['x2'] = x[1]
+
+        else:
+            new_data['x'] = x
         new_data['y'] = y
 
         data[title] = new_data
