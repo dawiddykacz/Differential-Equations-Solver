@@ -3,7 +3,9 @@ import math
 
 
 class ExampleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation):
-    def __init__(self, space: Space, with_noise: bool, alpha: float, weight_conditions: float = 1,
+    def __init__(self, space: Space, with_noise: bool, alpha: float,
+                 weight_pde: float = 1,
+                 weight_conditions: float = 1,
                  weight_data: float = 1):
         trainable_variables = TrainableVariables([1])
         non_trainable_variables = TrainableVariables([1, 1])
@@ -13,7 +15,9 @@ class ExampleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation):
                                  trainable_variables=trainable_variables,
                                  non_trainable_variables=non_trainable_variables,
                                  with_noise=with_noise,
-                                 alpha=alpha, weight_conditions=weight_conditions,
+                                 alpha=alpha,
+                                 weight_pde=weight_pde,
+                                 weight_conditions=weight_conditions,
                                  weight_data=weight_data),
                              trainable_variables=trainable_variables,
                              non_trainable_variables=non_trainable_variables,
@@ -23,12 +27,14 @@ class ExampleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation):
 class LossSimple(Loss):
     def __init__(self, trainable_variables: TrainableVariables,
                  non_trainable_variables: TrainableVariables, with_noise: bool,
-                 alpha: float, weight_conditions: float = 1, weight_data: float = 1):
+                 alpha: float, weight_pde: float = 1,
+                 weight_conditions: float = 1, weight_data: float = 1):
         super().__init__(trainable_variables, with_noise)
 
         self.__non_trainable_variables = non_trainable_variables
         self.__alpha = alpha
         self.__first_alpha = alpha
+        self.weight_pde = weight_pde
         self.weight_conditions = weight_conditions
         self.weight_data = weight_data
 
@@ -51,6 +57,9 @@ class LossSimple(Loss):
         w4 = function(x, ones_y) - target
 
         return tensorflow.abs(w1) + tensorflow.abs(w2) + tensorflow.abs(w3) + tensorflow.abs(w4)
+
+    def _pde_weight(self):
+        return self.weight_pde
 
     def _condition_data_weight(self):
         return self.weight_data * self.__non_trainable_variables.get_variables()[1]
