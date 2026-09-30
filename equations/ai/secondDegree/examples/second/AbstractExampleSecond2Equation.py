@@ -49,8 +49,16 @@ class Loss(LossFunction):
         else:
             w = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                  0.0, 0.0, 0.0, 0.0, 0.0]
-        self.__w = tensorflow.constant(w, dtype=tensorflow.float64)
+        self._w = tensorflow.constant(w, dtype=tensorflow.float64)
+        self._w = tensorflow.reshape(self._w, [-1, 1])
 
+        factors = [-0.9, -0.5, 0.0, 0.5, 0.9]
+        grid_x, grid_y = numpy.meshgrid(factors, factors, indexing='ij')
+
+        self._bc_x = tensorflow.constant(grid_x.reshape(-1, 1), dtype=tensorflow.float64)
+        self._bc_y = tensorflow.constant(grid_y.reshape(-1, 1), dtype=tensorflow.float64)
+
+    @tensorflow.function
     def _left_side_of_the_equation(self, function, *x):
         x_var = x[0]
         y_var = x[1]
@@ -80,33 +88,22 @@ class Loss(LossFunction):
 
         return a * (differential_x2 + differential_y2) / (pi ** 2)
 
+    @tensorflow.function
     def _right_side_of_the_equation(self, function, *x):
         y = x[1]
         x = x[0]
 
         return -tensorflow.sin(pi * x) * tensorflow.cos(pi * y)
 
+    @tensorflow.function
     def _condition_data(self, function, *x):
-        base_x = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
-        base_y = tensorflow.ones_like(x[1], dtype=tensorflow.float64)
+        predictions = function(self._bc_x, self._bc_y)
 
-        factors = [-0.9, -0.5, 0.0, 0.5, 0.9]
+        exact = exact_solution(self._bc_x, self._bc_y)
 
-        results = []
-        i = 0
-        for f_x in factors:
-            for f_y in factors:
-                point_x = f_x * base_x
-                point_y = f_y * base_y
+        errors = tensorflow.square(predictions - exact + self._w)
 
-                noise_val = self.__w[i]
-
-                results.append(
-                    condition_bc(function=function, x=point_x, y=point_y, noise=noise_val)
-                )
-                i += 1
-
-        return tensorflow.reduce_sum(tensorflow.add_n(results))
+        return tensorflow.reduce_sum(errors)
 
 
 class ExactSolution(Function):
