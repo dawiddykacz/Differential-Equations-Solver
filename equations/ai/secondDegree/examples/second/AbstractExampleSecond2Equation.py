@@ -50,13 +50,11 @@ class Loss(LossFunction):
             w = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                  0.0, 0.0, 0.0, 0.0, 0.0]
         self._w = tensorflow.constant(w, dtype=tensorflow.float64)
-        # Zmieniamy kształt szumu na kolumnowy (25, 1)
         self._w = tensorflow.reshape(self._w, [-1, 1])
 
         factors = [-0.9, -0.5, 0.0, 0.5, 0.9]
         grid_x, grid_y = numpy.meshgrid(factors, factors, indexing='ij')
 
-        # Używamy reshape(-1, 1) zamiast flatten(), by uzyskać wymiar [25, 1] zamiast [25,]
         self._bc_x = tensorflow.constant(grid_x.reshape(-1, 1), dtype=tensorflow.float64)
         self._bc_y = tensorflow.constant(grid_y.reshape(-1, 1), dtype=tensorflow.float64)
 
