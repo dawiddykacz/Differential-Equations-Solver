@@ -94,7 +94,9 @@ def parse(text: str, folder_path: Path):
 
 
 def get_heatmap_dir(folder_path: Path) -> Path:
-    return folder_path / "heatmaps"
+    heatmap_dir = folder_path / "heatmaps"
+    heatmap_dir.mkdir(parents=True, exist_ok=True)
+    return heatmap_dir
 
 
 def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_square_error"):
