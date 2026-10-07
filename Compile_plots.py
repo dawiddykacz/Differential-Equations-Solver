@@ -1,10 +1,13 @@
 import os
-import yaml
 import shutil
+import re
+
+import yaml
 import math
 import matplotlib.pyplot as plt
 
-NAME_MAPPED = {
+# Słowniki używane do mapowania
+MAPOWANIE = {
     "Convergence": "Funkcja straty vs l epok",
     "Loss_PDE": "Reziduum funkcji straty vs l epok",
     "Loss PDE": "Reziduum funkcji straty vs l epok",
@@ -18,37 +21,177 @@ NAME_MAPPED = {
     "Grad BC Max": "Maksymalny gradiend czesci warunkow funkcji straty vs l epok",
     "Grad_Data_Max": "Maksymalny gradiend czesci pomiarow funkcji straty vs l epok",
     "Grad Data Max": "Maksymalny gradiend czesci pomiarow funkcji straty vs l epok",
-    "Mean square error": "Blad sredniokwadratowy vs l epok"
+    "Network_Stiffness": "Sztywnosc vs l epok",
+    "Network Stiffness": "Sztywnosc vs l epok",
+    "Mean square error": "Blad sredniokwadratowy vs l epok",
+    "loss_bc": "Czesc warunkow funkcji straty vs l epok",
+    "loss_data": "Czesc pomiarow funkcji straty vs l epok",
+    "Trainable variable_variable_0_value": "Wartosc parametru dyfuzji vs l epok",
+    "Trainable variable_abs_error_variable_0_value": "Wartosc bledu absolutnego parametru dyfuzji vs l epok",
 }
 
 PLOT_GROUPS = {
-    "Podejscie_1": ["1a", "1b", "1c", "1d"],
-    "Podejscie_2": ["2a", "2b", "2c", "2d"]
+    "1 przyklad Podejscie_1": ["1.1.a", "1.1.b1", "1.1.b2", "1.1.c", "1.1.d1", "1.1.d2"],
+    "1 przyklad Podejscie_2": ["1.2.a", "1.2.b1", "1.2.b2", "1.2.c", "1.2.d1", "1.2.d2"],
+    "2 przyklad Podejscie_1": ["2.1.a", "2.1.b1", "2.1.b2", "2.1.c", "2.1.d1", "2.1.d2"],
+    "2 przyklad Podejscie_2": ["2.2.a", "2.2.b1", "2.2.b2", "2.2.c", "2.2.d1", "2.2.d2"],
 }
 
 
-def clear_and_create_folder(folder_path):
-    if os.path.exists(folder_path):
-        shutil.rmtree(folder_path)
-    os.makedirs(folder_path, exist_ok=True)
+def get_name_mapped(name: str) -> str | None:
+    first_part = name.split(" ")[0]
+    second_part = ""
+    third_part = ""
+
+    if "simple" in name:
+        second_part = "1"
+    else:
+        second_part = "2"
+
+    has_pde_1 = bool(re.search(r"weight_pde 1(?!\d)", name))
+    has_data_1 = bool(re.search(r"weight_data 1(?!\d)", name))
+
+    if "wang" in name:
+        if has_pde_1 and has_data_1:
+            third_part = "c"
+        elif has_pde_1:
+            third_part = "d2"
+        else:
+            third_part = "d1"
+    else:
+        if has_pde_1 and has_data_1:
+            third_part = "a"
+        elif has_data_1:
+            third_part = "b2"
+        else:
+            third_part = "b1"
+
+    try:
+        int(first_part)
+        int(second_part)
+    except ValueError:
+        return None
+
+    return f"{first_part}.{second_part}.{third_part}"
 
 
-def load_save_data(folder_path):
+def prepare_and_copy_folders(input_folder: str, output_folder: str):
+    """Krok 1 i 2: Usuwa docelowy folder i kopiuje zawartość wejściową"""
+    if os.path.exists(output_folder):
+        print(f"Usuwam stary folder docelowy: {output_folder}")
+        shutil.rmtree(output_folder)
+
+    print(f"Kopiuję {input_folder} -> {output_folder}")
+    shutil.copytree(input_folder, output_folder)
+
+
+def map_and_clean_folders(output_folder: str):
+    """Krok 3: Zmienia nazwy folderów i usuwa duplikaty/niepasujące"""
+    used_names = set()
+    for item in os.listdir(output_folder):
+        item_path = os.path.join(output_folder, item)
+        if not os.path.isdir(item_path):
+            continue
+
+        mapped_name = get_name_mapped(item)
+
+        # Jeśli nazwa pomyślnie zmapowana i nie ma jeszcze takiego folderu
+        if mapped_name and mapped_name is not None and mapped_name not in used_names:
+            new_path = os.path.join(output_folder, mapped_name)
+            if not os.path.exists(new_path):
+                os.rename(item_path, new_path)
+                used_names.add(mapped_name)
+                print(f"Zmapowano folder: '{item}' -> '{mapped_name}'")
+            else:
+                shutil.rmtree(item_path)
+                print(f"Usunięto (kolizja z innym): {item}")
+        else:
+            # Duplikaty (mapped_name in used_names) lub błędne mapowanie
+            shutil.rmtree(item_path)
+            print(f"Usunięto duplikat / śmieciowy folder: {item}")
+
+
+def rename_files_in_folder(folder_path: str):
+    """Krok 4: Mapuje nazwy plików wykresów, usuwa pliki których nie da się zmapować (zostawia yaml)"""
+    if not os.path.exists(folder_path):
+        return
+
+    pliki = os.listdir(folder_path)
+    grupy = {}
+
+    for plik in pliki:
+        sciezka = os.path.join(folder_path, plik)
+        if not os.path.isfile(sciezka):
+            continue
+
+        nazwa, rozszerzenie = os.path.splitext(plik)
+        nazwa = nazwa.strip()
+        nazwa_lower = nazwa.lower()
+        dopasowano = False
+
+        # 1. Szukamy dopasowania
+        for klucz in MAPOWANIE.keys():
+            klucz_lower = klucz.lower()
+            if nazwa_lower == klucz_lower:
+                grupy.setdefault((klucz, rozszerzenie), []).append((plik, None))
+                dopasowano = True
+                break
+            elif nazwa_lower.startswith(klucz_lower + "-"):
+                sufiks = nazwa_lower[len(klucz_lower) + 1:]
+                if sufiks.isdigit():
+                    grupy.setdefault((klucz, rozszerzenie), []).append((plik, int(sufiks)))
+                    dopasowano = True
+                    break
+
+        # 2. Sprawdzamy czy plik nie został wcześniej zmapowany
+        if not dopasowano:
+            for wartosc in MAPOWANIE.values():
+                wartosc_lower = wartosc.lower()
+                if nazwa_lower == wartosc_lower or nazwa_lower.startswith(f"{wartosc_lower} - zoom "):
+                    dopasowano = True
+                    break
+
+        # 3. Usuwamy pliki których nie udało się zmapować (nie dotyczy yaml/yml)
+        if not dopasowano:
+            if plik.lower().endswith(('.yaml', '.yml')):
+                continue
+            os.remove(sciezka)
+
+    # 4. Nadawanie nowych nazw i suffiksów zoom
+    for (klucz, rozszerzenie), lista_plikow in grupy.items():
+        lista_plikow.sort(key=lambda x: (x[1] is not None, x[1] if x[1] is not None else 0))
+        nowa_nazwa_bazowa = MAPOWANIE[klucz]
+        licznik_zoom = 1
+
+        for oryginalny_plik, numer_sufiksu in lista_plikow:
+            if numer_sufiksu is None:
+                nowa_nazwa = f"{nowa_nazwa_bazowa}{rozszerzenie}"
+            else:
+                nowa_nazwa = f"{nowa_nazwa_bazowa} - zoom {licznik_zoom}{rozszerzenie}"
+                licznik_zoom += 1
+
+            if oryginalny_plik != nowa_nazwa:
+                stara_sciezka = os.path.join(folder_path, oryginalny_plik)
+                nowa_sciezka = os.path.join(folder_path, nowa_nazwa)
+                try:
+                    os.replace(stara_sciezka, nowa_sciezka)
+                except Exception as e:
+                    print(f"BŁĄD przy zmianie {oryginalny_plik}: {e}")
+
+
+def load_save_data(folder_path: str):
     file_path = os.path.join(folder_path, 'save_data.yml')
     if not os.path.isfile(file_path):
         return None
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             return yaml.safe_load(file)
-    except yaml.YAMLError as yaml_error:
-        print(f"Błąd podczas parsowania pliku YAML ({file_path}): {yaml_error}")
-        return None
     except Exception as e:
-        print(f"Wystąpił nieoczekiwany błąd ({file_path}): {e}")
+        print(f"Błąd pliku YAML ({file_path}): {e}")
         return None
 
 
-def dir_data(base_folder):
+def dir_data(base_folder: str):
     items = os.listdir(base_folder)
     data = dict()
     for item in items:
@@ -61,20 +204,15 @@ def dir_data(base_folder):
 
 
 def find_elbow_index(y_values):
-    if len(y_values) < 10:
-        return 0
-
+    if len(y_values) < 10: return 0
     min_y, max_y = min(y_values), max(y_values)
     val_range = max_y - min_y
-    if val_range == 0:
-        return 0
+    if val_range == 0: return 0
 
     y_norm = [(val - min_y) / val_range for val in y_values]
     x_norm = [i / (len(y_values) - 1) for i in range(len(y_values))]
-
     dy = y_norm[-1] - y_norm[0]
     denominator = math.sqrt(dy ** 2 + 1)
-
     max_dist = -1
     elbow_idx = 0
 
@@ -83,22 +221,19 @@ def find_elbow_index(y_values):
         if dist > max_dist:
             max_dist = dist
             elbow_idx = i
-
     return elbow_idx
 
 
-def get_mapped_name(stat_name):
-    mapping_lower = {k.lower(): v for k, v in NAME_MAPPED.items()}
-    return mapping_lower.get(stat_name.lower(), stat_name)
+def get_mapped_stat_name(stat_name: str):
+    mapping_lower = {k.lower(): v for k, v in MAPOWANIE.items()}
+    return mapping_lower.get(stat_name.lower())
 
 
-def plot_merged_statistics(data, output_folder="wykresy", max_zooms=3):
+def plot_merged_statistics(data, output_folder, max_zooms=3):
     if not data:
-        print(f"Brak danych do wygenerowania wykresów w folderze: {output_folder}")
         return
 
-    clear_and_create_folder(output_folder)
-
+    os.makedirs(output_folder, exist_ok=True)
     all_statistics = set()
     for stats in data.values():
         all_statistics.update(stats.keys())
@@ -115,9 +250,13 @@ def plot_merged_statistics(data, output_folder="wykresy", max_zooms=3):
         if not plot_lines:
             continue
 
-        display_name = get_mapped_name(stat_name)
+        display_name = get_mapped_stat_name(stat_name)
+        if display_name is None:
+            continue
+
         safe_filename = display_name.replace("/", "_").replace("\\", "_").replace(" ", "_")
 
+        # Rysowanie pełnego wykresu
         plt.figure(figsize=(12, 7))
         for folder_id, x, y in plot_lines:
             plt.plot(x, y, label=folder_id, marker='.', markersize=4)
@@ -128,28 +267,22 @@ def plot_merged_statistics(data, output_folder="wykresy", max_zooms=3):
         plt.legend(title="ID Folderu", bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.grid(True, linestyle='--', alpha=0.7)
         plt.tight_layout()
-
-        full_save_path = os.path.join(output_folder, f"{safe_filename}.png")
-        plt.savefig(full_save_path, dpi=150)
+        plt.savefig(os.path.join(output_folder, f"{safe_filename}.png"), dpi=150)
         plt.close()
 
+        # Rysowanie przybliżeń (Zoom)
         current_start_idx = 0
         total_points = len(plot_lines[0][1])
 
         for zoom_level in range(1, max_zooms + 1):
             elbow_indices = []
-
             for folder_id, x, y in plot_lines:
                 current_y = y[current_start_idx:]
                 elbow_indices.append(find_elbow_index(current_y))
 
-            if not elbow_indices:
-                break
-
+            if not elbow_indices: break
             avg_elbow_step = int(sum(elbow_indices) / len(elbow_indices))
-
-            if avg_elbow_step <= 0:
-                break
+            if avg_elbow_step <= 0: break
 
             current_start_idx += avg_elbow_step
             max_allowed_idx = int(total_points * 0.95)
@@ -165,30 +298,57 @@ def plot_merged_statistics(data, output_folder="wykresy", max_zooms=3):
             plt.legend(title="ID Folderu", bbox_to_anchor=(1.05, 1), loc='upper left')
             plt.grid(True, linestyle='--', alpha=0.7)
             plt.tight_layout()
-
-            zoom_save_path = os.path.join(output_folder, f"{safe_filename}_zoom_{zoom_level}.png")
-            plt.savefig(zoom_save_path, dpi=150)
+            plt.savefig(os.path.join(output_folder, f"{safe_filename}_zoom_{zoom_level}.png"), dpi=150)
             plt.close()
 
             if current_start_idx >= max_allowed_idx:
                 break
 
-        print(f"Wygenerowano pliki dla: {stat_name} -> {display_name}")
 
+def cp_dir(input_folder: str, output_folder: str):
+    if not os.path.exists(input_folder):
+        print(f"BŁĄD: Zdefiniowany folder źródłowy '{input_folder}' nie istnieje.")
+        return
 
-if __name__ == "__main__":
-    target_folder = "wysyl/bez szumów"
-    base_output_folder = "wykresy_wynikowe"
+    # Krok 1 i 2
+    prepare_and_copy_folders(input_folder, output_folder)
 
-    collected_data = dir_data(target_folder)
+def process_all_data( output_folder: str):
+    # Krok 3
+    print("\n--- Mapowanie i czyszczenie podfolderów ---")
+    map_and_clean_folders(output_folder)
+
+    # Krok 4
+    print("\n--- Zmiana nazw plików i usuwanie niezmapowanych obrazków ---")
+    for item in os.listdir(output_folder):
+        item_path = os.path.join(output_folder, item)
+        if os.path.isdir(item_path) and item != "wykresy_wynikowe":
+            rename_files_in_folder(item_path)
+
+    # Krok 5
+    print("\n--- Tworzenie folderów zbiorczych z wykresami z .yaml ---")
+    collected_data = dir_data(output_folder)
+    base_output_folder = os.path.join(output_folder, "wykresy_wynikowe")  # Folder wewnątrz "wysylki"
+
+    # Tworzymy folder docelowy dla wykresów w środku `wysylka`
+    if os.path.exists(base_output_folder):
+        shutil.rmtree(base_output_folder)
+    os.makedirs(base_output_folder, exist_ok=True)
 
     for group_name, allowed_ids in PLOT_GROUPS.items():
-        print(f"\n--- Przetwarzanie grupy: {group_name} ---")
-
         grouped_data = {folder_id: stats for folder_id, stats in collected_data.items() if folder_id in allowed_ids}
 
         if grouped_data:
+            print(f"Generuję wykresy dla grupy: {group_name} ...")
             group_output_folder = os.path.join(base_output_folder, group_name)
-            plot_merged_statistics(grouped_data, group_output_folder, max_zooms=4)
-        else:
-            print(f"Brak pasujących katalogów dla ID zdefiniowanych w grupie {group_name}")
+            plot_merged_statistics(grouped_data, group_output_folder, max_zooms=20)
+
+
+# Uruchomienie skryptu
+if __name__ == "__main__":
+    FOLDER_ZRODLOWY = "dd"
+    FOLDER_DOCELOWY = "wysylka"
+    cp_dir(FOLDER_ZRODLOWY, FOLDER_DOCELOWY)
+
+    process_all_data("wysylka/1 test/basic 5k/bez szumów")
+    print("\nGotowe. Cały proces zakończony!")
