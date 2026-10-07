@@ -101,7 +101,7 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
 
     for name in unique_names:
         safe_name = re.sub(r'[\\/*?:"<>| ]', "_", name)
-        file = path / f"{safe_name}_{value_key}.png"
+        file = path / "heatmaps" / f"{safe_name}_{value_key}.png"
         print(f"Zapisywanie heatmapy: {file}")
 
         subset = df[df["name"] == name].copy()
