@@ -93,6 +93,12 @@ def parse(text: str, folder_path: Path):
     return d
 
 
+def get_heatmap_dir(folder_path: Path) -> Path:
+    heatmap_dir = folder_path / "heatmaps"
+    heatmap_dir.mkdir(parents=True, exist_ok=True)
+    return heatmap_dir
+
+
 def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_square_error"):
     if value_key not in df.columns:
         return
@@ -101,7 +107,7 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
 
     for name in unique_names:
         safe_name = re.sub(r'[\\/*?:"<>| ]', "_", name)
-        file = path / f"{safe_name}_{value_key}.png"
+        file = get_heatmap_dir(path) / f"{safe_name}_{value_key}.png"
         print(f"Zapisywanie heatmapy: {file}")
 
         subset = df[df["name"] == name].copy()
@@ -168,7 +174,7 @@ def list_path(path: str):
                     print(f"Pominięto pusty katalog: {noise_dir}")
                     continue
 
-                for png_file in noise_dir.glob("*.png"):
+                for png_file in get_heatmap_dir(noise_dir).glob("*.png"):
                     if png_file.is_file():
                         png_file.unlink()
 
