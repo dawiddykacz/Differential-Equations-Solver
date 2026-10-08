@@ -15,17 +15,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Dodano konfigurację Pythona na GH Runnerze dla GetPlotsPaths.py
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
-      - name: Deploy to VPS, Run Scripts and Get Paths
-        id: get-paths
+
+      - name: Deploy to VPS and Run Scripts
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-            set -e
-            
-            # Przechodzimy do folderu (używamy ~ by automatycznie trafić do /home/user)
+            # UWAGA: Usunięto set -e, aby błędy zamykania Dockera nie urywały połączenia SSH
             cd ~/Differential-Equations-Solver
 
             BRANCH="${{ github.ref_name }}"
@@ -39,23 +43,22 @@ jobs:
 
             echo "▶ Stating Solver - HeatmapScript.py"
             mkdir -p plot
-            docker compose run --rm ai-solver python bin/HeatmapScript.py
+            # || true sprawia, że nawet jak skrypt rzuci błędem, SSH pójdzie dalej
+            docker compose run --rm ai-solver python bin/HeatmapScript.py || true
 
             echo "▶ Stating Solver - Copy_Plots.py"
-            docker compose run --rm ai-solver python bin/Copy_Plots.py
-
-            echo "▶ Stating Solver - GetPlotsPaths.py"
-            # Ważne: to musi być wewnątrz bloku EOF!
-            docker compose run --rm ai-solver python bin/GetPlotsPaths.py > paths_output.json
+            docker compose run --rm ai-solver python bin/Copy_Plots.py || true
           EOF
 
-          echo "▶ Downloading paths_output.json from VPS"
-          # Odczytujemy plik z poziomu runnera Githuba, odnosząc się znowu przez ~
-          PATHS_JSON=$(ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cat ~/Differential-Equations-Solver/paths_output.json")
+      - name: Run GetPlotsPaths.py (on GitHub Runner)
+        id: get-paths
+        run: |
+          # 1. Odpalenie skryptu i zapisanie wyniku prosto do zmiennej. 
+          # Moduły os, glob, json to biblioteki standardowe, więc zadziała bez pip install
+          PATHS_JSON=$(python bin/GetPlotsPaths.py)
           
           echo "Pobrane ścieżki: $PATHS_JSON"
           echo "matrix=$PATHS_JSON" >> $GITHUB_OUTPUT
-      
 
   compile-plots:
     needs: prepare-and-get-paths
@@ -74,10 +77,8 @@ jobs:
       - name: Run Compile_plots.py in parallel
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-            set -e
-            cd /home/python/Differential-Equations-Solver
+            cd ~/Differential-Equations-Solver
             
             echo "▶ Running Compile_plots.py for path: ${{ matrix.path }}"
-            # Przekazanie ścieżki z zachowaniem cudzysłowów (odporne na spacje)
             docker compose run --rm ai-solver python bin/Compile_plots.py "${{ matrix.path }}"
           EOF
