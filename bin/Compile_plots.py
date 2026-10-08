@@ -4,7 +4,8 @@ import re
 import argparse
 
 import yaml
-import math
+import numpy as np
+import gc
 import matplotlib.pyplot as plt
 
 try:
@@ -184,10 +185,16 @@ def load_save_data(folder_path: str):
 
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
-            return yaml.load(file, Loader=SafeLoader)
+            data = yaml.load(file, Loader=SafeLoader)
+
+            if isinstance(data, dict):
+                return {k: v for k, v in data.items() if k in MAPOWANIE}
+
+            return data
     except Exception as e:
         print(f"Błąd pliku YAML ({file_path}): {e}")
         return None
+
 
 def dir_data(base_folder: str):
     items = os.listdir(base_folder)
@@ -204,23 +211,21 @@ def dir_data(base_folder: str):
 
 def find_elbow_index(y_values):
     if len(y_values) < 10: return 0
-    min_y, max_y = min(y_values), max(y_values)
+
+    y_vals = np.array(y_values)
+    min_y, max_y = y_vals.min(), y_vals.max()
     val_range = max_y - min_y
     if val_range == 0: return 0
 
-    y_norm = [(val - min_y) / val_range for val in y_values]
-    x_norm = [i / (len(y_values) - 1) for i in range(len(y_values))]
-    dy = y_norm[-1] - y_norm[0]
-    denominator = math.sqrt(dy ** 2 + 1)
-    max_dist = -1
-    elbow_idx = 0
+    y_norm = (y_vals - min_y) / val_range
+    x_norm = np.linspace(0, 1, len(y_values))
 
-    for i in range(len(y_values)):
-        dist = abs(dy * x_norm[i] - y_norm[i] + y_norm[0]) / denominator
-        if dist > max_dist:
-            max_dist = dist
-            elbow_idx = i
-    return elbow_idx
+    dy = y_norm[-1] - y_norm[0]
+    denominator = np.sqrt(dy ** 2 + 1)
+
+    dist = np.abs(dy * x_norm - y_norm + y_norm[0]) / denominator
+
+    return int(np.argmax(dist))
 
 
 def get_mapped_stat_name(stat_name: str):
@@ -255,21 +260,21 @@ def plot_merged_statistics(data, output_folder, max_zooms=3):
 
         safe_filename = display_name.replace("/", "_").replace("\\", "_").replace(" ", "_")
 
-        # Rysowanie pełnego wykresu
-        plt.figure(figsize=(12, 7))
+        fig, ax = plt.subplots(figsize=(12, 7))
         for folder_id, x, y in plot_lines:
-            plt.plot(x, y, label=folder_id, marker='.', markersize=4)
+            ax.plot(x, y, label=folder_id, marker='.', markersize=4)
 
-        plt.title(f"{display_name} (Pełny układ)", fontsize=14, pad=15)
-        plt.xlabel("Oś X", fontsize=12)
-        plt.ylabel("Wartość", fontsize=12)
-        plt.legend(title="ID Folderu", bbox_to_anchor=(1.05, 1), loc='upper left')
-        plt.grid(True, linestyle='--', alpha=0.7)
-        plt.tight_layout()
-        plt.savefig(os.path.join(output_folder, f"{safe_filename}.png"), dpi=150)
-        plt.close()
+        ax.set_title(f"{display_name} (Pełny układ)", fontsize=14, pad=15)
+        ax.set_xlabel("Oś X", fontsize=12)
+        ax.set_ylabel("Wartość", fontsize=12)
+        ax.legend(title="ID Folderu", bbox_to_anchor=(1.05, 1), loc='upper left')
+        ax.grid(True, linestyle='--', alpha=0.7)
+        fig.tight_layout()
+        fig.savefig(os.path.join(output_folder, f"{safe_filename}.png"), dpi=150)
 
-        # Rysowanie przybliżeń (Zoom)
+        fig.clf()
+        plt.close(fig)
+
         current_start_idx = 0
         total_points = len(plot_lines[0][1])
 
@@ -287,21 +292,25 @@ def plot_merged_statistics(data, output_folder, max_zooms=3):
             max_allowed_idx = int(total_points * 0.95)
             current_start_idx = min(current_start_idx, max_allowed_idx)
 
-            plt.figure(figsize=(12, 7))
+            fig, ax = plt.subplots(figsize=(12, 7))
             for folder_id, x, y in plot_lines:
-                plt.plot(x[current_start_idx:], y[current_start_idx:], label=folder_id, marker='.', markersize=4)
+                ax.plot(x[current_start_idx:], y[current_start_idx:], label=folder_id, marker='.', markersize=4)
 
-            plt.title(f"{display_name} (Zoom {zoom_level})", fontsize=14, pad=15)
-            plt.xlabel("Oś X", fontsize=12)
-            plt.ylabel("Wartość", fontsize=12)
-            plt.legend(title="ID Folderu", bbox_to_anchor=(1.05, 1), loc='upper left')
-            plt.grid(True, linestyle='--', alpha=0.7)
-            plt.tight_layout()
-            plt.savefig(os.path.join(output_folder, f"{safe_filename}_zoom_{zoom_level}.png"), dpi=150)
-            plt.close()
+            ax.set_title(f"{display_name} (Zoom {zoom_level})", fontsize=14, pad=15)
+            ax.set_xlabel("Oś X", fontsize=12)
+            ax.set_ylabel("Wartość", fontsize=12)
+            ax.legend(title="ID Folderu", bbox_to_anchor=(1.05, 1), loc='upper left')
+            ax.grid(True, linestyle='--', alpha=0.7)
+            fig.tight_layout()
+            fig.savefig(os.path.join(output_folder, f"{safe_filename}_zoom_{zoom_level}.png"), dpi=150)
+
+            fig.clf()
+            plt.close(fig)
 
             if current_start_idx >= max_allowed_idx:
                 break
+
+        gc.collect()
 
 
 def process_all_data(output_folder: str):
