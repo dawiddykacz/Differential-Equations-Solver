@@ -42,11 +42,10 @@ jobs:
 
             echo "▶ Stating Solver - HeatmapScript.py"
             mkdir -p plot
-            # || true sprawia, że nawet jak skrypt rzuci błędem, SSH pójdzie dalej
-            docker compose run --rm ai-solver python bin/HeatmapScript.py || true
+            #docker compose run --rm ai-solver python bin/HeatmapScript.py || true
 
             echo "▶ Stating Solver - Copy_Plots.py"
-            #docker compose run --rm ai-solver python bin/Copy_Plots.py || true
+            docker compose run --rm ai-solver python bin/Copy_Plots.py || true
           EOF
 
       - name: Run GetPlotsPaths.py (on GitHub Runner)
