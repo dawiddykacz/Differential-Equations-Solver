@@ -35,10 +35,13 @@ jobs:
             git fetch origin
             git checkout $BRANCH
             git reset --hard origin/$BRANCH
+          
+            echo "▶ Building output dirs"
+            mkdir -p plot
+            mkdir -p wysylka
 
             echo "▶ Building Docker image"
             docker compose build
-            mkdir -p plot
 
             echo "▶ Stating Solver - HeatmapScript.py"
             docker compose run --rm ai-solver python bin/HeatmapScript.py || true
@@ -50,7 +53,6 @@ jobs:
       - name: Copy Plots
         run: |
             echo "▶ Stating Solver - Copy_Plots.py"
-            mkdir -p wysylka
             PATHS_JSON=$(ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ~/Differential-Equations-Solver && docker compose run --quiet-pull --rm ai-solver python bin/Copy_Plots.py | grep '\['")
 
       - name: Run GetPlotsPaths.py (fetch directly from VPS)
