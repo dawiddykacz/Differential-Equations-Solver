@@ -5,8 +5,7 @@ on:
   schedule:
     - cron: '0 * * * *'
 
-jobs:
-  prepare-and-get-paths:
+prepare-and-get-paths:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.get-paths.outputs.matrix }}
@@ -14,11 +13,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.7.0
@@ -37,28 +31,21 @@ jobs:
             git reset --hard origin/$BRANCH
           
             echo "▶ Building output dirs"
-            mkdir -p plot
-            mkdir -p wysylka
+            mkdir -p plot wysylka
 
             echo "▶ Building Docker image"
             docker compose build
 
-            echo "▶ Stating Solver - HeatmapScript.py"
+            echo "▶ Starting Solver - HeatmapScript.py"
             docker compose run --rm ai-solver python bin/HeatmapScript.py || true
 
-            echo "▶ Stating Solver - Copy_Plots.py"
+            echo "▶ Starting Solver - Copy_Plots.py"
             docker compose run --rm ai-solver python bin/Copy_Plots.py || true
           EOF
-
-      - name: Copy Plots
-        run: |
-            echo "▶ Stating Solver - Copy_Plots.py"
-            PATHS_JSON=$(ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ~/Differential-Equations-Solver && docker compose run --quiet-pull --rm ai-solver python bin/Copy_Plots.py | grep '\['")
 
       - name: Run GetPlotsPaths.py (fetch directly from VPS)
         id: get-paths
         run: |
-          
           echo "▶ Running GetPlotsPaths on VPS and fetching result..."
           PATHS_JSON=$(ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ~/Differential-Equations-Solver && docker compose run --quiet-pull --rm ai-solver python bin/GetPlotsPaths.py | grep '\['")
           
