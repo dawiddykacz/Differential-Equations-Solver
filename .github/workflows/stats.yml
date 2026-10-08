@@ -48,10 +48,14 @@ jobs:
             docker compose run --rm ai-solver python bin/Copy_Plots.py || true
           EOF
 
-      - name: Run GetPlotsPaths.py (on GitHub Runner)
+      - name: Run GetPlotsPaths.py (fetch directly from VPS)
         id: get-paths
         run: |
-          PATHS_JSON=$(python bin/GetPlotsPaths.py)
+          # Łączymy się z VPS, przechodzimy do projektu i zlecamy uruchomienie skryptu przez środowisko dockera.
+          # Używamy jq, aby upewnić się, że śmieci z logów dockera nie popsują formatu JSON!
+          
+          echo "▶ Running GetPlotsPaths on VPS and fetching result..."
+          PATHS_JSON=$(ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ~/Differential-Equations-Solver && docker compose run --quiet-pull --rm ai-solver python bin/GetPlotsPaths.py | grep '\['")
           
           echo "Pobrane ścieżki: $PATHS_JSON"
           echo "matrix=$PATHS_JSON" >> $GITHUB_OUTPUT
