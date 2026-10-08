@@ -7,6 +7,11 @@ import yaml
 import math
 import matplotlib.pyplot as plt
 
+try:
+    from yaml import CSafeLoader as SafeLoader
+except ImportError:
+    from yaml import SafeLoader
+
 # Słowniki używane do mapowania
 MAPOWANIE = {
     "Convergence": "Funkcja straty vs l epok",
@@ -173,15 +178,16 @@ def rename_files_in_folder(folder_path: str):
 def load_save_data(folder_path: str):
     file_path = os.path.join(folder_path, 'save_data.yml')
     print(f"loading {file_path}")
+
     if not os.path.isfile(file_path):
         return None
+
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
-            return yaml.safe_load(file)
+            return yaml.load(file, Loader=SafeLoader)
     except Exception as e:
         print(f"Błąd pliku YAML ({file_path}): {e}")
         return None
-
 
 def dir_data(base_folder: str):
     items = os.listdir(base_folder)
