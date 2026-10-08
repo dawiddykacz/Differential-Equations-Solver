@@ -38,13 +38,13 @@ jobs:
 
             echo "▶ Building Docker image"
             docker compose build
+            mkdir -p plot
+            mkdir -p wysylka
 
             echo "▶ Stating Solver - HeatmapScript.py"
-            mkdir -p plot
             docker compose run --rm ai-solver python bin/HeatmapScript.py || true
 
             echo "▶ Stating Solver - Copy_Plots.py"
-            mkdir -p wysylka
             docker compose run --rm ai-solver python bin/Copy_Plots.py || true
           EOF
 
