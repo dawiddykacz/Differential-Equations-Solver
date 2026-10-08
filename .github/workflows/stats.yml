@@ -5,7 +5,8 @@ on:
   schedule:
     - cron: '0 * * * *'
 
-prepare-and-get-paths:
+jobs:
+  prepare-and-get-paths:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.get-paths.outputs.matrix }}
@@ -23,7 +24,7 @@ prepare-and-get-paths:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             cd ~/Differential-Equations-Solver
-
+          
             BRANCH="${{ github.ref_name }}"
             echo "▶ Deploying branch: $BRANCH"
             git fetch origin
@@ -32,13 +33,13 @@ prepare-and-get-paths:
           
             echo "▶ Building output dirs"
             mkdir -p plot wysylka
-
+          
             echo "▶ Building Docker image"
             docker compose build
-
+          
             echo "▶ Starting Solver - HeatmapScript.py"
             docker compose run --rm ai-solver python bin/HeatmapScript.py || true
-
+          
             echo "▶ Starting Solver - Copy_Plots.py"
             docker compose run --rm ai-solver python bin/Copy_Plots.py || true
           EOF
