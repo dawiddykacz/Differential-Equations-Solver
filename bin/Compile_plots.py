@@ -1,6 +1,7 @@
 import os
 import shutil
 import re
+import argparse
 
 import yaml
 import math
@@ -61,7 +62,7 @@ def get_name_mapped(name: str) -> str | None:
     else:
         if has_pde_1 and has_data_1:
             third_part = "a"
-        elif has_data_1:
+        elif has_pde_1:
             third_part = "b2"
         else:
             third_part = "b1"
@@ -73,16 +74,6 @@ def get_name_mapped(name: str) -> str | None:
         return None
 
     return f"{first_part}.{second_part}.{third_part}"
-
-
-def prepare_and_copy_folders(input_folder: str, output_folder: str):
-    """Krok 1 i 2: Usuwa docelowy folder i kopiuje zawartość wejściową"""
-    if os.path.exists(output_folder):
-        print(f"Usuwam stary folder docelowy: {output_folder}")
-        shutil.rmtree(output_folder)
-
-    print(f"Kopiuję {input_folder} -> {output_folder}")
-    shutil.copytree(input_folder, output_folder)
 
 
 def map_and_clean_folders(output_folder: str):
@@ -305,15 +296,7 @@ def plot_merged_statistics(data, output_folder, max_zooms=3):
                 break
 
 
-def cp_dir(input_folder: str, output_folder: str):
-    if not os.path.exists(input_folder):
-        print(f"BŁĄD: Zdefiniowany folder źródłowy '{input_folder}' nie istnieje.")
-        return
-
-    # Krok 1 i 2
-    prepare_and_copy_folders(input_folder, output_folder)
-
-def process_all_data( output_folder: str):
+def process_all_data(output_folder: str):
     # Krok 3
     print("\n--- Mapowanie i czyszczenie podfolderów ---")
     map_and_clean_folders(output_folder)
@@ -344,11 +327,11 @@ def process_all_data( output_folder: str):
             plot_merged_statistics(grouped_data, group_output_folder, max_zooms=20)
 
 
-# Uruchomienie skryptu
 if __name__ == "__main__":
-    FOLDER_ZRODLOWY = "dd"
-    FOLDER_DOCELOWY = "wysylka"
-    cp_dir(FOLDER_ZRODLOWY, FOLDER_DOCELOWY)
+    parser = argparse.ArgumentParser(description="Przetwarzanie danych z podanej ścieżki.")
+    parser.add_argument("data_path", type=str, help="Ścieżka do katalogu z danymi")
 
-    process_all_data("wysylka/1 test/basic 5k/bez szumów")
-    print("\nGotowe. Cały proces zakończony!")
+    args = parser.parse_args()
+
+    process_all_data(args.data_path)
+    print("\nGotowe!")

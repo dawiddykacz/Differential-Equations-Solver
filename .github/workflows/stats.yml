@@ -6,23 +6,25 @@ on:
     - cron: '0 * * * *'
 
 jobs:
-  deploy:
+  prepare-and-get-paths:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.get-paths.outputs.matrix }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-      - name: Deploy to VPS and Run HeatmapScript
+      - name: Deploy to VPS, Run Scripts and Get Paths
+        id: get-paths
         run: |
-         ssh -o StrictHostKeyChecking=no \
-          ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-
+          # 1. Łączymy się z VPS, budujemy obraz, puszczamy skrypty i zapisujemy JSON do pliku
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             set -e
             cd /home/python/Differential-Equations-Solver
 
@@ -32,11 +34,50 @@ jobs:
             git checkout $BRANCH
             git reset --hard origin/$BRANCH
 
-            echo "▶ Stating Solver - HeatmapScript.py"
-            mkdir -p plot
-          
+            echo "▶ Building Docker image"
             docker compose build
 
-            docker compose run --rm ai-solver python HeatmapScript.py
+            echo "▶ Stating Solver - HeatmapScript.py"
+            mkdir -p plot
+            docker compose run --rm ai-solver python bin/HeatmapScript.py
 
-         EOF
+            echo "▶ Stating Solver - Copy_Plots.py"
+            docker compose run --rm ai-solver python bin/Copy_Plots.py
+
+            echo "▶ Stating Solver - GetPlotsPaths.py"
+            # WYNIK ZAPISUJEMY DO PLIKU na VPS (aby logi dockera nie popsuły nam struktury JSON)
+            docker compose run --rm ai-solver python bin/GetPlotsPaths.py > paths_output.json
+          EOF
+
+          # 2. Pobieramy zawartość zapisanego pliku JSON z VPS
+          PATHS_JSON=$(ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cat /home/python/Differential-Equations-Solver/paths_output.json")
+          
+          echo "Pobrane ścieżki: $PATHS_JSON"
+          
+          # 3. Zapisujemy odczytany JSON jako GITHUB_OUTPUT, by macierz mogła go odczytać
+          echo "matrix=$PATHS_JSON" >> $GITHUB_OUTPUT
+
+  compile-plots:
+    needs: prepare-and-get-paths
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        path: ${{ fromJson(needs.prepare-and-get-paths.outputs.matrix) }}
+
+    steps:
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Run Compile_plots.py in parallel
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            set -e
+            cd /home/python/Differential-Equations-Solver
+            
+            echo "▶ Running Compile_plots.py for path: ${{ matrix.path }}"
+            # Przekazanie ścieżki z zachowaniem cudzysłowów (odporne na spacje)
+            docker compose run --rm ai-solver python bin/Compile_plots.py "${{ matrix.path }}"
+          EOF
