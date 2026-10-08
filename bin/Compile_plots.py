@@ -172,6 +172,7 @@ def rename_files_in_folder(folder_path: str):
 
 def load_save_data(folder_path: str):
     file_path = os.path.join(folder_path, 'save_data.yml')
+    print(f"loading {file_path}")
     if not os.path.isfile(file_path):
         return None
     try:
@@ -191,6 +192,7 @@ def dir_data(base_folder: str):
             d = load_save_data(path)
             if d is not None:
                 data[item] = d
+                print(f"Loaded {path}")
     return data
 
 
@@ -311,6 +313,7 @@ def process_all_data(output_folder: str):
     # Krok 5
     print("\n--- Tworzenie folderów zbiorczych z wykresami z .yaml ---")
     collected_data = dir_data(output_folder)
+    print("\nLoaded data")
     base_output_folder = os.path.join(output_folder, "wykresy_wynikowe")  # Folder wewnątrz "wysylki"
 
     # Tworzymy folder docelowy dla wykresów w środku `wysylka`
