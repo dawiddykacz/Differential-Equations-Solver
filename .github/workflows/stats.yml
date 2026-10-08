@@ -37,11 +37,13 @@ jobs:
               echo "▶ Building Docker image"
               docker compose build
             
-              echo "▶ Starting Solver - HeatmapScript.py"
-              docker compose run -T --rm ai-solver python -u bin/HeatmapScript.py || true
-            
-              echo "▶ Starting Solver - Copy_Plots.py"
-              docker compose run -T --rm ai-solver python -u bin/Copy_Plots.py || true
+              docker compose run -T --rm ai-solver bash -c "
+                echo '--- Running HeatmapScript.py ---'
+                python -u bin/HeatmapScript.py || true
+                
+                echo '--- Running Copy_Plots.py ---'
+                python -u bin/Copy_Plots.py || true
+              "
             EOF
 
       - name: Run GetPlotsPaths.py (fetch directly from VPS)
