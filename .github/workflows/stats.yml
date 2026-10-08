@@ -88,16 +88,14 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-      - name: Pobieranie folderów 'wysylka' i 'plot' z VPS
+      - name: Szybkie pobieranie folderów (Streaming TAR)
         run: |
           echo "▶ Tworzenie lokalnego katalogu na pobrane pliki..."
           mkdir -p ./wyniki
-
-          echo "▶ Pobieranie folderu 'wysylka' przez SCP..."
-          scp -o StrictHostKeyChecking=no -r ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/Differential-Equations-Solver/wysylka ./wyniki/
-
-          echo "▶ Pobieranie folderu 'plot' przez SCP..."
-          scp -o StrictHostKeyChecking=no -r ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/Differential-Equations-Solver/plot ./wyniki/
+          
+          echo "▶ Kompresja na VPS i jednoczesne pobieranie do GitHuba..."
+          # Serwer pakuje 'wysylka' i 'plot' do strumienia (-czf -), a GitHub od razu to rozpakowuje (| tar -xzf -)
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ~/Differential-Equations-Solver && tar -czf - wysylka plot 2>/dev/null || true" | tar -xzf - -C ./wyniki/
 
       - name: Publikacja folderów jako Artefakt na GitHub
         uses: actions/upload-artifact@v4
