@@ -19,14 +19,14 @@ jobs:
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
-
       - name: Deploy to VPS, Run Scripts and Get Paths
         id: get-paths
         run: |
-          # 1. Łączymy się z VPS, budujemy obraz, puszczamy skrypty i zapisujemy JSON do pliku
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             set -e
-            cd /home/python/Differential-Equations-Solver
+            
+            # Przechodzimy do folderu (używamy ~ by automatycznie trafić do /home/user)
+            cd ~/Differential-Equations-Solver
 
             BRANCH="${{ github.ref_name }}"
             echo "▶ Deploying branch: $BRANCH"
@@ -45,17 +45,17 @@ jobs:
             docker compose run --rm ai-solver python bin/Copy_Plots.py
 
             echo "▶ Stating Solver - GetPlotsPaths.py"
-            # WYNIK ZAPISUJEMY DO PLIKU na VPS (aby logi dockera nie popsuły nam struktury JSON)
+            # Ważne: to musi być wewnątrz bloku EOF!
             docker compose run --rm ai-solver python bin/GetPlotsPaths.py > paths_output.json
           EOF
 
-          # 2. Pobieramy zawartość zapisanego pliku JSON z VPS
-          PATHS_JSON=$(ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cat /home/python/Differential-Equations-Solver/paths_output.json")
+          echo "▶ Downloading paths_output.json from VPS"
+          # Odczytujemy plik z poziomu runnera Githuba, odnosząc się znowu przez ~
+          PATHS_JSON=$(ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cat ~/Differential-Equations-Solver/paths_output.json")
           
           echo "Pobrane ścieżki: $PATHS_JSON"
-          
-          # 3. Zapisujemy odczytany JSON jako GITHUB_OUTPUT, by macierz mogła go odczytać
           echo "matrix=$PATHS_JSON" >> $GITHUB_OUTPUT
+      
 
   compile-plots:
     needs: prepare-and-get-paths
