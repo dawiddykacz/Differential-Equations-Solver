@@ -2,34 +2,52 @@ import os
 import shutil
 
 
+def safe_copytree(src, dst):
+    """
+    Autorskie kopiowanie, które zmusza Pythona do ignorowania metadanych
+    katalogów i plików. Rozwiązuje problem 'Operation not permitted' w Dockerze.
+    """
+    # Tworzymy folder docelowy (ignorujemy błąd, jeśli już istnieje)
+    os.makedirs(dst, exist_ok=True)
+
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+
+        if os.path.isdir(s):
+            # Rekurencyjne kopiowanie dla podfolderów
+            safe_copytree(s, d)
+        else:
+            # Usuwamy stary plik, jeśli istnieje, aby go swobodnie nadpisać
+            try:
+                if os.path.exists(d):
+                    os.remove(d)
+            except Exception:
+                pass
+
+            # copyfile kopiuje TYLKO bitową zawartość pliku (żadnych uprawnień/metadanych)
+            try:
+                shutil.copyfile(s, d)
+            except Exception as e:
+                print(f"Nie udało się skopiować pliku {s}: {e}")
+
+
 def prepare_and_copy_folders(input_folder: str, output_folder: str):
-    # Konwersja na ścieżki absolutne
     abs_input = os.path.abspath(input_folder)
     abs_output = os.path.abspath(output_folder)
 
-    # Dodanie prefixu omijającego limit długości w Windows
     if os.name == 'nt':
         abs_input = "\\\\?\\" + abs_input
         abs_output = "\\\\?\\" + abs_output
 
-    """Krok 1: Próba usunięcia z wymuszeniem ignorowania zablokowanych plików"""
     if os.path.exists(abs_output):
         print(f"Próbuję usunąć stary folder docelowy: {abs_output}")
-        # ignore_errors=True sprawia, że skrypt nie przerwie się, jeśli Docker przytrzyma jakiś plik
+        # Próbujemy usunąć, ale jak się nie uda przez blokady Dockera, idziemy dalej
         shutil.rmtree(abs_output, ignore_errors=True)
 
-    """Krok 2: Kopiowanie z nadpisywaniem BEZ metadanych"""
     print(f"Kopiuję {abs_input} -> {abs_output}")
-
-    # KLUCZOWA ZMIANA: copy_function=shutil.copy
-    # Zmusza Pythona do kopiowania samej zawartości plików z pominięciem metadanych
-    # (których modyfikacja wywoływała błąd "Operation not permitted" w Dockerze).
-    shutil.copytree(
-        abs_input,
-        abs_output,
-        dirs_exist_ok=True,
-        copy_function=shutil.copy
-    )
+    # Używamy naszej kuloodpornej funkcji zamiast shutil.copytree
+    safe_copytree(abs_input, abs_output)
 
 
 def cp_dir(input_folder: str, output_folder: str):
