@@ -52,7 +52,6 @@ jobs:
             mkdir -p wysylka
             echo "▶ Stating Solver - Copy_Plots.py"
             docker compose run --rm ai-solver python bin/Copy_Plots.py || true
-          EOF
 
       - name: Run GetPlotsPaths.py (fetch directly from VPS)
         id: get-paths
