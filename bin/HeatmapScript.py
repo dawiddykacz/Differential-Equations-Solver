@@ -237,4 +237,4 @@ def list_path(path: str):
 
 
 if __name__ == "__main__":
-    list_path(path="../plot")
+    list_path(path="plot")

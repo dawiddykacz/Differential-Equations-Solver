@@ -34,6 +34,6 @@ def cp_dir(input_folder: str, output_folder: str):
 
 
 if __name__ == "__main__":
-    FOLDER_ZRODLOWY = "../plot"
-    FOLDER_DOCELOWY = "../wysylka"
+    FOLDER_ZRODLOWY = "plot"
+    FOLDER_DOCELOWY = "wysylka"
     cp_dir(FOLDER_ZRODLOWY, FOLDER_DOCELOWY)
