@@ -82,5 +82,5 @@ jobs:
             cd ~/Differential-Equations-Solver
             
             echo "▶ Running Compile_plots.py for path: ${{ matrix.path }}"
-            docker compose run --rm ai-solver python bin/Compile_plots.py "${{ matrix.path }}"
+            docker compose run -T --rm ai-solver python -u bin/Compile_plots.py "${{ matrix.path }}"
           EOF
