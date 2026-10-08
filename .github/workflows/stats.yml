@@ -28,7 +28,6 @@ jobs:
       - name: Deploy to VPS and Run Scripts
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-            # UWAGA: Usunięto set -e, aby błędy zamykania Dockera nie urywały połączenia SSH
             cd ~/Differential-Equations-Solver
 
             BRANCH="${{ github.ref_name }}"
@@ -42,7 +41,7 @@ jobs:
 
             echo "▶ Stating Solver - HeatmapScript.py"
             mkdir -p plot
-            #docker compose run --rm ai-solver python bin/HeatmapScript.py || true
+            docker compose run --rm ai-solver python bin/HeatmapScript.py || true
 
             echo "▶ Stating Solver - Copy_Plots.py"
             mkdir -p wysylka
@@ -52,8 +51,6 @@ jobs:
       - name: Run GetPlotsPaths.py (fetch directly from VPS)
         id: get-paths
         run: |
-          # Łączymy się z VPS, przechodzimy do projektu i zlecamy uruchomienie skryptu przez środowisko dockera.
-          # Używamy jq, aby upewnić się, że śmieci z logów dockera nie popsują formatu JSON!
           
           echo "▶ Running GetPlotsPaths on VPS and fetching result..."
           PATHS_JSON=$(ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ~/Differential-Equations-Solver && docker compose run --quiet-pull --rm ai-solver python bin/GetPlotsPaths.py | grep '\['")
