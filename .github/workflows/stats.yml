@@ -78,3 +78,30 @@ jobs:
             echo "▶ Running Compile_plots.py for path: ${{ matrix.path }}"
             docker compose run -T --rm ai-solver python -u bin/Compile_plots.py "${{ matrix.path }}"
           EOF
+    download-and-save-artifact:
+      needs: compile-plots
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Setup SSH
+          uses: webfactory/ssh-agent@v0.7.0
+          with:
+            ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+        - name: Pobieranie folderów 'wysylka' i 'plot' z VPS
+          run: |
+            echo "▶ Tworzenie lokalnego katalogu na pobrane pliki..."
+            mkdir -p ./wyniki
+
+            echo "▶ Pobieranie folderu 'wysylka' przez SCP..."
+            scp -o StrictHostKeyChecking=no -r ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/Differential-Equations-Solver/wysylka ./wyniki/
+
+            echo "▶ Pobieranie folderu 'plot' przez SCP..."
+            scp -o StrictHostKeyChecking=no -r ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/Differential-Equations-Solver/plot ./wyniki/
+
+        - name: Publikacja folderów jako Artefakt na GitHub
+          uses: actions/upload-artifact@v4
+          with:
+            name: Wykresy-Pelne
+            path: ./wyniki/
+            retention-days: 7
