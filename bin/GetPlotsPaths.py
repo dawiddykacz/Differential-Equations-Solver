@@ -14,7 +14,7 @@ def get_target_directories(base_path: str):
 
 
 if __name__ == "__main__":
-    FOLDER_BAZOWY = "wysylka"
+    FOLDER_BAZOWY = "../wysylka"
 
     sciezki = get_target_directories(FOLDER_BAZOWY)
 

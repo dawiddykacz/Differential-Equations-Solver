@@ -15,7 +15,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Dodano konfigurację Pythona na GH Runnerze dla GetPlotsPaths.py
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -47,14 +46,12 @@ jobs:
             docker compose run --rm ai-solver python bin/HeatmapScript.py || true
 
             echo "▶ Stating Solver - Copy_Plots.py"
-            docker compose run --rm ai-solver python bin/Copy_Plots.py || true
+            #docker compose run --rm ai-solver python bin/Copy_Plots.py || true
           EOF
 
       - name: Run GetPlotsPaths.py (on GitHub Runner)
         id: get-paths
         run: |
-          # 1. Odpalenie skryptu i zapisanie wyniku prosto do zmiennej. 
-          # Moduły os, glob, json to biblioteki standardowe, więc zadziała bez pip install
           PATHS_JSON=$(python bin/GetPlotsPaths.py)
           
           echo "Pobrane ścieżki: $PATHS_JSON"
