@@ -23,26 +23,26 @@ jobs:
       - name: Deploy to VPS and Run Scripts
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-            cd ~/Differential-Equations-Solver
-          
-            BRANCH="${{ github.ref_name }}"
-            echo "▶ Deploying branch: $BRANCH"
-            git fetch origin
-            git checkout $BRANCH
-            git reset --hard origin/$BRANCH
-          
-            echo "▶ Building output dirs"
-            mkdir -p plot wysylka
-          
-            echo "▶ Building Docker image"
-            docker compose build
-          
-            echo "▶ Starting Solver - HeatmapScript.py"
-            docker compose run --rm ai-solver python bin/HeatmapScript.py || true
-          
-            echo "▶ Starting Solver - Copy_Plots.py"
-            docker compose run --rm ai-solver python bin/Copy_Plots.py || true
-          EOF
+              cd ~/Differential-Equations-Solver
+            
+              BRANCH="${{ github.ref_name }}"
+              echo "▶ Deploying branch: $BRANCH"
+              git fetch origin
+              git checkout $BRANCH
+              git reset --hard origin/$BRANCH
+            
+              echo "▶ Building output dirs"
+              mkdir -p plot wysylka
+            
+              echo "▶ Building Docker image"
+              docker compose build
+            
+              echo "▶ Starting Solver - HeatmapScript.py"
+              docker compose run -T --rm ai-solver python -u bin/HeatmapScript.py || true
+            
+              echo "▶ Starting Solver - Copy_Plots.py"
+              docker compose run -T --rm ai-solver python -u bin/Copy_Plots.py || true
+            EOF
 
       - name: Run GetPlotsPaths.py (fetch directly from VPS)
         id: get-paths
