@@ -1,30 +1,35 @@
 import os
 import shutil
-import stat
-
-
-def on_rm_error(func, path, exc_info):
-    try:
-        os.chmod(path, stat.S_IWRITE)
-        func(path)
-    except Exception:
-        pass
 
 
 def prepare_and_copy_folders(input_folder: str, output_folder: str):
+    # Konwersja na ścieżki absolutne
     abs_input = os.path.abspath(input_folder)
     abs_output = os.path.abspath(output_folder)
 
+    # Dodanie prefixu omijającego limit długości w Windows
     if os.name == 'nt':
         abs_input = "\\\\?\\" + abs_input
         abs_output = "\\\\?\\" + abs_output
 
+    """Krok 1: Próba usunięcia z wymuszeniem ignorowania zablokowanych plików"""
     if os.path.exists(abs_output):
         print(f"Próbuję usunąć stary folder docelowy: {abs_output}")
-        shutil.rmtree(abs_output, onerror=on_rm_error)
+        # ignore_errors=True sprawia, że skrypt nie przerwie się, jeśli Docker przytrzyma jakiś plik
+        shutil.rmtree(abs_output, ignore_errors=True)
 
+    """Krok 2: Kopiowanie z nadpisywaniem BEZ metadanych"""
     print(f"Kopiuję {abs_input} -> {abs_output}")
-    shutil.copytree(abs_input, abs_output, dirs_exist_ok=True)
+
+    # KLUCZOWA ZMIANA: copy_function=shutil.copy
+    # Zmusza Pythona do kopiowania samej zawartości plików z pominięciem metadanych
+    # (których modyfikacja wywoływała błąd "Operation not permitted" w Dockerze).
+    shutil.copytree(
+        abs_input,
+        abs_output,
+        dirs_exist_ok=True,
+        copy_function=shutil.copy
+    )
 
 
 def cp_dir(input_folder: str, output_folder: str):
