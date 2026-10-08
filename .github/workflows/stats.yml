@@ -6,37 +6,75 @@ on:
     - cron: '0 * * * *'
 
 jobs:
-  deploy:
+  prepare-and-get-paths:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.get-paths.outputs.matrix }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-      - name: Deploy to VPS and Run HeatmapScript
+      - name: Deploy to VPS and Run Scripts
         run: |
-         ssh -o StrictHostKeyChecking=no \
-          ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+              cd ~/Differential-Equations-Solver
+            
+              BRANCH="${{ github.ref_name }}"
+              echo "▶ Deploying branch: $BRANCH"
+              git fetch origin
+              git checkout $BRANCH
+              git reset --hard origin/$BRANCH
+            
+              echo "▶ Building output dirs"
+              mkdir -p plot wysylka
+            
+              echo "▶ Building Docker image"
+              docker compose build
+            
+              docker compose run -T --rm ai-solver bash -c "
+                echo '--- Running HeatmapScript.py ---'
+                python -u bin/HeatmapScript.py || true
+                
+                echo '--- Running Copy_Plots.py ---'
+                python -u bin/Copy_Plots.py || true
+              "
+            EOF
 
-            set -e
-            cd /home/python/Differential-Equations-Solver
-
-            BRANCH="${{ github.ref_name }}"
-            echo "▶ Deploying branch: $BRANCH"
-            git fetch origin
-            git checkout $BRANCH
-            git reset --hard origin/$BRANCH
-
-            echo "▶ Stating Solver - HeatmapScript.py"
-            mkdir -p plot
+      - name: Run GetPlotsPaths.py (fetch directly from VPS)
+        id: get-paths
+        run: |
+          echo "▶ Running GetPlotsPaths on VPS and fetching result..."
+          PATHS_JSON=$(ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ~/Differential-Equations-Solver && docker compose run --quiet-pull --rm ai-solver python bin/GetPlotsPaths.py | grep '\['")
           
-            docker compose build
+          echo "Pobrane ścieżki: $PATHS_JSON"
+          echo "matrix=$PATHS_JSON" >> $GITHUB_OUTPUT
 
-            docker compose run --rm ai-solver python HeatmapScript.py
+  compile-plots:
+    needs: prepare-and-get-paths
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        path: ${{ fromJson(needs.prepare-and-get-paths.outputs.matrix) }}
 
-         EOF
+    steps:
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Run Compile_plots.py in parallel
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            cd ~/Differential-Equations-Solver
+            
+            echo "▶ Running Compile_plots.py for path: ${{ matrix.path }}"
+            docker compose run -T --rm ai-solver python -u bin/Compile_plots.py "${{ matrix.path }}"
+          EOF

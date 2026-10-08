@@ -1,6 +1,6 @@
 import unittest
 
-from HeatmapScript import parse_name
+from bin.HeatmapScript import parse_name
 
 
 class EquationsTest(unittest.TestCase):

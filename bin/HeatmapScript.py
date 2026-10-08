@@ -1,4 +1,5 @@
 import re
+import gc
 from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -88,7 +89,8 @@ def parse(text: str, folder_path: Path):
         with open(data_file, "r", encoding="utf-8") as file:
             data = yaml.safe_load(file)
             if isinstance(data, dict):
-                d.update(data)
+                filtered_data = {k: data[k] for k in metric_keys if k in data}
+                d.update(filtered_data)
 
     return d
 
@@ -127,13 +129,14 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
 
         heatmap_matrix = heatmap_matrix.sort_index(ascending=False)
 
-        plt.figure(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=(10, 6))
         sns.heatmap(
             heatmap_matrix,
             annot=True,
             fmt=".4g",
             cmap="viridis",
             cbar_kws={"label": value_key},
+            ax=ax
         )
 
         plt.title(f"{name}\nMetric: {value_key}")
@@ -143,7 +146,9 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
         plt.tight_layout()
 
         plt.savefig(file, dpi=300)
-        plt.close()
+        fig.clf()
+        plt.close(fig)
+        plt.close('all')
 
 
 def list_path(path: str):
@@ -230,10 +235,15 @@ def list_path(path: str):
         g.fig.suptitle(f"Zbiorczy Box Plot: {metric}", y=1.03, fontsize=16)
 
         out_file = boxplot_folder / f"global_boxplot_{metric}.png"
-        plt.savefig(out_file, dpi=300, bbox_inches="tight")
-        plt.close()
+        g.fig.savefig(out_file, dpi=300, bbox_inches="tight")
+
+        g.fig.clf()
+        plt.close(g.fig)
+        plt.close('all')
 
         print(f"Zapisano wykres -> {out_file}")
+    del df_all
+    gc.collect()
 
 
 if __name__ == "__main__":
