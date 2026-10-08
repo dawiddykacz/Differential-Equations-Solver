@@ -49,9 +49,9 @@ jobs:
 
       - name: Copy Plots
         run: |
-            mkdir -p wysylka
             echo "▶ Stating Solver - Copy_Plots.py"
-            docker compose run --rm ai-solver python bin/Copy_Plots.py || true
+            mkdir -p wysylka
+            PATHS_JSON=$(ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ~/Differential-Equations-Solver && docker compose run --quiet-pull --rm ai-solver python bin/Copy_Plots.py | grep '\['")
 
       - name: Run GetPlotsPaths.py (fetch directly from VPS)
         id: get-paths
