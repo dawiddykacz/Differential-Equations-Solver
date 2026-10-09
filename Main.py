@@ -17,7 +17,7 @@ def configure_solver():
     model_configuration = ModelConfiguration()
     wang_params = WangParams(hidden_dim=50, activation_function='tanh')
     model_configuration.configure(model_with_optimization=None,
-                                  wang_configuration=wang_params,
+                                  wang_configuration=None,
                                   dense_list=[
                                       tensorflow.keras.layers.Dense(units=50, activation='tanh', dtype='float64'),
                                       tensorflow.keras.layers.Dense(units=50, activation='tanh', dtype='float64'),
@@ -110,23 +110,47 @@ def run_all(learning_rate: float):
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
+
     d_min = 0.0001
     range_weight = 10 ** 4
-    for with_noise in [True]:
-        for weight in [1]:
-            for alpha in [0.9]:
-                task_repository.add_task(
-                    ExampleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
-                                                                weight_pde=1,
-                                                                weight_conditions=weight,
-                                                                weight_data=weight, with_noise=with_noise))
-                task_repository.add_task(
-                    ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
-                                                                      weight_pde=1,
-                                                                      weight_data=weight,
-                                                                      with_noise=with_noise))
+    for with_noise in [False, True]:
+        task_repository.add_task(ExampleFirst2ProblemLossTask(weight_data=1,
+                                                              weight_pde=d_min,
+                                                              weight_conditions=1,
+                                                              with_noise=with_noise))
+        task_repository.add_task(ExampleSimpleFirst2ProblemLossTask(weight_pde=d_min,
+                                                                    weight_data=1,
+                                                                    with_noise=with_noise))
+        task_repository.add_task(ExampleSecond2ProblemLossTask(weight_data=1,
+                                                               weight_pde=d_min,
+                                                               weight_conditions=1,
+                                                               with_noise=with_noise))
+        task_repository.add_task(ExampleSimpleSecond2ProblemLossTask(weight_pde=d_min,
+                                                                     weight_data=1,
+                                                                     with_noise=with_noise))
 
-        for weight in [range_weight]:
+        task_repository.add_task(
+            ExampleFirst2ProblemLossWithWeightTask(alpha=0.9,
+                                                   weight_pde=d_min,
+                                                   weight_conditions=1,
+                                                   weight_data=1, with_noise=with_noise))
+        task_repository.add_task(
+            ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=0.9,
+                                                         weight_pde=d_min,
+                                                         weight_data=1,
+                                                         with_noise=with_noise))
+        task_repository.add_task(
+            ExampleSecond2ProblemLossTaskWithWeightTask(alpha=0.9,
+                                                        weight_pde=d_min,
+                                                        weight_conditions=1,
+                                                        weight_data=1, with_noise=with_noise))
+        task_repository.add_task(
+            ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=0.9,
+                                                              weight_pde=d_min,
+                                                              weight_data=1,
+                                                              with_noise=with_noise))
+
+        for weight in [1, range_weight]:
             task_repository.add_task(ExampleFirst2ProblemLossTask(weight_data=weight,
                                                                   weight_pde=1,
                                                                   weight_conditions=weight,

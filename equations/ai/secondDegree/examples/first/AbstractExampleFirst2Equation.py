@@ -30,12 +30,12 @@ class Loss(LossFunction):
         self.__t = t
 
         if with_noise:
-            w = [-0.082, 0.016, 0.048, -0.066, 0.042]
+            w = [-0.082, 0.048, 0.042]
         else:
-            w = [0.0, 0.0, 0.0, 0.0, 0.0]
+            w = [0.0, 0.0, 0.0]
         self.__w = tensorflow.constant(w, dtype=tensorflow.float64)
 
-        self.__points = tensorflow.constant([-1.0, -0.5, 1.0, 0.5, 0.1], dtype=tensorflow.float64)
+        self.__points = tensorflow.constant([-1.0, 1.0, 0.1], dtype=tensorflow.float64)
 
     def _left_side_of_the_equation(self, function, *x):
         with tensorflow.GradientTape(persistent=True) as g:
