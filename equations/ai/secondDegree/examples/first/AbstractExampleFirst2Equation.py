@@ -64,7 +64,7 @@ class Loss(LossFunction):
         base_x = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
 
         results = []
-        for i in range(5):
+        for i in range(len(self.__points)):
             point_val = self.__points[i] * base_x
             noise_val = self.__w[i]
 
