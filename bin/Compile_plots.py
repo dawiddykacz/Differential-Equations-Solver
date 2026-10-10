@@ -2,6 +2,7 @@ import os
 import shutil
 import re
 import argparse
+import itertools
 
 import yaml
 import numpy as np
@@ -243,6 +244,26 @@ def plot_merged_statistics(data, output_folder, max_zooms=3):
     for stats in data.values():
         all_statistics.update(stats.keys())
 
+    # --- NOWE: Generowanie stałych stylów dla każdego ID folderu ---
+    folder_ids = list(data.keys())
+
+    # Tworzymy szeroką paletę 40 kolorów łącząc dwie z matplotlib
+    cmap1 = plt.get_cmap('tab20')
+    cmap2 = plt.get_cmap('tab20b')
+    colors = [cmap1(i % 20) for i in range(20)] + [cmap2(i % 20) for i in range(20)]
+
+    linestyles = itertools.cycle(['-', '--', '-.', ':'])
+    markers = itertools.cycle(['o', 's', '^', 'D', 'x', 'v', 'p', '*'])
+
+    style_mapping = {}
+    for i, fid in enumerate(folder_ids):
+        style_mapping[fid] = {
+            'color': colors[i % len(colors)],
+            'linestyle': next(linestyles),
+            'marker': next(markers)
+        }
+    # ---------------------------------------------------------------
+
     for stat_name in all_statistics:
         plot_lines = []
         for folder_id, stats in data.items():
@@ -261,9 +282,14 @@ def plot_merged_statistics(data, output_folder, max_zooms=3):
 
         safe_filename = display_name.replace("/", "_").replace("\\", "_").replace(" ", "_")
 
+        # --- WYKRES PEŁNY ---
         fig, ax = plt.subplots(figsize=(12, 7))
         for folder_id, x, y in plot_lines:
-            ax.plot(x, y, label=folder_id, marker='.', markersize=4)
+            sty = style_mapping[folder_id]
+            # markevery rozrzedza znaczniki, żeby nie zamazały linii (np. 1 znacznik na 50 punktów)
+            step = max(1, len(x) // 50)
+            ax.plot(x, y, label=folder_id, color=sty['color'], linestyle=sty['linestyle'],
+                    marker=sty['marker'], markersize=5, markevery=step, linewidth=1.5)
 
         ax.set_title(f"{display_name} (Pełny układ)", fontsize=14, pad=15)
         ax.set_xlabel("Oś X", fontsize=12)
@@ -279,6 +305,7 @@ def plot_merged_statistics(data, output_folder, max_zooms=3):
         current_start_idx = 0
         total_points = len(plot_lines[0][1])
 
+        # --- WYKRESY ZOOM ---
         for zoom_level in range(1, max_zooms + 1):
             elbow_indices = []
             for folder_id, x, y in plot_lines:
@@ -295,7 +322,14 @@ def plot_merged_statistics(data, output_folder, max_zooms=3):
 
             fig, ax = plt.subplots(figsize=(12, 7))
             for folder_id, x, y in plot_lines:
-                ax.plot(x[current_start_idx:], y[current_start_idx:], label=folder_id, marker='.', markersize=4)
+                x_zoom = x[current_start_idx:]
+                y_zoom = y[current_start_idx:]
+                sty = style_mapping[folder_id]
+                step = max(1, len(x_zoom) // 50)
+
+                ax.plot(x_zoom, y_zoom, label=folder_id, color=sty['color'],
+                        linestyle=sty['linestyle'], marker=sty['marker'],
+                        markersize=5, markevery=step, linewidth=1.5)
 
             ax.set_title(f"{display_name} (Zoom {zoom_level})", fontsize=14, pad=15)
             ax.set_xlabel("Oś X", fontsize=12)
