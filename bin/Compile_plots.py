@@ -43,6 +43,7 @@ PLOT_GROUPS = {
     "2 przyklad Podejscie_1": ["2.1.a", "2.1.b1", "2.1.b2", "2.1.c", "2.1.d1", "2.1.d2"],
     "2 przyklad Podejscie_2": ["2.2.a", "2.2.b1", "2.2.b2", "2.2.c", "2.2.d1", "2.2.d2"],
 }
+PLOT_GROUPS["Wszystkie podejścia"] = [item for sublist in PLOT_GROUPS.values() for item in sublist]
 
 
 def get_name_mapped(name: str) -> str | None:
