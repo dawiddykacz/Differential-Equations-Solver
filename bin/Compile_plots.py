@@ -313,6 +313,97 @@ def plot_merged_statistics(data, output_folder, max_zooms=3):
         gc.collect()
 
 
+def plot_subplots_for_all_groups(data, groups, output_folder, max_zooms=3):
+    if not data:
+        return
+
+    os.makedirs(output_folder, exist_ok=True)
+    all_statistics = set()
+    for stats in data.values():
+        all_statistics.update(stats.keys())
+
+    group_names = list(groups.keys())
+    n_groups = len(group_names)
+
+    # Wyliczamy układ siatki (np. 2 kolumny)
+    cols = 2
+    rows = (n_groups + cols - 1) // cols
+
+    for stat_name in all_statistics:
+        display_name = get_mapped_stat_name(stat_name)
+        if display_name is None:
+            continue
+
+        safe_filename = display_name.replace("/", "_").replace("\\", "_").replace(" ", "_")
+
+        # Pobieramy wszystkie linie, by policzyć total_points do zoomów
+        all_lines = []
+        for folder_id, stats in data.items():
+            if stat_name in stats and "x" in stats[stat_name] and "y" in stats[stat_name]:
+                all_lines.append(stats[stat_name]["y"])
+
+        if not all_lines:
+            continue
+
+        total_points = len(all_lines[0])
+        current_start_idx = 0
+
+        # Pętla generująca główny wykres (zoom 0) oraz kolejne zoomy
+        for zoom_level in range(max_zooms + 1):
+            fig, axes = plt.subplots(rows, cols, figsize=(14, 5 * rows))
+            # Spłaszczenie tablicy osi dla łatwiejszego iterowania
+            axes = axes.flatten() if n_groups > 1 else [axes]
+
+            tytul_glowny = f"{display_name}" + (" (Pełny układ)" if zoom_level == 0 else f" (Zoom {zoom_level})")
+            fig.suptitle(tytul_glowny, fontsize=16, y=1.02)
+
+            for idx, group_name in enumerate(group_names):
+                ax = axes[idx]
+                allowed_ids = groups[group_name]
+
+                plotted_anything = False
+                for folder_id in allowed_ids:
+                    if folder_id in data and stat_name in data[folder_id]:
+                        x = data[folder_id][stat_name].get("x", [])
+                        y = data[folder_id][stat_name].get("y", [])
+                        if x and y:
+                            ax.plot(x[current_start_idx:], y[current_start_idx:], label=folder_id, marker='.',
+                                    markersize=4)
+                            plotted_anything = True
+
+                ax.set_title(group_name, fontsize=12)
+                ax.set_xlabel("Oś X")
+                ax.set_ylabel("Wartość")
+                ax.grid(True, linestyle='--', alpha=0.7)
+                if plotted_anything:
+                    ax.legend(fontsize=9, loc='best')
+
+            # Ukrywamy puste podwykresy (jeśli liczba grup jest nieparzysta)
+            for idx in range(n_groups, len(axes)):
+                axes[idx].set_visible(False)
+
+            fig.tight_layout()
+            nazwa_pliku = f"{safe_filename}.png" if zoom_level == 0 else f"{safe_filename}_zoom_{zoom_level}.png"
+            fig.savefig(os.path.join(output_folder, nazwa_pliku), dpi=150, bbox_inches='tight')
+            plt.close(fig)
+
+            # Obliczanie indeksu dla kolejnego zooma
+            elbow_indices = [find_elbow_index(y[current_start_idx:]) for y in all_lines]
+            if not elbow_indices:
+                break
+            avg_elbow_step = int(sum(elbow_indices) / len(elbow_indices))
+            if avg_elbow_step <= 0:
+                break
+
+            current_start_idx += avg_elbow_step
+            max_allowed_idx = int(total_points * 0.95)
+            current_start_idx = min(current_start_idx, max_allowed_idx)
+
+            if current_start_idx >= max_allowed_idx:
+                break
+
+        gc.collect()
+
 def process_all_data(output_folder: str):
     # Krok 3
     print("\n--- Mapowanie i czyszczenie podfolderów ---")
@@ -343,6 +434,12 @@ def process_all_data(output_folder: str):
             print(f"Generuję wykresy dla grupy: {group_name} ...")
             group_output_folder = os.path.join(base_output_folder, group_name)
             plot_merged_statistics(grouped_data, group_output_folder, max_zooms=20)
+
+    if collected_data:
+        print("Generuję wykresy siatkowe (zbiorcze podział na grupy) ...")
+        grid_output_folder = os.path.join(base_output_folder, "Wszystkie_podejscia_Siatka")
+        # Przekazujemy wszystkie dane, słownik PLOT_GROUPS i docelowy folder
+        plot_subplots_for_all_groups(collected_data, PLOT_GROUPS, grid_output_folder, max_zooms=20)
 
 
 if __name__ == "__main__":
