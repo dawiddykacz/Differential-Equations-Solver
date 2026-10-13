@@ -1,5 +1,6 @@
 import re
 import gc
+import math
 from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -106,12 +107,28 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
         return
 
     unique_names = df["name"].dropna().unique()
+    n_plots = len(unique_names)
 
+    if n_plots == 0:
+        return
+
+    # Ustalanie rozmiaru siatki (np. maksymalnie 3 kolumny)
+    cols = min(3, n_plots)
+    rows = math.ceil(n_plots / cols)
+
+    fig, axes = plt.subplots(rows, cols, figsize=(7 * cols, 6 * rows))
+
+    # Upewniamy się, że axes to zawsze spłaszczona lista/tablica do iteracji
+    if n_plots == 1:
+        axes = [axes]
+    elif isinstance(axes, (list, tuple)) or axes.ndim > 1:
+        axes = axes.flatten()
+
+    file = get_heatmap_dir(path) / f"heatmap_{value_key}.png"
+    print(f"Zapisywanie zbiorczej heatmapy: {file}")
+
+    plot_idx = 0
     for name in unique_names:
-        safe_name = re.sub(r'[\\/*?:"<>| ]', "_", name)
-        file = get_heatmap_dir(path) / f"{safe_name}_{value_key}.png"
-        print(f"Zapisywanie heatmapy: {file}")
-
         subset = df[df["name"] == name].copy()
 
         if subset.empty:
@@ -129,7 +146,7 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
 
         heatmap_matrix = heatmap_matrix.sort_index(ascending=False)
 
-        fig, ax = plt.subplots(figsize=(10, 6))
+        ax = axes[plot_idx]
         sns.heatmap(
             heatmap_matrix,
             annot=True,
@@ -139,16 +156,23 @@ def plot_heatmaps(df: pd.DataFrame, path: Path, value_key: str = "last_mean_squa
             ax=ax
         )
 
-        plt.title(f"{name}\nMetric: {value_key}")
+        ax.set_title(f"{name}")
+        ax.set_xlabel("Weights Configuration")
+        ax.set_ylabel("Dynamic weight (Wang)")
 
-        plt.xlabel("Weights Configuration")
-        plt.ylabel("Dynamic weight (Wang)")
-        plt.tight_layout()
+        plot_idx += 1
 
-        plt.savefig(file, dpi=300)
-        fig.clf()
-        plt.close(fig)
-        plt.close('all')
+    # Usuwanie pustych osi (subplotów), jeśli siatka jest większa niż liczba wykresów
+    for i in range(plot_idx, len(axes)):
+        fig.delaxes(axes[i])
+
+    plt.suptitle(f"Metric: {value_key}", fontsize=18, y=1.02)
+    plt.tight_layout()
+
+    plt.savefig(file, dpi=300, bbox_inches="tight")
+    fig.clf()
+    plt.close(fig)
+    plt.close('all')
 
 
 def list_path(path: str):
