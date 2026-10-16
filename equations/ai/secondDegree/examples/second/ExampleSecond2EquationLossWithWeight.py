@@ -68,8 +68,8 @@ class LossSimple(Loss):
         return self.weight_conditions * self.__non_trainable_variables.get_variables()[0]
 
     def assign_weights(self, data):
-        self.__non_trainable_variables.get_variables()[0] = tensorflow.constant(data[0], dtype=tensorflow.float64)
-        self.__non_trainable_variables.get_variables()[1] = tensorflow.constant(data[1], dtype=tensorflow.float64)
+        self.__non_trainable_variables.get_variables()[0].assign(tensorflow.constant(data[0], dtype=tensorflow.float64))
+        self.__non_trainable_variables.get_variables()[1].assign(tensorflow.constant(data[1], dtype=tensorflow.float64))
 
     def recalculate_weights(self, grads_dict, loss_error):
         max_grad_pde = grads_dict['grad_pde_max']
@@ -79,12 +79,12 @@ class LossSimple(Loss):
         if not tensorflow.equal(mean_grad_data, 0):
             w = max_grad_pde / mean_grad_data
 
-            self.__non_trainable_variables.get_variables()[1] = ((1 - self.__alpha) *
-                                                                 self.__non_trainable_variables.get_variables()[1]
-                                                                 + self.__alpha * w)
+            self.__non_trainable_variables.get_variables()[1].assign((1 - self.__alpha) *
+                                                                     self.__non_trainable_variables.get_variables()[1]
+                                                                     + self.__alpha * w)
         if not tensorflow.equal(mean_grad_bc, 0):
             w2 = max_grad_pde / mean_grad_bc
 
-            self.__non_trainable_variables.get_variables()[0] = ((1 - self.__alpha) *
-                                                                 self.__non_trainable_variables.get_variables()[0]
-                                                                 + self.__alpha * w2)
+            self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
+                                                                     self.__non_trainable_variables.get_variables()[0]
+                                                                     + self.__alpha * w2)
