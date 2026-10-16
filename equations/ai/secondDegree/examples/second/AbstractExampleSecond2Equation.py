@@ -58,7 +58,6 @@ class Loss(LossFunction):
         self._bc_x = tensorflow.constant(grid_x.reshape(-1, 1), dtype=tensorflow.float64)
         self._bc_y = tensorflow.constant(grid_y.reshape(-1, 1), dtype=tensorflow.float64)
 
-    @tensorflow.function
     def _left_side_of_the_equation(self, function, *x):
         x_var = x[0]
         y_var = x[1]
@@ -88,14 +87,12 @@ class Loss(LossFunction):
 
         return a * (differential_x2 + differential_y2) / (pi ** 2)
 
-    @tensorflow.function
     def _right_side_of_the_equation(self, function, *x):
         y = x[1]
         x = x[0]
 
         return -tensorflow.sin(pi * x) * tensorflow.cos(pi * y)
 
-    @tensorflow.function
     def _condition_data(self, function, *x):
         predictions = function(self._bc_x, self._bc_y)
 
