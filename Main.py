@@ -190,4 +190,3 @@ def run_all(learning_rate: float):
 if __name__ == '__main__':
     configure_solver()
     run_all(10 ** -3)
-
