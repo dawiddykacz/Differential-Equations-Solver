@@ -41,7 +41,7 @@ class LossSimple(Loss):
         return self.weight_data * self.__non_trainable_variables.get_variables()[0]
 
     def assign_weights(self, data):
-        self.__non_trainable_variables.get_variables()[0] = tensorflow.constant(data[0], dtype=tensorflow.float64)
+        self.__non_trainable_variables.get_variables()[0].assign(tensorflow.constant(data[0], dtype=tensorflow.float64))
 
     def _pde_weight(self):
         return self.weight_pde
@@ -53,6 +53,6 @@ class LossSimple(Loss):
         if not tensorflow.equal(mean_grad_data, 0):
             w2 = max_grad_pde / mean_grad_data
 
-            self.__non_trainable_variables.get_variables()[0] = ((1 - self.__alpha) *
-                                                                 self.__non_trainable_variables.get_variables()[0]
-                                                                 + self.__alpha * w2)
+            self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
+                                                                     self.__non_trainable_variables.get_variables()[0]
+                                                                     + self.__alpha * w2)
