@@ -14,7 +14,7 @@ class AbstractModel(tensorflow.keras.Model):
             custom_layers = []
         self.loss_tracker = tensorflow.keras.metrics.Mean(name="loss")
         self.dense_list = tensorflow.keras.Sequential(dense_list)
-        self.out_dense = tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64')
+        self.out_dense = tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64', name='out')
         self._loss = loss
         self._custom_trainable_variables = trainable_variables
         self.optimizer = optimizer

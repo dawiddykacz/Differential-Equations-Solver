@@ -3,6 +3,13 @@ import tensorflow
 from objects.functions.loss.LossFunction import LossFunction
 
 
+def parse_layer_path_to_name(layer_path):
+    for part in layer_path.split('/'):
+        if part.startswith("hidden_") or part.startswith("out") or part.startswith("dense_wang"):
+            return part
+    return layer_path
+
+
 class WangWeightCalculator:
 
     @staticmethod
@@ -55,12 +62,14 @@ class WangWeightCalculator:
 
             wang_bc_list.append(wang_bc)
             wang_data_list.append(wang_data)
-            save_data['grad_pde_max'][kernels[i].path] = pde_max
-            save_data['grad_pde_mean'][kernels[i].path] = pde_mean
-            save_data['grad_bc_max'][kernels[i].path] = bc_max
-            save_data['grad_bc_mean'][kernels[i].path] = bc_mean
-            save_data['grad_data_max'][kernels[i].path] = data_max
-            save_data['grad_data_mean'][kernels[i].path] = data_mean
+
+            layer_name = parse_layer_path_to_name(kernels[i].path)
+            save_data['grad_pde_max'][layer_name] = pde_max
+            save_data['grad_pde_mean'][layer_name] = pde_mean
+            save_data['grad_bc_max'][layer_name] = bc_max
+            save_data['grad_bc_mean'][layer_name] = bc_mean
+            save_data['grad_data_max'][layer_name] = data_max
+            save_data['grad_data_mean'][layer_name] = data_mean
 
         t_pde_max = tensorflow.stack(pde_max_list)
         t_bc_max = tensorflow.stack(bc_max_list)

@@ -1,7 +1,7 @@
 import copy
 import tensorflow
 from objects.TrainableVariables import TrainableVariables
-from objects.functions.loss.LossFunction import LossFunction
+from solvers.WangWeightCalculator import WangWeightCalculator
 
 
 class WangModel(tensorflow.keras.Model):
@@ -12,18 +12,22 @@ class WangModel(tensorflow.keras.Model):
         self.hidden_dim = hidden_dim
         self.activation = activation
 
-        self.encoder_U = tensorflow.keras.layers.Dense(units=hidden_dim, activation=activation, dtype='float64')
-        self.encoder_V = tensorflow.keras.layers.Dense(units=hidden_dim, activation=activation, dtype='float64')
+        self.encoder_U = tensorflow.keras.layers.Dense(units=hidden_dim, activation=activation, dtype='float64',
+                                                       name="dense_wang_u")
+        self.encoder_V = tensorflow.keras.layers.Dense(units=hidden_dim, activation=activation, dtype='float64',
+                                                       name="dense_wang_v")
 
-        self.layer_H1 = tensorflow.keras.layers.Dense(units=hidden_dim, activation=activation, dtype='float64')
+        self.layer_H1 = tensorflow.keras.layers.Dense(units=hidden_dim, activation=activation, dtype='float64',
+                                                      name="dense_wang_h")
 
         self.layers_Z = layers_Z
 
-        self.out_dense = tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64')
+        self.out_dense = tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64', name="out")
 
         self._loss = loss
         self._custom_trainable_variables = trainable_variables
         self.optimizer = optimizer
+        self.__wang_calculator = WangWeightCalculator()
 
     def call(self, inputs):
         U = self.encoder_U(inputs)
