@@ -1,6 +1,7 @@
 import tensorflow
 
 from equations.ai.article.examples.first.FirstProblemLoss import *
+from solvers.WangWeightCalculator import WangWeightCalculator
 
 
 class FirstProblemLossWithWeight(FirstProblemLoss):
@@ -25,14 +26,12 @@ class LossSimpleWeight(LossSimple):
         return self.__t.get_variables()[0]
 
     def recalculate_weights(self, grads_dict, loss_error):
-        max_grad_pde = grads_dict['grad_pde_max']
+        max_grad_bc_pde = grads_dict['grad_pde_max_bc']
         mean_grad_bc = grads_dict['grad_bc_mean']
-        if not tensorflow.equal(mean_grad_bc, 0):
-            w = max_grad_pde / mean_grad_bc
 
-            self.__t.get_variables()[0] = (1 - self.__alpha) * self.__t.get_variables()[0] + self.__alpha * w
-
-            if loss_error > 1.05:
-                self.__alpha = self.__first_alpha
-            else:
-                self.__alpha *= self.__alpha_lower
+        self.__t.get_variables()[0].assign(WangWeightCalculator.calculate_new_weight(
+            alpha=self.__alpha,
+            old_weight=self.__t.get_variables()[0],
+            max_grad=max_grad_bc_pde,
+            mean_grad=mean_grad_bc
+        ))
