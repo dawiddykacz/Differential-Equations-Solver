@@ -75,7 +75,7 @@ class WangWeightCalculator:
         max_index_bc = tensorflow.argmax(t_wang_bc)
         max_index_data = tensorflow.argmax(t_wang_data)
 
-        return {
+        d = {
             'grad_pde_max_bc': t_pde_max[max_index_bc],
             'grad_pde_max_data': t_pde_max[max_index_data],
             'grad_bc_max': t_bc_max[max_index_bc],
@@ -86,3 +86,7 @@ class WangWeightCalculator:
             'grad_bc_mean': t_bc_mean[max_index_bc],
             'data': save_data
         }
+        for key in save_data.keys():
+            for key2 in save_data[key].keys():
+                d[f'{key}-{key2}'] = save_data[key][key2]
+        return d
