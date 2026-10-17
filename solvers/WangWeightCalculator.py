@@ -13,9 +13,6 @@ class WangWeightCalculator:
             lambda: (1.0 - alpha) * old_weight + alpha * (max_grad / mean_grad)
         )
 
-    def __init__(self):
-        self.save_data = dict()
-
     def calculate(self, loss, kernels, tape):
         loss_pde = tensorflow.convert_to_tensor(loss['loss_pde'], dtype=tensorflow.float64)
         conditions = tensorflow.convert_to_tensor(loss['conditions'], dtype=tensorflow.float64)
@@ -29,6 +26,14 @@ class WangWeightCalculator:
         pde_mean_list, bc_mean_list, data_mean_list = [], [], []
         wang_bc_list, wang_data_list = [], []
 
+        save_data = {
+            "grad_pde_max": dict(),
+            "grad_pde_mean": dict(),
+            "grad_bc_max": dict(),
+            "grad_bc_mean": dict(),
+            "grad_data_max": dict(),
+            "grad_data_mean": dict(),
+        }
         for i in range(len(kernels)):
             pde_max = LossFunction.max_abs_grads(grad_pde[i])
             bc_max = LossFunction.max_abs_grads(grad_bc[i])
@@ -50,6 +55,12 @@ class WangWeightCalculator:
 
             wang_bc_list.append(wang_bc)
             wang_data_list.append(wang_data)
+            save_data['grad_pde_max'][kernels[i].path] = pde_max
+            save_data['grad_pde_mean'][kernels[i].path] = pde_mean
+            save_data['grad_bc_max'][kernels[i].path] = bc_max
+            save_data['grad_bc_mean'][kernels[i].path] = bc_mean
+            save_data['grad_data_max'][kernels[i].path] = data_max
+            save_data['grad_data_mean'][kernels[i].path] = data_mean
 
         t_pde_max = tensorflow.stack(pde_max_list)
         t_bc_max = tensorflow.stack(bc_max_list)
@@ -73,4 +84,5 @@ class WangWeightCalculator:
             'grad_pde_mean_data': t_pde_mean[max_index_data],
             'grad_data_mean': t_data_mean[max_index_data],
             'grad_bc_mean': t_bc_mean[max_index_bc],
+            'data': save_data
         }

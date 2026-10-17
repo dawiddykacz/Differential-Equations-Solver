@@ -38,6 +38,9 @@ class AISolution(Function):
     def get_network_stiffness_array(self):
         return self._ai_solver.get_network_stiffness_array()
 
+    def get_layers_grads(self):
+        return self._ai_solver.get_layers_grads()
+
     def get_loss_pde_array(self):
         return self._ai_solver.get_loss_pde_array()
 

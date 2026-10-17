@@ -1,3 +1,5 @@
+import copy
+
 import tensorflow
 import numpy
 
@@ -28,6 +30,7 @@ class AISolver:
         self.__loss_function = loss_function
         self.__plots = plots
         self.__calculate_as_numpy = calculate_as_numpy
+        self.__grad_layers = None
 
         if trainable_variables is None:
             self.__trainable_variables = TrainableVariables()
@@ -86,6 +89,14 @@ class AISolver:
     def current_loss(self):
         return self.__loss_function.calculate(self.__solution_function, *self.__points)
 
+    def get_layers_grads(self):
+        grad_layers = copy.deepcopy( self.__grad_layers)
+        for key in self.__grad_layers.keys():
+            for key2 in self.__grad_layers[key].keys():
+                grad_layers[key][key2] = tensorflow.convert_to_tensor(grad_layers[key][key2],
+                                                                      dtype=tensorflow.float64)
+        return grad_layers
+
     def solve(self, epochs: int, test_points):
         self.__neural_network.init(self.__inputs)
 
@@ -103,6 +114,17 @@ class AISolver:
         before_loss = self.current_loss()["loss"]
         for i in range(epochs):
             loss = self.__neural_network.train_step()
+            if self.__grad_layers is None:
+                self.__grad_layers = copy.deepcopy(loss['data'])
+                for key in self.__grad_layers.keys():
+                    for key2 in self.__grad_layers[key].keys():
+                        self.__grad_layers[key][key2] = [float(self.__grad_layers[key][key2].numpy())]
+            else:
+                grad_layers = copy.deepcopy(loss['data'])
+                for key in self.__grad_layers.keys():
+                    for key2 in self.__grad_layers[key].keys():
+                        self.__grad_layers[key][key2].append(float(grad_layers[key][key2].numpy()))
+
             loss_dict = loss
             current_loss = loss["loss"]
             loss_error = tensorflow.abs((current_loss - before_loss) / before_loss + 1e-8)

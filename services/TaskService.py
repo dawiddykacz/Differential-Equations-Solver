@@ -16,6 +16,8 @@ from objects.functions.error.AbsError import AbsError
 from objects.functions.error.PercentError import PercentError
 from statistics import mean
 
+from solvers.GradsSaveData import GradsSaveData
+
 _equations_amount = 1
 
 
@@ -81,6 +83,7 @@ class TaskService:
             for j in range(len(non_trainable_variables_array[i])):
                 non_trainable_variables_array[i][j] = 0
 
+        grads_save_data = GradsSaveData()
         loss_array = copy.deepcopy(equations[0].get_solution_function().get_loss_array())
         if loss_array is not None:
             for i in range(len(loss_array)):
@@ -151,6 +154,7 @@ class TaskService:
 
         for eq in equations:
             y += eq.get_solution_function().calculate_as_numpy(test_space)
+            grads_save_data.add(eq.get_solution_function().get_layers_grads())
 
             if variables_array is not None:
                 variables_array_temp = copy.deepcopy(eq.get_solution_function().get_trainable_variables_array())
@@ -582,6 +586,8 @@ class TaskService:
         converted_data = self.make_json_serializable(data=save_data)
         with open(self.__get_plot_path(task.get_task_name(), "save_data", "yml"), "w", encoding="utf-8") as file:
             json.dump(converted_data, file, ensure_ascii=False, indent=4)
+        with open(self.__get_plot_path(task.get_task_name(), "save_grads_data", "yml"), "w", encoding="utf-8") as file:
+            json.dump(grads_save_data.to_dict(), file, ensure_ascii=False, indent=4)
 
     def make_json_serializable(self, data):
         if isinstance(data, dict):
