@@ -1,3 +1,5 @@
+import copy
+
 import tensorflow
 import numpy
 
@@ -28,6 +30,7 @@ class AISolver:
         self.__loss_function = loss_function
         self.__plots = plots
         self.__calculate_as_numpy = calculate_as_numpy
+        self.__grad_layers = None
 
         if trainable_variables is None:
             self.__trainable_variables = TrainableVariables()
@@ -63,11 +66,13 @@ class AISolver:
         self.__loss_conditions_array = []
         self.__loss_conditions_data_array = []
 
-        self.__grad_pde_max_array = []
+        self.__grad_pde_max_bc_array = []
+        self.__grad_pde_max_data_array = []
         self.__grad_bc_max_array = []
         self.__grad_data_max_array = []
 
-        self.__grad_pde_mean_array = []
+        self.__grad_pde_mean_bc_array = []
+        self.__grad_pde_mean_data_array = []
         self.__grad_data_mean_array = []
         self.__grad_bc_mean_array = []
         self.__network_stiffness_array = []
@@ -83,6 +88,14 @@ class AISolver:
 
     def current_loss(self):
         return self.__loss_function.calculate(self.__solution_function, *self.__points)
+
+    def get_layers_grads(self):
+        grad_layers = copy.deepcopy(self.__grad_layers)
+        for key in self.__grad_layers.keys():
+            for key2 in self.__grad_layers[key].keys():
+                grad_layers[key][key2] = tensorflow.convert_to_tensor(grad_layers[key][key2],
+                                                                      dtype=tensorflow.float64)
+        return grad_layers
 
     def solve(self, epochs: int, test_points):
         self.__neural_network.init(self.__inputs)
@@ -101,6 +114,21 @@ class AISolver:
         before_loss = self.current_loss()["loss"]
         for i in range(epochs):
             loss = self.__neural_network.train_step()
+            if self.__grad_layers is None:
+                self.__grad_layers = dict()
+                for key in loss.keys():
+                    if "-" in key:
+                        k1, k2 = key.split("-", 1)
+
+                        if k1 not in self.__grad_layers:
+                            self.__grad_layers[k1] = {}
+
+                        self.__grad_layers[k1][k2] = [float(loss[key].numpy())]
+            else:
+                for key in self.__grad_layers.keys():
+                    for key2 in self.__grad_layers[key].keys():
+                        self.__grad_layers[key][key2].append(float(loss[f"{key}-{key2}"].numpy()))
+
             loss_dict = loss
             current_loss = loss["loss"]
             loss_error = tensorflow.abs((current_loss - before_loss) / before_loss + 1e-8)
@@ -118,11 +146,13 @@ class AISolver:
                 self.__loss_conditions_array.append(loss['loss_conditions'].numpy())
                 self.__loss_conditions_data_array.append(loss['loss_conditions_data'].numpy())
 
-                self.__grad_pde_max_array.append(loss['grad_pde_max'].numpy())
+                self.__grad_pde_max_bc_array.append(loss['grad_pde_max_bc'].numpy())
+                self.__grad_pde_max_data_array.append(loss['grad_pde_max_data'].numpy())
                 self.__grad_bc_max_array.append(loss['grad_bc_max'].numpy())
                 self.__grad_data_max_array.append(loss['grad_data_max'].numpy())
 
-                self.__grad_pde_mean_array.append(loss['grad_pde_mean'].numpy())
+                self.__grad_pde_mean_bc_array.append(loss['grad_pde_mean_bc'].numpy())
+                self.__grad_pde_mean_data_array.append(loss['grad_pde_mean_data'].numpy())
                 self.__grad_data_mean_array.append(loss['grad_data_mean'].numpy())
                 self.__grad_bc_mean_array.append(loss['grad_bc_mean'].numpy())
 
@@ -211,9 +241,14 @@ class AISolver:
             return numpy.array(self.__loss_conditions_data_array)
         return None
 
-    def get_grad_pde_max_array(self):
+    def get_grad_pde_max_bc_array(self):
         if self.__plots:
-            return numpy.array(self.__grad_pde_max_array)
+            return numpy.array(self.__grad_pde_max_bc_array)
+        return None
+
+    def get_grad_pde_max_data_array(self):
+        if self.__plots:
+            return numpy.array(self.__grad_pde_max_data_array)
         return None
 
     def get_grad_bc_max_array(self):
@@ -226,9 +261,14 @@ class AISolver:
             return numpy.array(self.__grad_data_max_array)
         return None
 
-    def get_grad_pde_mean_array(self):
+    def get_grad_pde_mean_bc_array(self):
         if self.__plots:
-            return numpy.array(self.__grad_pde_mean_array)
+            return numpy.array(self.__grad_pde_mean_bc_array)
+        return None
+
+    def get_grad_pde_mean_data_array(self):
+        if self.__plots:
+            return numpy.array(self.__grad_pde_mean_data_array)
         return None
 
     def get_grad_data_mean_array(self):

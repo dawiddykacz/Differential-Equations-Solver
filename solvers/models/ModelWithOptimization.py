@@ -62,7 +62,8 @@ class ModelWithOptimization(AbstractModel):
             activation = hp.Choice('activations_{}'.format(i),
                                    model_configuration.model_with_optimization.activations_functions,
                                    default='sigmoid')
-            dense_layers.append(tensorflow.keras.layers.Dense(units=units, activation=activation, dtype='float64'))
+            dense_layers.append(tensorflow.keras.layers.Dense(units=units, activation=activation, dtype='float64',
+                                                              name=f"hidden_{i}"))
 
         super().__init__(
             loss=self.loss,

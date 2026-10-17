@@ -1,7 +1,7 @@
 import copy
 import tensorflow
 from objects.TrainableVariables import TrainableVariables
-from objects.functions.loss.LossFunction import LossFunction
+from solvers.WangWeightCalculator import WangWeightCalculator
 
 
 class WangModel(tensorflow.keras.Model):
@@ -12,18 +12,22 @@ class WangModel(tensorflow.keras.Model):
         self.hidden_dim = hidden_dim
         self.activation = activation
 
-        self.encoder_U = tensorflow.keras.layers.Dense(units=hidden_dim, activation=activation, dtype='float64')
-        self.encoder_V = tensorflow.keras.layers.Dense(units=hidden_dim, activation=activation, dtype='float64')
+        self.encoder_U = tensorflow.keras.layers.Dense(units=hidden_dim, activation=activation, dtype='float64',
+                                                       name="dense_wang_u")
+        self.encoder_V = tensorflow.keras.layers.Dense(units=hidden_dim, activation=activation, dtype='float64',
+                                                       name="dense_wang_v")
 
-        self.layer_H1 = tensorflow.keras.layers.Dense(units=hidden_dim, activation=activation, dtype='float64')
+        self.layer_H1 = tensorflow.keras.layers.Dense(units=hidden_dim, activation=activation, dtype='float64',
+                                                      name="dense_wang_h")
 
         self.layers_Z = layers_Z
 
-        self.out_dense = tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64')
+        self.out_dense = tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64', name="out")
 
         self._loss = loss
         self._custom_trainable_variables = trainable_variables
         self.optimizer = optimizer
+        self.__wang_calculator = WangWeightCalculator()
 
     def call(self, inputs):
         U = self.encoder_U(inputs)
@@ -53,42 +57,22 @@ class WangModel(tensorflow.keras.Model):
         grads = tape.gradient(current_loss, variables_to_train)
         self.optimizer.apply_gradients(zip(grads, variables_to_train))
 
-        layers = list(self.layers_Z) + [self.out_dense, self.layer_H1, self.encoder_U, self.encoder_V]
+        layers = list(self.layers_Z) + [self.out_dense] #[self.out_dense, self.layer_H1, self.encoder_U, self.encoder_V]
         kernels = [layer.kernel for layer in layers if hasattr(layer, 'kernel')]
 
-        grad_data = tape.gradient(conditions_data, kernels)
-        grad_pde = tape.gradient(loss_pde, kernels)
-        grad_bc = tape.gradient(conditions, kernels)
+        save_data = self.__wang_calculator.calculate(loss=loss, kernels=kernels, tape=tape)
 
         del tape
 
-        grad_data = [
-            tensorflow.reshape(g, [-1]) if g is not None else None
-            for g in grad_data
-        ]
-
-        grad_pde = [
-            tensorflow.reshape(g, [-1]) if g is not None else None
-            for g in grad_pde
-        ]
-
-        grad_bc = [
-            tensorflow.reshape(g, [-1]) if g is not None else None
-            for g in grad_bc
-        ]
-
-        return {
+        data = {
             'loss': current_loss,
             'loss_pde': loss_pde,
             'loss_conditions': conditions,
-            'loss_conditions_data': conditions_data,
-            'grad_pde_max': LossFunction.max_abs_grads(grad_pde),
-            'grad_bc_max': LossFunction.max_abs_grads(grad_bc),
-            'grad_data_max': LossFunction.max_abs_grads(grad_data),
-            'grad_pde_mean': LossFunction.mean_abs_grads(grad_pde),
-            'grad_data_mean': LossFunction.mean_abs_grads(grad_data),
-            'grad_bc_mean': LossFunction.mean_abs_grads(grad_bc),
+            'loss_conditions_data': conditions_data
         }
+        for key in save_data.keys():
+            data[key] = save_data[key]
+        return data
 
     @tensorflow.function
     def estimate_stiffness(self, num_iters=3):

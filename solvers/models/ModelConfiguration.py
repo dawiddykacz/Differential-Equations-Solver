@@ -11,7 +11,7 @@ class Range:
 
 
 class WangParams:
-    def __init__(self, hidden_dim: int = 10, activation_function: str='sigmoid'):
+    def __init__(self, hidden_dim: int = 10, activation_function: str = 'sigmoid'):
         self.hidden_dim = hidden_dim
         self.activation_function = activation_function
 
@@ -45,7 +45,8 @@ class ModelConfiguration:
     def __init__(self):
         if not hasattr(self, '_initialized'):
             self.dense_list = [
-                tensorflow.keras.layers.Dense(units=10, activation='sigmoid', dtype='float64')
+                tensorflow.keras.layers.Dense(units=10, activation='sigmoid', dtype='float64',
+                                              name="hidden_0")
             ]
             self.model_with_optimization = None
             self.wang_configuration = None

@@ -4,6 +4,7 @@ import tensorflow
 
 from objects.TrainableVariables import TrainableVariables
 from objects.functions.loss.LossFunction import LossFunction
+from solvers.WangWeightCalculator import WangWeightCalculator
 
 
 class AbstractModel(tensorflow.keras.Model):
@@ -13,11 +14,12 @@ class AbstractModel(tensorflow.keras.Model):
             custom_layers = []
         self.loss_tracker = tensorflow.keras.metrics.Mean(name="loss")
         self.dense_list = tensorflow.keras.Sequential(dense_list)
-        self.out_dense = tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64')
+        self.out_dense = tensorflow.keras.layers.Dense(units=1, activation='linear', dtype='float64', name='out')
         self._loss = loss
         self._custom_trainable_variables = trainable_variables
         self.optimizer = optimizer
         self._custom_layers = custom_layers
+        self.__wang_calculator = WangWeightCalculator()
 
     def call(self, inputs):
         x = self.dense_list(inputs)
@@ -41,39 +43,19 @@ class AbstractModel(tensorflow.keras.Model):
         layers = list(self.dense_list.layers) + [self.out_dense]
         kernels = [layer.kernel for layer in layers if hasattr(layer, 'kernel')]
 
-        grad_data = tape.gradient(conditions_data, kernels)
-        grad_pde = tape.gradient(loss_pde, kernels)
-        grad_bc = tape.gradient(conditions, kernels)
+        save_data = self.__wang_calculator.calculate(loss=loss, kernels=kernels, tape=tape)
 
         del tape
 
-        grad_data = [
-            tensorflow.reshape(g, [-1]) if g is not None else None
-            for g in grad_data
-        ]
-
-        grad_pde = [
-            tensorflow.reshape(g, [-1]) if g is not None else None
-            for g in grad_pde
-        ]
-
-        grad_bc = [
-            tensorflow.reshape(g, [-1]) if g is not None else None
-            for g in grad_bc
-        ]
-
-        return {
+        data = {
             'loss': current_loss,
             'loss_pde': loss_pde,
             'loss_conditions': conditions,
-            'loss_conditions_data': conditions_data,
-            'grad_pde_max': LossFunction.max_abs_grads(grad_pde),
-            'grad_bc_max': LossFunction.max_abs_grads(grad_bc),
-            'grad_data_max': LossFunction.max_abs_grads(grad_data),
-            'grad_pde_mean': LossFunction.mean_abs_grads(grad_pde),
-            'grad_data_mean': LossFunction.mean_abs_grads(grad_data),
-            'grad_bc_mean': LossFunction.mean_abs_grads(grad_bc),
+            'loss_conditions_data': conditions_data
         }
+        for key in save_data.keys():
+            data[key] = save_data[key]
+        return data
 
     @tensorflow.function
     def estimate_stiffness(self, num_iters=3):

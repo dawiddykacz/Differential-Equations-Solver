@@ -38,6 +38,9 @@ class AISolution(Function):
     def get_network_stiffness_array(self):
         return self._ai_solver.get_network_stiffness_array()
 
+    def get_layers_grads(self):
+        return self._ai_solver.get_layers_grads()
+
     def get_loss_pde_array(self):
         return self._ai_solver.get_loss_pde_array()
 
@@ -47,8 +50,11 @@ class AISolution(Function):
     def get_loss_conditions_data_array(self):
         return self._ai_solver.get_loss_conditions_data_array()
 
-    def get_grad_pde_max_array(self):
-        return self._ai_solver.get_grad_pde_max_array()
+    def get_grad_pde_max_bc_array(self):
+        return self._ai_solver.get_grad_pde_max_bc_array()
+
+    def get_grad_pde_max_data_array(self):
+        return self._ai_solver.get_grad_pde_max_data_array()
 
     def get_grad_bc_max_array(self):
         return self._ai_solver.get_grad_bc_max_array()
@@ -56,8 +62,11 @@ class AISolution(Function):
     def get_grad_data_max_array(self):
         return self._ai_solver.get_grad_data_max_array()
 
-    def get_grad_pde_mean_array(self):
-        return self._ai_solver.get_grad_pde_mean_array()
+    def get_grad_pde_mean_bc_array(self):
+        return self._ai_solver.get_grad_pde_mean_bc_array()
+
+    def get_grad_pde_mean_data_array(self):
+        return self._ai_solver.get_grad_pde_mean_data_array()
 
     def get_grad_data_mean_array(self):
         return self._ai_solver.get_grad_data_mean_array()
