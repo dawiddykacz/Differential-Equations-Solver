@@ -60,21 +60,15 @@ class LossFunction(Function):
     @staticmethod
     @tensorflow.function
     def max_abs_grads(grad):
-        valid_grads = [g for g in grad if g is not None]
-
-        if not valid_grads:
+        if grad is None:
             return tensorflow.constant(0.0, dtype=tensorflow.float64)
 
-        max_values = [tensorflow.reduce_max(tensorflow.abs(g)) for g in valid_grads]
-        return tensorflow.reduce_max(tensorflow.stack(max_values))
+        return tensorflow.reduce_max(tensorflow.abs(grad))
 
     @staticmethod
     @tensorflow.function
     def mean_abs_grads(grad):
-        valid_grads = [g for g in grad if g is not None]
-
-        if not valid_grads:
+        if grad is None:
             return tensorflow.constant(0.0, dtype=tensorflow.float64)
 
-        max_values = [tensorflow.reduce_mean(tensorflow.abs(g)) for g in valid_grads]
-        return tensorflow.reduce_mean(tensorflow.stack(max_values))
+        return tensorflow.reduce_mean(tensorflow.abs(grad))
