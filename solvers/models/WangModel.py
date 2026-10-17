@@ -57,7 +57,7 @@ class WangModel(tensorflow.keras.Model):
         grads = tape.gradient(current_loss, variables_to_train)
         self.optimizer.apply_gradients(zip(grads, variables_to_train))
 
-        layers = list(self.layers_Z) + [self.out_dense, self.layer_H1, self.encoder_U, self.encoder_V]
+        layers = list(self.layers_Z) + [self.out_dense] #[self.out_dense, self.layer_H1, self.encoder_U, self.encoder_V]
         kernels = [layer.kernel for layer in layers if hasattr(layer, 'kernel')]
 
         save_data = self.__wang_calculator.calculate(loss=loss, kernels=kernels, tape=tape)
