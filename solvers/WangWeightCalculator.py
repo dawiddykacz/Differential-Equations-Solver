@@ -83,8 +83,7 @@ class WangWeightCalculator:
             'grad_pde_mean_bc': t_pde_mean[max_index_bc],
             'grad_pde_mean_data': t_pde_mean[max_index_data],
             'grad_data_mean': t_data_mean[max_index_data],
-            'grad_bc_mean': t_bc_mean[max_index_bc],
-            'data': save_data
+            'grad_bc_mean': t_bc_mean[max_index_bc]
         }
         for key in save_data.keys():
             for key2 in save_data[key].keys():
