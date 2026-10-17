@@ -1,4 +1,5 @@
 from equations.ai.secondDegree.examples.second.AbstractExampleSecond2Equation import *
+from solvers.WangWeightCalculator import WangWeightCalculator
 
 
 class ExampleSimpleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation):
@@ -52,12 +53,12 @@ class LossSimple(Loss):
         self.__non_trainable_variables.get_variables()[0].assign(tensorflow.constant(data[0], dtype=tensorflow.float64))
 
     def recalculate_weights(self, grads_dict, loss_error):
-        max_grad_pde = grads_dict['grad_pde_max']
+        max_grad_data_pde = grads_dict['grad_pde_max_data']
         mean_grad_data = grads_dict['grad_data_mean']
 
-        if not tensorflow.equal(mean_grad_data, 0):
-            w2 = max_grad_pde / mean_grad_data
-
-            self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
-                                                                     self.__non_trainable_variables.get_variables()[0]
-                                                                     + self.__alpha * w2)
+        self.__non_trainable_variables.get_variables()[0].assign(WangWeightCalculator.calculate_new_weight(
+            alpha=self.__alpha,
+            old_weight=self.__non_trainable_variables.get_variables()[0],
+            max_grad=max_grad_data_pde,
+            mean_grad=mean_grad_data
+        ))
