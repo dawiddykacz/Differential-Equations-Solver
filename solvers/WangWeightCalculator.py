@@ -75,13 +75,16 @@ class WangWeightCalculator:
             save_data['grad_data_max'][layer_name] = data_max
             save_data['grad_data_mean'][layer_name] = data_mean
 
-        max_pde = tensorflow.reduce_max([tensorflow.reduce_max(tensorflow.abs(g)) for g in grad_pde])
-        max_bc = tensorflow.reduce_max([tensorflow.reduce_max(tensorflow.abs(g)) for g in grad_bc])
-        max_data = tensorflow.reduce_max([tensorflow.reduce_max(tensorflow.abs(g)) for g in grad_data])
+        max_pde = tensorflow.reduce_max(tensorflow.stack([tensorflow.reduce_max(tensorflow.abs(g)) for g in grad_pde]))
+        max_bc = tensorflow.reduce_max(tensorflow.stack([tensorflow.reduce_max(tensorflow.abs(g)) for g in grad_bc]))
+        max_data = tensorflow.reduce_max(
+            tensorflow.stack([tensorflow.reduce_max(tensorflow.abs(g)) for g in grad_data]))
 
-        mean_pde = tensorflow.reduce_mean([tensorflow.reduce_mean(tensorflow.abs(g)) for g in grad_pde])
-        mean_bc = tensorflow.reduce_mean([tensorflow.reduce_mean(tensorflow.abs(g)) for g in grad_bc])
-        mean_data = tensorflow.reduce_mean([tensorflow.reduce_mean(tensorflow.abs(g)) for g in grad_data])
+        mean_pde = tensorflow.reduce_mean(
+            tensorflow.stack([tensorflow.reduce_mean(tensorflow.abs(g)) for g in grad_pde]))
+        mean_bc = tensorflow.reduce_mean(tensorflow.stack([tensorflow.reduce_mean(tensorflow.abs(g)) for g in grad_bc]))
+        mean_data = tensorflow.reduce_mean(
+            tensorflow.stack([tensorflow.reduce_mean(tensorflow.abs(g)) for g in grad_data]))
 
         d = {
             'grad_pde_max': max_pde,
