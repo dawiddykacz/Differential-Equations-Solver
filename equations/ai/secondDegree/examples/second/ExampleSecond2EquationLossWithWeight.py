@@ -8,7 +8,7 @@ class ExampleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation):
                  weight_conditions: float = 1,
                  weight_data: float = 1):
         trainable_variables = TrainableVariables([1])
-        non_trainable_variables = TrainableVariables([1, 1])
+        non_trainable_variables = TrainableVariables([1, 1], trainable=False)
         super().__init__(
             SolutionFunction(space,
                              loss_function=LossSimple(

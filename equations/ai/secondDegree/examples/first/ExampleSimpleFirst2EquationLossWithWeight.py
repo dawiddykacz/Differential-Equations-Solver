@@ -4,7 +4,7 @@ from equations.ai.secondDegree.examples.first.AbstractExampleFirst2Equation impo
 class ExampleSimpleFirst2EquationLossWithWeight(AbstractExampleFirst2Problem):
     def __init__(self, space: Space, with_noise: bool, alpha: float, weight_pde: float = 1, weight_data: float = 1):
         trainable_variables = TrainableVariables([1])
-        non_trainable_variables = TrainableVariables([1])
+        non_trainable_variables = TrainableVariables([1], trainable=False)
         super().__init__(
             SimpleSolutionFunction(space,
                                    loss_function=LossSimple(

@@ -5,7 +5,7 @@ class ExampleSimpleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation)
     def __init__(self, space: Space, with_noise: bool, alpha: float, weight_pde: float = 1,
                  weight_data: float = 1):
         trainable_variables = TrainableVariables([1])
-        non_trainable_variables = TrainableVariables([1, 1])
+        non_trainable_variables = TrainableVariables([1, 1], trainable=False)
         super().__init__(
             SimpleSolutionFunction(space,
                                    loss_function=LossSimple(
