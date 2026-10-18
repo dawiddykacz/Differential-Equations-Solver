@@ -75,16 +75,16 @@ class LossSimple(Loss):
         max_grad_pde = grads_dict['grad_pde_max']
         mean_grad_data = grads_dict['grad_data_mean']
         mean_grad_bc = grads_dict['grad_bc_mean']
+        eps = 1e-8
 
-        if not tensorflow.equal(mean_grad_data, 0):
-            w = max_grad_pde / mean_grad_data
+        w = max_grad_pde / (mean_grad_data + eps)
 
-            self.__non_trainable_variables.get_variables()[1].assign((1 - self.__alpha) *
-                                                                     self.__non_trainable_variables.get_variables()[1]
-                                                                     + self.__alpha * w)
-        if not tensorflow.equal(mean_grad_bc, 0):
-            w2 = max_grad_pde / mean_grad_bc
+        self.__non_trainable_variables.get_variables()[1].assign((1 - self.__alpha) *
+                                                                 self.__non_trainable_variables.get_variables()[1]
+                                                                 + self.__alpha * w)
 
-            self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
-                                                                     self.__non_trainable_variables.get_variables()[0]
-                                                                     + self.__alpha * w2)
+        w2 = max_grad_pde / (mean_grad_bc + eps)
+
+        self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
+                                                                 self.__non_trainable_variables.get_variables()[0]
+                                                                 + self.__alpha * w2)

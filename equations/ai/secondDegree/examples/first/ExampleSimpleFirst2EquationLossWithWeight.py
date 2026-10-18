@@ -49,10 +49,10 @@ class LossSimple(Loss):
     def recalculate_weights(self, grads_dict, loss_error):
         max_grad_pde = grads_dict['grad_pde_max']
         mean_grad_data = grads_dict['grad_data_mean']
+        eps = 1e-8
 
-        if not tensorflow.equal(mean_grad_data, 0):
-            w2 = max_grad_pde / mean_grad_data
+        w2 = max_grad_pde / (mean_grad_data + eps)
 
-            self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
-                                                                     self.__non_trainable_variables.get_variables()[0]
-                                                                     + self.__alpha * w2)
+        self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
+                                                                 self.__non_trainable_variables.get_variables()[0]
+                                                                 + self.__alpha * w2)
