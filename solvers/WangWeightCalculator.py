@@ -29,6 +29,10 @@ class WangWeightCalculator:
         grad_pde = tape.gradient(loss_pde, kernels)
         grad_bc = tape.gradient(conditions, kernels)
 
+        grad_pde = [g if g is not None else tensorflow.zeros_like(k) for g, k in zip(grad_pde, kernels)]
+        grad_bc = [g if g is not None else tensorflow.zeros_like(k) for g, k in zip(grad_bc, kernels)]
+        grad_data = [g if g is not None else tensorflow.zeros_like(k) for g, k in zip(grad_data, kernels)]
+
         pde_max_list, bc_max_list, data_max_list = [], [], []
         pde_mean_list, bc_mean_list, data_mean_list = [], [], []
         wang_bc_list, wang_data_list = [], []
@@ -71,28 +75,21 @@ class WangWeightCalculator:
             save_data['grad_data_max'][layer_name] = data_max
             save_data['grad_data_mean'][layer_name] = data_mean
 
-        t_pde_max = tensorflow.stack(pde_max_list)
-        t_bc_max = tensorflow.stack(bc_max_list)
-        t_data_max = tensorflow.stack(data_max_list)
-        t_pde_mean = tensorflow.stack(pde_mean_list)
-        t_bc_mean = tensorflow.stack(bc_mean_list)
-        t_data_mean = tensorflow.stack(data_mean_list)
+        max_pde = tensorflow.reduce_max([tensorflow.reduce_max(tensorflow.abs(g)) for g in grad_pde])
+        max_bc = tensorflow.reduce_max([tensorflow.reduce_max(tensorflow.abs(g)) for g in grad_bc])
+        max_data = tensorflow.reduce_max([tensorflow.reduce_max(tensorflow.abs(g)) for g in grad_data])
 
-        t_wang_bc = tensorflow.stack(wang_bc_list)
-        t_wang_data = tensorflow.stack(wang_data_list)
-
-        max_index_bc = tensorflow.argmax(t_wang_bc)
-        max_index_data = tensorflow.argmax(t_wang_data)
+        mean_pde = tensorflow.reduce_mean([tensorflow.reduce_mean(tensorflow.abs(g)) for g in grad_pde])
+        mean_bc = tensorflow.reduce_mean([tensorflow.reduce_mean(tensorflow.abs(g)) for g in grad_bc])
+        mean_data = tensorflow.reduce_mean([tensorflow.reduce_mean(tensorflow.abs(g)) for g in grad_data])
 
         d = {
-            'grad_pde_max_bc': t_pde_max[max_index_bc],
-            'grad_pde_max_data': t_pde_max[max_index_data],
-            'grad_bc_max': t_bc_max[max_index_bc],
-            'grad_data_max': t_data_max[max_index_data],
-            'grad_pde_mean_bc': t_pde_mean[max_index_bc],
-            'grad_pde_mean_data': t_pde_mean[max_index_data],
-            'grad_data_mean': t_data_mean[max_index_data],
-            'grad_bc_mean': t_bc_mean[max_index_bc]
+            'grad_pde_max': max_pde,
+            'grad_bc_max': max_bc,
+            'grad_data_max': max_data,
+            'grad_pde_mean': mean_pde,
+            'grad_data_mean': mean_data,
+            'grad_bc_mean': mean_bc
         }
         for key in save_data.keys():
             for key2 in save_data[key].keys():

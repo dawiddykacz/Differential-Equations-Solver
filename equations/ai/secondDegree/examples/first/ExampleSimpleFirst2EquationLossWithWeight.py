@@ -48,7 +48,7 @@ class LossSimple(Loss):
         return self.weight_pde
 
     def recalculate_weights(self, grads_dict, loss_error):
-        max_grad_data_pde = grads_dict['grad_pde_max_data']
+        max_grad_data_pde = grads_dict['grad_pde_max']
         mean_grad_data = grads_dict['grad_data_mean']
 
         self.__non_trainable_variables.get_variables()[0].assign(WangWeightCalculator.calculate_new_weight(

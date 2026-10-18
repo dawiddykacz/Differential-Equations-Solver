@@ -66,13 +66,11 @@ class AISolver:
         self.__loss_conditions_array = []
         self.__loss_conditions_data_array = []
 
-        self.__grad_pde_max_bc_array = []
-        self.__grad_pde_max_data_array = []
+        self.__grad_pde_max_array = []
         self.__grad_bc_max_array = []
         self.__grad_data_max_array = []
 
-        self.__grad_pde_mean_bc_array = []
-        self.__grad_pde_mean_data_array = []
+        self.__grad_pde_mean_array = []
         self.__grad_data_mean_array = []
         self.__grad_bc_mean_array = []
         self.__network_stiffness_array = []
@@ -146,13 +144,11 @@ class AISolver:
                 self.__loss_conditions_array.append(loss['loss_conditions'].numpy())
                 self.__loss_conditions_data_array.append(loss['loss_conditions_data'].numpy())
 
-                self.__grad_pde_max_bc_array.append(loss['grad_pde_max_bc'].numpy())
-                self.__grad_pde_max_data_array.append(loss['grad_pde_max_data'].numpy())
+                self.__grad_pde_max_array.append(loss['grad_pde_max'].numpy())
                 self.__grad_bc_max_array.append(loss['grad_bc_max'].numpy())
                 self.__grad_data_max_array.append(loss['grad_data_max'].numpy())
 
-                self.__grad_pde_mean_bc_array.append(loss['grad_pde_mean_bc'].numpy())
-                self.__grad_pde_mean_data_array.append(loss['grad_pde_mean_data'].numpy())
+                self.__grad_pde_mean_array.append(loss['grad_pde_mean'].numpy())
                 self.__grad_data_mean_array.append(loss['grad_data_mean'].numpy())
                 self.__grad_bc_mean_array.append(loss['grad_bc_mean'].numpy())
 
@@ -241,14 +237,9 @@ class AISolver:
             return numpy.array(self.__loss_conditions_data_array)
         return None
 
-    def get_grad_pde_max_bc_array(self):
+    def get_grad_pde_max_array(self):
         if self.__plots:
-            return numpy.array(self.__grad_pde_max_bc_array)
-        return None
-
-    def get_grad_pde_max_data_array(self):
-        if self.__plots:
-            return numpy.array(self.__grad_pde_max_data_array)
+            return numpy.array(self.__grad_pde_max_array)
         return None
 
     def get_grad_bc_max_array(self):
@@ -261,14 +252,9 @@ class AISolver:
             return numpy.array(self.__grad_data_max_array)
         return None
 
-    def get_grad_pde_mean_bc_array(self):
+    def get_grad_pde_mean_array(self):
         if self.__plots:
-            return numpy.array(self.__grad_pde_mean_bc_array)
-        return None
-
-    def get_grad_pde_mean_data_array(self):
-        if self.__plots:
-            return numpy.array(self.__grad_pde_mean_data_array)
+            return numpy.array(self.__grad_pde_mean_array)
         return None
 
     def get_grad_data_mean_array(self):
