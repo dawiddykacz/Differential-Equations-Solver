@@ -41,11 +41,9 @@ class LossSimple(Loss):
         return function(zero) - zero
 
     def _condition_data_weight(self):
-        tensorflow.print("d", self.weight_data, self.__non_trainable_variables.get_variables()[1])
         return self.weight_data * self.__non_trainable_variables.get_variables()[1]
 
     def _condition_weight(self):
-        tensorflow.print("c", self.weight_conditions, self.__non_trainable_variables.get_variables()[0])
         return self.weight_conditions * self.__non_trainable_variables.get_variables()[0]
 
     def _pde_weight(self):
