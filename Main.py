@@ -18,12 +18,9 @@ def configure_solver():
     model_configuration.configure(model_with_optimization=None,
                                   wang_configuration=None,
                                   dense_list=[
-                                      tensorflow.keras.layers.Dense(units=50, activation='tanh', dtype='float64',
-                                                                    name="hidden_0"),
-                                      tensorflow.keras.layers.Dense(units=50, activation='tanh', dtype='float64',
-                                                                    name="hidden_1"),
-                                      tensorflow.keras.layers.Dense(units=50, activation='tanh', dtype='float64',
-                                                                    name="hidden_2"),
+                                      tensorflow.keras.layers.Dense(units=50, activation='tanh', dtype='float64'),
+                                      tensorflow.keras.layers.Dense(units=50, activation='tanh', dtype='float64'),
+                                      tensorflow.keras.layers.Dense(units=50, activation='tanh', dtype='float64'),
                                   ])
 
 
