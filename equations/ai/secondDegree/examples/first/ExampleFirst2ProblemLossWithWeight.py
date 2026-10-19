@@ -3,7 +3,8 @@ from equations.ai.secondDegree.examples.first.AbstractExampleFirst2Equation impo
 
 class ExampleFirst2EquationLossWithWeight(AbstractExampleFirst2Problem):
     def __init__(self, space: Space, with_noise: bool, alpha: float, weight_conditions: float = 1,
-                 weight_pde: float = 1, weight_data: float = 1):
+                 weight_pde: float = 1, weight_data: float = 1,
+                 epsilon: float = 1e-8):
         trainable_variables = TrainableVariables([1])
         non_trainable_variables = TrainableVariables([1, 1], trainable=False)
         super().__init__(
@@ -14,7 +15,8 @@ class ExampleFirst2EquationLossWithWeight(AbstractExampleFirst2Problem):
                                  with_noise=with_noise,
                                  alpha=alpha, weight_conditions=weight_conditions,
                                  weight_pde=weight_pde,
-                                 weight_data=weight_data),
+                                 weight_data=weight_data,
+                                 eps=epsilon),
                              trainable_variables=trainable_variables,
                              non_trainable_variables=non_trainable_variables,
                              exact_trainable_variables=[0.5]))
@@ -24,7 +26,7 @@ class LossSimple(Loss):
     def __init__(self, trainable_variables: TrainableVariables,
                  non_trainable_variables: TrainableVariables, with_noise: bool,
                  alpha: float, weight_pde: float = 1, weight_conditions: float = 1,
-                 weight_data: float = 1):
+                 weight_data: float = 1, eps: float = 1e-8):
         super().__init__(trainable_variables, with_noise)
 
         self.__non_trainable_variables = non_trainable_variables
@@ -33,9 +35,9 @@ class LossSimple(Loss):
         self.weight_conditions = weight_conditions
         self.weight_data = weight_data
         self.weight_pde = weight_pde
+        self.eps = eps
 
     def _condition(self, function, *x):
-
         zero = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
 
         return function(zero) - zero
@@ -57,14 +59,14 @@ class LossSimple(Loss):
         max_grad_pde = grads_dict['grad_pde_max']
         mean_grad_data = grads_dict['grad_data_mean']
         mean_grad_bc = grads_dict['grad_bc_mean']
-        eps = 1e-8
+        eps = 1e-4
 
-        w = max_grad_pde / (mean_grad_data + eps)
+        w = max_grad_pde / (mean_grad_data + self.eps)
 
         self.__non_trainable_variables.get_variables()[1].assign((1 - self.__alpha) *
                                                                  self.__non_trainable_variables.get_variables()[1]
                                                                  + self.__alpha * w)
-        w2 = max_grad_pde / (mean_grad_bc + eps)
+        w2 = max_grad_pde / (mean_grad_bc + self.eps)
 
         self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
                                                                  self.__non_trainable_variables.get_variables()[0]

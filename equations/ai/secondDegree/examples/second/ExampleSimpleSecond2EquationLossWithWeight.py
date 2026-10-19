@@ -3,7 +3,7 @@ from equations.ai.secondDegree.examples.second.AbstractExampleSecond2Equation im
 
 class ExampleSimpleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation):
     def __init__(self, space: Space, with_noise: bool, alpha: float, weight_pde: float = 1,
-                 weight_data: float = 1):
+                 weight_data: float = 1, eps: float = 1e-8):
         trainable_variables = TrainableVariables([1])
         non_trainable_variables = TrainableVariables([1], trainable=False)
         super().__init__(
@@ -13,7 +13,9 @@ class ExampleSimpleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation)
                                        non_trainable_variables=non_trainable_variables,
                                        with_noise=with_noise,
                                        alpha=alpha,
-                                       weight_pde=weight_pde, weight_data=weight_data),
+                                       weight_pde=weight_pde, weight_data=weight_data,
+                                       eps=eps
+                                   ),
                                    trainable_variables=trainable_variables,
                                    non_trainable_variables=non_trainable_variables,
                                    exact_trainable_variables=[0.5]))
@@ -33,7 +35,7 @@ class LossSimple(Loss):
     def __init__(self, trainable_variables: TrainableVariables,
                  non_trainable_variables: TrainableVariables, with_noise: bool,
                  alpha: float, weight_pde: float = 1,
-                 weight_data: float = 1):
+                 weight_data: float = 1, eps: float = 1e-8):
         super().__init__(trainable_variables, with_noise)
 
         self.__non_trainable_variables = non_trainable_variables
@@ -41,6 +43,7 @@ class LossSimple(Loss):
         self.__first_alpha = alpha
         self.weight_pde = weight_pde
         self.weight_data = weight_data
+        self.eps = eps
 
     def _pde_weight(self):
         return self.weight_pde
@@ -54,9 +57,8 @@ class LossSimple(Loss):
     def recalculate_weights(self, grads_dict, loss_error):
         max_grad_pde = grads_dict['grad_pde_max']
         mean_grad_data = grads_dict['grad_data_mean']
-        eps = 1e-4
 
-        w2 = max_grad_pde / (mean_grad_data + eps)
+        w2 = max_grad_pde / (mean_grad_data + self.eps)
 
         self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
                                                                  self.__non_trainable_variables.get_variables()[0]

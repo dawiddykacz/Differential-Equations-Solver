@@ -7,7 +7,8 @@ class ExampleSecond2ProblemLossTaskWithWeightTask(TaskData):
     def __init__(self, with_noise: bool, alpha: float = 0.1,
                  weight_pde: float = 1,
                  weight_conditions: float = 1,
-                 weight_data: float = 1):
+                 weight_data: float = 1,
+                 eps: float = 1e-4):
         super().__init__(SpaceRanges(10, Range(-1, 1), Range(-1, 1)),
                          f"2 example problem loss (wang and"
                          f" weight_pde {weight_pde}"
@@ -19,13 +20,15 @@ class ExampleSecond2ProblemLossTaskWithWeightTask(TaskData):
         self.weight_pde = weight_pde
         self.weight_conditions = weight_conditions
         self.weight_data = weight_data
+        self.eps = eps
 
     def get_equation(self):
         return ExampleSecond2EquationLossWithWeight(self.get_space_range().split(), with_noise=self.with_noise,
                                                     alpha=self.alpha,
                                                     weight_pde=self.weight_pde,
                                                     weight_conditions=self.weight_conditions,
-                                                    weight_data=self.weight_data)
+                                                    weight_data=self.weight_data,
+                                                    eps=self.eps)
 
     def get_plot_title(self):
         return f"2 example problem loss (weight)"
