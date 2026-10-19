@@ -75,7 +75,7 @@ class LossSimple(Loss):
         max_grad_pde = grads_dict['grad_pde_max']
         mean_grad_data = grads_dict['grad_data_mean']
         mean_grad_bc = grads_dict['grad_bc_mean']
-        eps = 1e-8
+        eps = 1e-4
 
         w = max_grad_pde / (mean_grad_data + eps)
 

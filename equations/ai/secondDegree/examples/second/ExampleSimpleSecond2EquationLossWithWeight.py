@@ -5,7 +5,7 @@ class ExampleSimpleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation)
     def __init__(self, space: Space, with_noise: bool, alpha: float, weight_pde: float = 1,
                  weight_data: float = 1):
         trainable_variables = TrainableVariables([1])
-        non_trainable_variables = TrainableVariables([1, 1], trainable=False)
+        non_trainable_variables = TrainableVariables([1], trainable=False)
         super().__init__(
             SimpleSolutionFunction(space,
                                    loss_function=LossSimple(
@@ -54,7 +54,7 @@ class LossSimple(Loss):
     def recalculate_weights(self, grads_dict, loss_error):
         max_grad_pde = grads_dict['grad_pde_max']
         mean_grad_data = grads_dict['grad_data_mean']
-        eps = 1e-8
+        eps = 1e-4
 
         w2 = max_grad_pde / (mean_grad_data + eps)
 
