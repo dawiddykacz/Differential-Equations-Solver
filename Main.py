@@ -27,6 +27,8 @@ def configure_solver():
 def basic_rep(task_repository):
     d_min = 0.0001
     range_weight = 10 ** 4
+    alpha = 0.1
+
     for with_noise in [False, True]:
         task_repository.add_task(ExampleFirst2ProblemLossTask(weight_data=1,
                                                               weight_pde=d_min,
@@ -43,22 +45,22 @@ def basic_rep(task_repository):
                                                                      weight_data=1,
                                                                      with_noise=with_noise))
         task_repository.add_task(
-            ExampleFirst2ProblemLossWithWeightTask(alpha=0.9,
+            ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
                                                    weight_pde=d_min,
                                                    weight_conditions=1,
                                                    weight_data=1, with_noise=with_noise))
         task_repository.add_task(
-            ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=0.9,
+            ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=alpha,
                                                          weight_pde=d_min,
                                                          weight_data=1,
                                                          with_noise=with_noise))
         task_repository.add_task(
-            ExampleSecond2ProblemLossTaskWithWeightTask(alpha=0.9,
+            ExampleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
                                                         weight_pde=d_min,
                                                         weight_conditions=1,
                                                         weight_data=1, with_noise=with_noise))
         task_repository.add_task(
-            ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=0.9,
+            ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
                                                               weight_pde=d_min,
                                                               weight_data=1,
                                                               with_noise=with_noise))
@@ -106,8 +108,11 @@ def run_all(learning_rate: float):
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
+
     d_min = 0.0001
     range_weight = 10 ** 4
+    alpha = 0.1
+
     for with_noise in [False, True]:
         task_repository.add_task(ExampleFirst2ProblemLossTask(weight_data=1,
                                                               weight_pde=d_min,
@@ -124,22 +129,22 @@ def run_all(learning_rate: float):
                                                                      weight_data=1,
                                                                      with_noise=with_noise))
         task_repository.add_task(
-            ExampleFirst2ProblemLossWithWeightTask(alpha=0.9,
+            ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
                                                    weight_pde=d_min,
                                                    weight_conditions=1,
                                                    weight_data=1, with_noise=with_noise))
         task_repository.add_task(
-            ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=0.9,
+            ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=alpha,
                                                          weight_pde=d_min,
                                                          weight_data=1,
                                                          with_noise=with_noise))
         task_repository.add_task(
-            ExampleSecond2ProblemLossTaskWithWeightTask(alpha=0.9,
+            ExampleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
                                                         weight_pde=d_min,
                                                         weight_conditions=1,
                                                         weight_data=1, with_noise=with_noise))
         task_repository.add_task(
-            ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=0.9,
+            ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
                                                               weight_pde=d_min,
                                                               weight_data=1,
                                                               with_noise=with_noise))
@@ -158,27 +163,27 @@ def run_all(learning_rate: float):
             task_repository.add_task(ExampleSimpleSecond2ProblemLossTask(weight_pde=1,
                                                                          weight_data=weight,
                                                                          with_noise=with_noise))
-            for alpha in [0.9]:
-                task_repository.add_task(
-                    ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
-                                                           weight_pde=1,
-                                                           weight_conditions=weight,
-                                                           weight_data=weight, with_noise=with_noise))
-                task_repository.add_task(
-                    ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=alpha,
-                                                                 weight_pde=1,
-                                                                 weight_data=weight,
-                                                                 with_noise=with_noise))
-                task_repository.add_task(
-                    ExampleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
-                                                                weight_pde=1,
-                                                                weight_conditions=weight,
-                                                                weight_data=weight, with_noise=with_noise))
-                task_repository.add_task(
-                    ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
-                                                                      weight_pde=1,
-                                                                      weight_data=weight,
-                                                                      with_noise=with_noise))
+            task_repository.add_task(
+                ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
+                                                       weight_pde=1,
+                                                       weight_conditions=weight,
+                                                       weight_data=weight, with_noise=with_noise))
+            task_repository.add_task(
+                ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=alpha,
+                                                             weight_pde=1,
+                                                             weight_data=weight,
+                                                             with_noise=with_noise))
+            task_repository.add_task(
+                ExampleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
+                                                            weight_pde=1,
+                                                            weight_conditions=weight,
+                                                            weight_data=weight, with_noise=with_noise))
+            task_repository.add_task(
+                ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
+                                                                  weight_pde=1,
+                                                                  weight_data=weight,
+                                                                  with_noise=with_noise))
+
     task_service.solve(5000)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
     error_messages = task_service.get_error_messages()
@@ -190,4 +195,3 @@ def run_all(learning_rate: float):
 if __name__ == '__main__':
     configure_solver()
     run_all(10 ** -3)
-

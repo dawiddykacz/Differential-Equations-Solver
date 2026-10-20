@@ -6,9 +6,10 @@ class ExampleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation):
     def __init__(self, space: Space, with_noise: bool, alpha: float,
                  weight_pde: float = 1,
                  weight_conditions: float = 1,
-                 weight_data: float = 1):
+                 weight_data: float = 1,
+                 eps: float = 1e-8):
         trainable_variables = TrainableVariables([1])
-        non_trainable_variables = TrainableVariables([1, 1])
+        non_trainable_variables = TrainableVariables([1, 1], trainable=False)
         super().__init__(
             SolutionFunction(space,
                              loss_function=LossSimple(
@@ -18,7 +19,8 @@ class ExampleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation):
                                  alpha=alpha,
                                  weight_pde=weight_pde,
                                  weight_conditions=weight_conditions,
-                                 weight_data=weight_data),
+                                 weight_data=weight_data,
+                                 eps=eps),
                              trainable_variables=trainable_variables,
                              non_trainable_variables=non_trainable_variables,
                              exact_trainable_variables=[0.5]))
@@ -28,7 +30,8 @@ class LossSimple(Loss):
     def __init__(self, trainable_variables: TrainableVariables,
                  non_trainable_variables: TrainableVariables, with_noise: bool,
                  alpha: float, weight_pde: float = 1,
-                 weight_conditions: float = 1, weight_data: float = 1):
+                 weight_conditions: float = 1, weight_data: float = 1,
+                 eps: float = 1e-8):
         super().__init__(trainable_variables, with_noise)
 
         self.__non_trainable_variables = non_trainable_variables
@@ -37,6 +40,7 @@ class LossSimple(Loss):
         self.weight_pde = weight_pde
         self.weight_conditions = weight_conditions
         self.weight_data = weight_data
+        self.eps = eps
 
     @tensorflow.function
     def _condition(self, function, *args):
@@ -76,15 +80,14 @@ class LossSimple(Loss):
         mean_grad_data = grads_dict['grad_data_mean']
         mean_grad_bc = grads_dict['grad_bc_mean']
 
-        if not tensorflow.equal(mean_grad_data, 0):
-            w = max_grad_pde / mean_grad_data
+        w = max_grad_pde / (mean_grad_data + self.eps)
 
-            self.__non_trainable_variables.get_variables()[1].assign((1 - self.__alpha) *
-                                                                     self.__non_trainable_variables.get_variables()[1]
-                                                                     + self.__alpha * w)
-        if not tensorflow.equal(mean_grad_bc, 0):
-            w2 = max_grad_pde / mean_grad_bc
+        self.__non_trainable_variables.get_variables()[1].assign((1 - self.__alpha) *
+                                                                 self.__non_trainable_variables.get_variables()[1]
+                                                                 + self.__alpha * w)
 
-            self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
-                                                                     self.__non_trainable_variables.get_variables()[0]
-                                                                     + self.__alpha * w2)
+        w2 = max_grad_pde / (mean_grad_bc + self.eps)
+
+        self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
+                                                                 self.__non_trainable_variables.get_variables()[0]
+                                                                 + self.__alpha * w2)

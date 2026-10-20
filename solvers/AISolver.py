@@ -130,7 +130,8 @@ class AISolver:
                     self.__trainable_plot[j].append(self.__trainable_variables.get_variables()[j].numpy())
                 for j in range(len(self.__non_trainable_plot)):
                     self.__non_trainable_plot[j].append(self.__non_trainable_variables.get_variables()[j].numpy())
-            self.__loss_function.recalculate_weights(loss, loss_error)
+                if i % 10 == 0:
+                    self.__loss_function.recalculate_weights(loss, loss_error)
 
             if model_configuration.optimize_condition_weight:
                 # ==========================================
