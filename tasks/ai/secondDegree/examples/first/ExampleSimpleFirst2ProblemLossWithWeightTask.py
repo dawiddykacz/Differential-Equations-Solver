@@ -5,7 +5,7 @@ from equations.ai.secondDegree.examples.first.ExampleSimpleFirst2EquationLossWit
 
 class ExampleSimpleFirst2ProblemLossWithWeightTask(TaskData):
     def __init__(self, with_noise: bool, alpha: float = 0.1, weight_pde: float = 1,
-                 weight_data: float = 1, eps: float = 1e-8):
+                 weight_data: float = 1, eps: float = 1e-4):
         super().__init__(SpaceRanges(10, Range(-1, 1)), f"1 example simple problem loss "
                                                         f"(wang and"
                                                         f" weight_data {weight_data}"
