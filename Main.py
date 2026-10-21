@@ -119,7 +119,7 @@ def basic_rep(task_repository):
 
 def run_all(learning_rate: float):
     set_learning_rate(learning_rate)
-    set_equations_amount(2)
+    set_equations_amount(10)
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
@@ -209,7 +209,7 @@ def run_all(learning_rate: float):
                                                                       with_noise=with_noise,
                                                                       is_calculating_wang_grads=is_calculating_wang_grads))
 
-    task_service.solve(100)
+    task_service.solve(5000)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
     error_messages = task_service.get_error_messages()
     if error_messages is not None:
