@@ -1,20 +1,27 @@
 from equations.ai.secondDegree.examples.first.AbstractExampleFirst2Equation import *
 
 
+def choose_loss(is_calculating_wang_grads: bool):
+    if is_calculating_wang_grads:
+        return LossSimpleWithWeightGrads
+    return LossSimple
+
+
 class ExampleSimpleFirst2EquationLossWithWeight(AbstractExampleFirst2Problem):
     def __init__(self, space: Space, with_noise: bool, alpha: float, weight_pde: float = 1,
-                 weight_data: float = 1, epsilon: float = 1e-8):
+                 weight_data: float = 1, epsilon: float = 1e-8, is_calculating_wang_grads: bool = False):
         trainable_variables = TrainableVariables([1])
         non_trainable_variables = TrainableVariables([1], trainable=False)
         super().__init__(
             SimpleSolutionFunction(space,
-                                   loss_function=LossSimple(
+                                   loss_function=choose_loss(is_calculating_wang_grads)(
                                        trainable_variables=trainable_variables,
                                        non_trainable_variables=non_trainable_variables,
                                        with_noise=with_noise,
                                        alpha=alpha,
                                        weight_pde=weight_pde,
-                                       weight_data=weight_data),
+                                       weight_data=weight_data,
+                                       eps=epsilon),
                                    trainable_variables=trainable_variables,
                                    non_trainable_variables=non_trainable_variables,
                                    exact_trainable_variables=[0.5]))
@@ -58,3 +65,25 @@ class LossSimple(Loss):
         self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
                                                                  self.__non_trainable_variables.get_variables()[0]
                                                                  + self.__alpha * w2)
+
+
+class LossSimpleWithWeightGrads(LossSimple):
+    def __init__(self, trainable_variables: TrainableVariables,
+                 non_trainable_variables: TrainableVariables, with_noise: bool,
+                 alpha: float, weight_pde: float = 1,
+                 weight_data: float = 1, eps: float = 1e-8):
+        super().__init__(
+            trainable_variables=trainable_variables,
+            non_trainable_variables=non_trainable_variables,
+            with_noise=with_noise,
+            alpha=alpha,
+            weight_pde=weight_pde,
+            weight_data=weight_data,
+            eps=eps
+        )
+
+    def _pde_grad_weight(self):
+        return self.weight_pde
+
+    def _condition_data_grad_weight(self):
+        return self.weight_data

@@ -1,15 +1,21 @@
 from equations.ai.secondDegree.examples.first.AbstractExampleFirst2Equation import *
 
 
+def choose_loss(is_calculating_wang_grads: bool):
+    if is_calculating_wang_grads:
+        return LossSimpleWithWeightGrads
+    return LossSimple
+
+
 class ExampleFirst2EquationLossWithWeight(AbstractExampleFirst2Problem):
     def __init__(self, space: Space, with_noise: bool, alpha: float, weight_conditions: float = 1,
                  weight_pde: float = 1, weight_data: float = 1,
-                 epsilon: float = 1e-8):
+                 epsilon: float = 1e-8, is_calculating_wang_grads: bool = False):
         trainable_variables = TrainableVariables([1])
         non_trainable_variables = TrainableVariables([1, 1], trainable=False)
         super().__init__(
             SolutionFunction(space,
-                             loss_function=LossSimple(
+                             loss_function=choose_loss(is_calculating_wang_grads=is_calculating_wang_grads)(
                                  trainable_variables=trainable_variables,
                                  non_trainable_variables=non_trainable_variables,
                                  with_noise=with_noise,
@@ -59,7 +65,6 @@ class LossSimple(Loss):
         max_grad_pde = grads_dict['grad_pde_max']
         mean_grad_data = grads_dict['grad_data_mean']
         mean_grad_bc = grads_dict['grad_bc_mean']
-        eps = 1e-4
 
         w = max_grad_pde / (mean_grad_data + self.eps)
 
@@ -71,3 +76,29 @@ class LossSimple(Loss):
         self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
                                                                  self.__non_trainable_variables.get_variables()[0]
                                                                  + self.__alpha * w2)
+
+
+class LossSimpleWithWeightGrads(LossSimple):
+    def __init__(self, trainable_variables: TrainableVariables,
+                 non_trainable_variables: TrainableVariables, with_noise: bool,
+                 alpha: float, weight_pde: float = 1, weight_conditions: float = 1,
+                 weight_data: float = 1, eps: float = 1e-8):
+        super().__init__(
+            trainable_variables=trainable_variables,
+            non_trainable_variables=non_trainable_variables,
+            with_noise=with_noise,
+            alpha=alpha,
+            weight_pde=weight_pde,
+            weight_conditions=weight_conditions,
+            weight_data=weight_data,
+            eps=eps
+        )
+
+    def _pde_grad_weight(self):
+        return self.weight_pde
+
+    def _condition_grad_weight(self):
+        return self.weight_conditions
+
+    def _condition_data_grad_weight(self):
+        return self.weight_data

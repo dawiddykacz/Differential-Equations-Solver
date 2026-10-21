@@ -12,8 +12,8 @@ class LossFunction(Function):
         conditions = self._condition(function, *x)
         conditions_data = self._condition_data(function, *x)
 
-        y = abs(self._pde_weight()) * tensorflow.reduce_mean(tensorflow.square(y))
-        loss = y + self._add_condition()
+        y = tensorflow.reduce_mean(tensorflow.square(y))
+        loss = abs(self._pde_weight()) * y + self._add_condition()
         if conditions is not 0:
             conditions = tensorflow.reduce_mean(tensorflow.square(conditions))
             loss += abs(self._condition_weight()) * conditions
@@ -22,7 +22,11 @@ class LossFunction(Function):
             conditions_data = tensorflow.reduce_mean(tensorflow.square(conditions_data))
             loss += abs(self._condition_data_weight()) * conditions_data
 
-        return {'loss': loss, 'loss_pde': y, 'conditions': conditions, 'conditions_data': conditions_data}
+        return {'loss': loss,
+                'loss_pde': abs(self._pde_grad_weight()) * y,
+                'conditions': abs(self._condition_grad_weight()) * conditions,
+                'conditions_data': abs(self._condition_data_grad_weight()) * conditions_data
+                }
 
     def _left_side_of_the_equation(self, function, *x):
         return 0
@@ -45,10 +49,19 @@ class LossFunction(Function):
     def _condition_weight(self):
         return 1
 
+    def _condition_grad_weight(self):
+        return 1
+
     def _pde_weight(self):
         return 1
 
+    def _pde_grad_weight(self):
+        return 1
+
     def _condition_data_weight(self):
+        return 1
+
+    def _condition_data_grad_weight(self):
         return 1
 
     def recalculate_weights(self, grads_dict, loss_error):

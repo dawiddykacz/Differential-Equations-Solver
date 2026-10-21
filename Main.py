@@ -24,6 +24,12 @@ def configure_solver():
                                   ])
 
 
+def get_is_calculating_wang_grads_by_weight(weight):
+    if weight == 1:
+        return [False]
+    return [True, False]
+
+
 def basic_rep(task_repository):
     d_min = 0.0001
     range_weight = 10 ** 4
@@ -44,26 +50,31 @@ def basic_rep(task_repository):
         task_repository.add_task(ExampleSimpleSecond2ProblemLossTask(weight_pde=d_min,
                                                                      weight_data=1,
                                                                      with_noise=with_noise))
-        task_repository.add_task(
-            ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
-                                                   weight_pde=d_min,
-                                                   weight_conditions=1,
-                                                   weight_data=1, with_noise=with_noise))
-        task_repository.add_task(
-            ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=alpha,
-                                                         weight_pde=d_min,
-                                                         weight_data=1,
-                                                         with_noise=with_noise))
-        task_repository.add_task(
-            ExampleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
-                                                        weight_pde=d_min,
-                                                        weight_conditions=1,
-                                                        weight_data=1, with_noise=with_noise))
-        task_repository.add_task(
-            ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
-                                                              weight_pde=d_min,
-                                                              weight_data=1,
-                                                              with_noise=with_noise))
+        for is_calculating_wang_grads in [False, True]:
+            task_repository.add_task(
+                ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
+                                                       weight_pde=d_min,
+                                                       weight_conditions=1,
+                                                       weight_data=1, with_noise=with_noise,
+                                                       is_calculating_wang_grads=is_calculating_wang_grads))
+            task_repository.add_task(
+                ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=alpha,
+                                                             weight_pde=d_min,
+                                                             weight_data=1,
+                                                             with_noise=with_noise,
+                                                             is_calculating_wang_grads=is_calculating_wang_grads))
+            task_repository.add_task(
+                ExampleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
+                                                            weight_pde=d_min,
+                                                            weight_conditions=1,
+                                                            weight_data=1, with_noise=with_noise,
+                                                            is_calculating_wang_grads=is_calculating_wang_grads))
+            task_repository.add_task(
+                ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
+                                                                  weight_pde=d_min,
+                                                                  weight_data=1,
+                                                                  with_noise=with_noise,
+                                                                  is_calculating_wang_grads=is_calculating_wang_grads))
         for weight in [1, range_weight]:
             task_repository.add_task(ExampleFirst2ProblemLossTask(weight_data=weight,
                                                                   weight_pde=1,
@@ -79,32 +90,36 @@ def basic_rep(task_repository):
             task_repository.add_task(ExampleSimpleSecond2ProblemLossTask(weight_pde=1,
                                                                          weight_data=weight,
                                                                          with_noise=with_noise))
-            for alpha in [0.9]:
+            for is_calculating_wang_grads in get_is_calculating_wang_grads_by_weight(weight):
                 task_repository.add_task(
                     ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
                                                            weight_pde=1,
                                                            weight_conditions=weight,
-                                                           weight_data=weight, with_noise=with_noise))
+                                                           weight_data=weight, with_noise=with_noise,
+                                                           is_calculating_wang_grads=is_calculating_wang_grads))
                 task_repository.add_task(
                     ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=alpha,
                                                                  weight_pde=1,
                                                                  weight_data=weight,
-                                                                 with_noise=with_noise))
+                                                                 with_noise=with_noise,
+                                                                 is_calculating_wang_grads=is_calculating_wang_grads))
                 task_repository.add_task(
                     ExampleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
                                                                 weight_pde=1,
                                                                 weight_conditions=weight,
-                                                                weight_data=weight, with_noise=with_noise))
+                                                                weight_data=weight, with_noise=with_noise,
+                                                                is_calculating_wang_grads=is_calculating_wang_grads))
                 task_repository.add_task(
                     ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
                                                                       weight_pde=1,
                                                                       weight_data=weight,
-                                                                      with_noise=with_noise))
+                                                                      with_noise=with_noise,
+                                                                      is_calculating_wang_grads=is_calculating_wang_grads))
 
 
 def run_all(learning_rate: float):
     set_learning_rate(learning_rate)
-    set_equations_amount(10)
+    set_equations_amount(2)
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
@@ -128,26 +143,31 @@ def run_all(learning_rate: float):
         task_repository.add_task(ExampleSimpleSecond2ProblemLossTask(weight_pde=d_min,
                                                                      weight_data=1,
                                                                      with_noise=with_noise))
-        task_repository.add_task(
-            ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
-                                                   weight_pde=d_min,
-                                                   weight_conditions=1,
-                                                   weight_data=1, with_noise=with_noise))
-        task_repository.add_task(
-            ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=alpha,
-                                                         weight_pde=d_min,
-                                                         weight_data=1,
-                                                         with_noise=with_noise))
-        task_repository.add_task(
-            ExampleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
-                                                        weight_pde=d_min,
-                                                        weight_conditions=1,
-                                                        weight_data=1, with_noise=with_noise))
-        task_repository.add_task(
-            ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
-                                                              weight_pde=d_min,
-                                                              weight_data=1,
-                                                              with_noise=with_noise))
+        for is_calculating_wang_grads in [False, True]:
+            task_repository.add_task(
+                ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
+                                                       weight_pde=d_min,
+                                                       weight_conditions=1,
+                                                       weight_data=1, with_noise=with_noise,
+                                                       is_calculating_wang_grads=is_calculating_wang_grads))
+            task_repository.add_task(
+                ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=alpha,
+                                                             weight_pde=d_min,
+                                                             weight_data=1,
+                                                             with_noise=with_noise,
+                                                             is_calculating_wang_grads=is_calculating_wang_grads))
+            task_repository.add_task(
+                ExampleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
+                                                            weight_pde=d_min,
+                                                            weight_conditions=1,
+                                                            weight_data=1, with_noise=with_noise,
+                                                            is_calculating_wang_grads=is_calculating_wang_grads))
+            task_repository.add_task(
+                ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
+                                                                  weight_pde=d_min,
+                                                                  weight_data=1,
+                                                                  with_noise=with_noise,
+                                                                  is_calculating_wang_grads=is_calculating_wang_grads))
         for weight in [1, range_weight]:
             task_repository.add_task(ExampleFirst2ProblemLossTask(weight_data=weight,
                                                                   weight_pde=1,
@@ -163,28 +183,33 @@ def run_all(learning_rate: float):
             task_repository.add_task(ExampleSimpleSecond2ProblemLossTask(weight_pde=1,
                                                                          weight_data=weight,
                                                                          with_noise=with_noise))
-            task_repository.add_task(
-                ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
-                                                       weight_pde=1,
-                                                       weight_conditions=weight,
-                                                       weight_data=weight, with_noise=with_noise))
-            task_repository.add_task(
-                ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=alpha,
-                                                             weight_pde=1,
-                                                             weight_data=weight,
-                                                             with_noise=with_noise))
-            task_repository.add_task(
-                ExampleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
-                                                            weight_pde=1,
-                                                            weight_conditions=weight,
-                                                            weight_data=weight, with_noise=with_noise))
-            task_repository.add_task(
-                ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
-                                                                  weight_pde=1,
-                                                                  weight_data=weight,
-                                                                  with_noise=with_noise))
+            for is_calculating_wang_grads in get_is_calculating_wang_grads_by_weight(weight):
+                task_repository.add_task(
+                    ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
+                                                           weight_pde=1,
+                                                           weight_conditions=weight,
+                                                           weight_data=weight, with_noise=with_noise,
+                                                           is_calculating_wang_grads=is_calculating_wang_grads))
+                task_repository.add_task(
+                    ExampleSimpleFirst2ProblemLossWithWeightTask(alpha=alpha,
+                                                                 weight_pde=1,
+                                                                 weight_data=weight,
+                                                                 with_noise=with_noise,
+                                                                 is_calculating_wang_grads=is_calculating_wang_grads))
+                task_repository.add_task(
+                    ExampleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
+                                                                weight_pde=1,
+                                                                weight_conditions=weight,
+                                                                weight_data=weight, with_noise=with_noise,
+                                                                is_calculating_wang_grads=is_calculating_wang_grads))
+                task_repository.add_task(
+                    ExampleSimpleSecond2ProblemLossTaskWithWeightTask(alpha=alpha,
+                                                                      weight_pde=1,
+                                                                      weight_data=weight,
+                                                                      with_noise=with_noise,
+                                                                      is_calculating_wang_grads=is_calculating_wang_grads))
 
-    task_service.solve(5000)
+    task_service.solve(100)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
     error_messages = task_service.get_error_messages()
     if error_messages is not None:
