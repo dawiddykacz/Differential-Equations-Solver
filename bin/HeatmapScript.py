@@ -52,6 +52,7 @@ def parse_name(text: str) -> dict:
     w_data_match = re.search(rf"\bweight_data\s*=?\s*{num_pattern}", text, flags=re.IGNORECASE)
 
     wang_flag = bool(re.search(r"\bwang\b", text, flags=re.IGNORECASE))
+    weight_grads_flag = bool(re.search(r"\bfix grad\b", text, flags=re.IGNORECASE))
 
     alpha = float(alpha_match.group(1)) if alpha_match else None
     alpha_lower = float(alpha_lower_match.group(1)) if alpha_lower_match else None
@@ -78,7 +79,7 @@ def parse_name(text: str) -> dict:
         "weight_conditions": w_cond,
         "weight_data": w_data,
         "weights_combo": weights_combo,
-        "is_wang_dynamic_weight": wang_flag,
+        "is_wang_dynamic_weight": f"{wang_flag} - grad: {weight_grads_flag}",
     }
 
 

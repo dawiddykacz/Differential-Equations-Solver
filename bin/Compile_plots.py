@@ -63,7 +63,12 @@ def get_name_mapped(name: str) -> str | None:
     has_data_1 = bool(re.search(r"weight_data 1(?!\d)", name))
 
     if "wang" in name:
-        if has_pde_1 and has_data_1:
+        if " fix grad" in name:
+            if has_pde_1:
+                third_part = "e2"
+            else:
+                third_part = "e1"
+        elif has_pde_1 and has_data_1:
             third_part = "c"
         elif has_pde_1:
             third_part = "d2"
