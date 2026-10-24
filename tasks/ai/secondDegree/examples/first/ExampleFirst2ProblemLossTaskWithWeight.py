@@ -18,7 +18,8 @@ class ExampleFirst2ProblemLossWithWeightTask(TaskData):
                                                         f" weight_pde {weight_pde}"
                                                         f" weight_conditions {weight_conditions},"
                                                         f" weight_data {weight_data})"
-                                                        f" with noise = {with_noise} alpha = {alpha}")
+                                                        f" with noise = {with_noise} alpha = {alpha}"
+                                                        f" eps = {eps}")
         self.with_noise = with_noise
         self.alpha = alpha
         self.weight_conditions = weight_conditions
