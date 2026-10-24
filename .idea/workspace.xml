@@ -1,0 +1,1085 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="55f874e2-9076-4297-8e0e-a1581fa34371" name="Changes" comment="fix main" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dockerfile" />
+        <option value="Python Unit Test" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="fix_wang" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="revert-57-fix_wang_weight" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;dawiddykacz&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/dawiddykacz/Differential-Equations-Solver.git&quot;,
+    &quot;accountId&quot;: &quot;d43c167c-66d5-45e4-b2c7-f4ee163fcda8&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="3GCpr35aMuMHwElsQ4c8c8w8q0M" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Docker. docker-compose.yml: Compose Deployment.executor": "Run",
+    "Python tests.Python tests for AllEquationsTest.EquationsTest.executor": "Run",
+    "Python tests.Python tests for CompilePlotsTest.EquationsTest.executor": "Run",
+    "Python tests.Python tests for CompilePlotsTest.EquationsTest.test_1.executor": "Run",
+    "Python tests.Python tests for HeatmapScriptTest.EquationsTest.executor": "Run",
+    "Python tests.Python tests for HeatmapScriptTest.EquationsTest.test_1.executor": "Run",
+    "Python tests.Python tests for HeatmapScriptTest.EquationsTest.test_2.executor": "Run",
+    "Python tests.Python tests in AllEquationsTest.py.executor": "Run",
+    "Python.A.executor": "Run",
+    "Python.AISolver.executor": "Run",
+    "Python.AbstractExampleFirst2Equation.executor": "Run",
+    "Python.Compile_plots.executor": "Run",
+    "Python.Copy_Plots.executor": "Run",
+    "Python.ExampleSimpleFirst2ProblemLossWithWeightTask.executor": "Run",
+    "Python.GetPlotsPaths.executor": "Run",
+    "Python.GradsSaveData.executor": "Run",
+    "Python.HeatmapHelper.executor": "Run",
+    "Python.HeatmapScript (1).executor": "Run",
+    "Python.HeatmapScript.executor": "Run",
+    "Python.Main.executor": "Run",
+    "Python.Main2.executor": "Run",
+    "Python.WangModel.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "C:/Users/dawid/Desktop/Atlas-Logger-main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\dawid\Desktop\study\praca\Differential-Equations-Solver\plot" />
+      <recent name="C:\Users\dawid\Desktop\study\praca\Differential-Equations-Solver\plot\ama" />
+      <recent name="C:\Users\dawid\Desktop\study\praca\Differential-Equations-Solver\bin" />
+      <recent name="C:\Users\dawid\Desktop\study\praca\Differential-Equations-Solver\plot\1.5 k\bez opt" />
+      <recent name="C:\Users\dawid\Desktop\study\praca\Differential-Equations-Solver\plot\1.5 k\z opt" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.Main">
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="HeatmapScript" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/HeatmapScript.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="HeatmapScript" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/HeatmapScript.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Main2" type="PythonConfigurationType" factoryName="Python">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (Differential-Equations-Solver)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Main2" type="PythonConfigurationType" factoryName="Python">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (Differential-Equations-Solver)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Main2" type="PythonConfigurationType" factoryName="Python">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (Differential-Equations-Solver)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Main2" type="PythonConfigurationType" factoryName="Python">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (Differential-Equations-Solver)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name=" docker-compose.yml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="sourceFilePath" value=" docker-compose.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name=" docker-compose.yml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
+      <deployment type="docker-compose.yml">
+        <settings>
+          <option name="sourceFilePath" value=" docker-compose.yml" />
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for AllEquationsTest.EquationsTest" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;AllEquationsTest.EquationsTest&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for AllEquationsTest.EquationsTest" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;AllEquationsTest.EquationsTest&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for AllEquationsTest.EquationsTest" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;AllEquationsTest.EquationsTest&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for AllEquationsTest.EquationsTest" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;AllEquationsTest.EquationsTest&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in AllEquationsTest.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/AllEquationsTest.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in AllEquationsTest.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/AllEquationsTest.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in AllEquationsTest.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/AllEquationsTest.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in AllEquationsTest.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Differential-Equations-Solver" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/AllEquationsTest.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Docker. docker-compose.yml: Compose Deployment" />
+      <item itemvalue="Python.Main2" />
+      <item itemvalue="Python.HeatmapScript" />
+      <item itemvalue="Python.Main" />
+      <item itemvalue="Python tests.Python tests for AllEquationsTest.EquationsTest" />
+      <item itemvalue="Python tests.Python tests in AllEquationsTest.py" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.Main" />
+        <item itemvalue="Python tests.Python tests in AllEquationsTest.py" />
+        <item itemvalue="Python tests.Python tests for AllEquationsTest.EquationsTest" />
+        <item itemvalue="Python.HeatmapScript" />
+        <item itemvalue="Docker. docker-compose.yml: Compose Deployment" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.18034.82" />
+        <option value="bundled-python-sdk-975db3bf15a3-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.18034.82" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="55f874e2-9076-4297-8e0e-a1581fa34371" name="Changes" comment="add second degree equations" />
+      <created>1783485604695</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1783485604695</updated>
+      <workItem from="1783485606255" duration="18588000" />
+      <workItem from="1783680724891" duration="16868000" />
+      <workItem from="1783794338698" duration="9848000" />
+      <workItem from="1784197121928" duration="212000" />
+      <workItem from="1784197408205" duration="3343000" />
+      <workItem from="1784268071833" duration="1678000" />
+      <workItem from="1784367065698" duration="2958000" />
+      <workItem from="1784442061021" duration="9800000" />
+      <workItem from="1784527023053" duration="1345000" />
+      <workItem from="1784609292853" duration="10179000" />
+      <workItem from="1784702657216" duration="8787000" />
+      <workItem from="1784791727085" duration="1107000" />
+      <workItem from="1784885014379" duration="10589000" />
+      <workItem from="1784981765155" duration="7882000" />
+      <workItem from="1785061602837" duration="1248000" />
+      <workItem from="1785135553550" duration="4024000" />
+      <workItem from="1785218711780" duration="24485000" />
+      <workItem from="1785300930637" duration="19583000" />
+      <workItem from="1785478630018" duration="26055000" />
+      <workItem from="1785570701009" duration="5279000" />
+      <workItem from="1785605006710" duration="698000" />
+      <workItem from="1785740257396" duration="684000" />
+      <workItem from="1785960428576" duration="335000" />
+      <workItem from="1785998537930" duration="4466000" />
+      <workItem from="1786007984824" duration="13913000" />
+      <workItem from="1786049566375" duration="1159000" />
+      <workItem from="1786206420760" duration="7418000" />
+      <workItem from="1786258156524" duration="11022000" />
+      <workItem from="1786292117874" duration="1494000" />
+      <workItem from="1786366058070" duration="12973000" />
+      <workItem from="1786425611536" duration="9986000" />
+      <workItem from="1786533562472" duration="5471000" />
+      <workItem from="1786604696308" duration="689000" />
+      <workItem from="1787143467329" duration="8840000" />
+      <workItem from="1787226043569" duration="6334000" />
+      <workItem from="1787387732599" duration="13908000" />
+      <workItem from="1787470461847" duration="8906000" />
+      <workItem from="1787565585995" duration="7533000" />
+      <workItem from="1787643595526" duration="1864000" />
+      <workItem from="1787661944842" duration="3814000" />
+      <workItem from="1787741933045" duration="1017000" />
+      <workItem from="1787901568156" duration="8000" />
+      <workItem from="1787903069873" duration="11267000" />
+      <workItem from="1787994326082" duration="4212000" />
+      <workItem from="1788077260609" duration="3856000" />
+      <workItem from="1788251209094" duration="1965000" />
+      <workItem from="1788357195126" duration="8176000" />
+      <workItem from="1788413429833" duration="8751000" />
+      <workItem from="1788500371613" duration="708000" />
+      <workItem from="1788501775445" duration="1319000" />
+      <workItem from="1788626776711" duration="1013000" />
+      <workItem from="1788674842630" duration="200000" />
+      <workItem from="1788864474448" duration="9631000" />
+      <workItem from="1788944109608" duration="38000" />
+      <workItem from="1789059215830" duration="9715000" />
+      <workItem from="1789101750333" duration="7804000" />
+      <workItem from="1789195572739" duration="2278000" />
+      <workItem from="1789279077152" duration="8320000" />
+      <workItem from="1789306548168" duration="5007000" />
+      <workItem from="1789323521480" duration="4629000" />
+      <workItem from="1789363955851" duration="974000" />
+      <workItem from="1789381764149" duration="3228000" />
+      <workItem from="1789552230831" duration="12582000" />
+      <workItem from="1789567372186" duration="20791000" />
+      <workItem from="1789622181059" duration="10971000" />
+      <workItem from="1789675047016" duration="2035000" />
+      <workItem from="1789713447498" duration="14686000" />
+      <workItem from="1789750598528" duration="3647000" />
+      <workItem from="1790019428333" duration="780000" />
+      <workItem from="1790238501108" duration="18000" />
+      <workItem from="1790541743962" duration="52000" />
+      <workItem from="1790595493126" duration="6898000" />
+      <workItem from="1790608789845" duration="1801000" />
+      <workItem from="1790768427636" duration="14640000" />
+      <workItem from="1790832408050" duration="538000" />
+      <workItem from="1791266369514" duration="1018000" />
+      <workItem from="1791358669941" duration="2529000" />
+      <workItem from="1791388283053" duration="1114000" />
+      <workItem from="1791438773557" duration="4506000" />
+      <workItem from="1791800556759" duration="2293000" />
+      <workItem from="1791832067794" duration="5035000" />
+      <workItem from="1791872271953" duration="2358000" />
+      <workItem from="1791905246814" duration="4081000" />
+      <workItem from="1791921262613" duration="2320000" />
+      <workItem from="1792041760157" duration="1215000" />
+      <workItem from="1792069423096" duration="4992000" />
+      <workItem from="1792165953071" duration="10729000" />
+      <workItem from="1792224816871" duration="25058000" />
+      <workItem from="1792301057836" duration="17341000" />
+      <workItem from="1792333081020" duration="6730000" />
+      <workItem from="1792393427338" duration="16979000" />
+      <workItem from="1792437963710" duration="1016000" />
+      <workItem from="1792496733479" duration="2557000" />
+      <workItem from="1792567563681" duration="8024000" />
+      <workItem from="1792615280607" duration="1251000" />
+      <workItem from="1792649225164" duration="4117000" />
+    </task>
+    <task id="LOCAL-00119" summary="added data">
+      <option name="closed" value="true" />
+      <created>1790783654364</created>
+      <option name="number" value="00119" />
+      <option name="presentableId" value="LOCAL-00119" />
+      <option name="project" value="LOCAL" />
+      <updated>1790783654364</updated>
+    </task>
+    <task id="LOCAL-00120" summary="fix main">
+      <option name="closed" value="true" />
+      <created>1790783814212</created>
+      <option name="number" value="00120" />
+      <option name="presentableId" value="LOCAL-00120" />
+      <option name="project" value="LOCAL" />
+      <updated>1790783814212</updated>
+    </task>
+    <task id="LOCAL-00121" summary="fix 2 eq">
+      <option name="closed" value="true" />
+      <created>1790798359332</created>
+      <option name="number" value="00121" />
+      <option name="presentableId" value="LOCAL-00121" />
+      <option name="project" value="LOCAL" />
+      <updated>1790798359332</updated>
+    </task>
+    <task id="LOCAL-00122" summary="fix 2 eq">
+      <option name="closed" value="true" />
+      <created>1790798493702</created>
+      <option name="number" value="00122" />
+      <option name="presentableId" value="LOCAL-00122" />
+      <option name="project" value="LOCAL" />
+      <updated>1790798493702</updated>
+    </task>
+    <task id="LOCAL-00123" summary="fix 2 eq">
+      <option name="closed" value="true" />
+      <created>1790798578105</created>
+      <option name="number" value="00123" />
+      <option name="presentableId" value="LOCAL-00123" />
+      <option name="project" value="LOCAL" />
+      <updated>1790798578105</updated>
+    </task>
+    <task id="LOCAL-00124" summary="fix 2 eq">
+      <option name="closed" value="true" />
+      <created>1791266883314</created>
+      <option name="number" value="00124" />
+      <option name="presentableId" value="LOCAL-00124" />
+      <option name="project" value="LOCAL" />
+      <updated>1791266883314</updated>
+    </task>
+    <task id="LOCAL-00125" summary="fix heat dir">
+      <option name="closed" value="true" />
+      <created>1791358801037</created>
+      <option name="number" value="00125" />
+      <option name="presentableId" value="LOCAL-00125" />
+      <option name="project" value="LOCAL" />
+      <updated>1791358801038</updated>
+    </task>
+    <task id="LOCAL-00126" summary="fix heat dir">
+      <option name="closed" value="true" />
+      <created>1791359143676</created>
+      <option name="number" value="00126" />
+      <option name="presentableId" value="LOCAL-00126" />
+      <option name="project" value="LOCAL" />
+      <updated>1791359143676</updated>
+    </task>
+    <task id="LOCAL-00127" summary="fix heat dir">
+      <option name="closed" value="true" />
+      <created>1791359584307</created>
+      <option name="number" value="00127" />
+      <option name="presentableId" value="LOCAL-00127" />
+      <option name="project" value="LOCAL" />
+      <updated>1791359584307</updated>
+    </task>
+    <task id="LOCAL-00128" summary="added gh action">
+      <option name="closed" value="true" />
+      <created>1791442187224</created>
+      <option name="number" value="00128" />
+      <option name="presentableId" value="LOCAL-00128" />
+      <option name="project" value="LOCAL" />
+      <updated>1791442187225</updated>
+    </task>
+    <task id="LOCAL-00129" summary="fix gh action">
+      <option name="closed" value="true" />
+      <created>1791442336358</created>
+      <option name="number" value="00129" />
+      <option name="presentableId" value="LOCAL-00129" />
+      <option name="project" value="LOCAL" />
+      <updated>1791442336358</updated>
+    </task>
+    <task id="LOCAL-00130" summary="fix gh action">
+      <option name="closed" value="true" />
+      <created>1791442715499</created>
+      <option name="number" value="00130" />
+      <option name="presentableId" value="LOCAL-00130" />
+      <option name="project" value="LOCAL" />
+      <updated>1791442715499</updated>
+    </task>
+    <task id="LOCAL-00131" summary="fix gh action">
+      <option name="closed" value="true" />
+      <created>1791443058873</created>
+      <option name="number" value="00131" />
+      <option name="presentableId" value="LOCAL-00131" />
+      <option name="project" value="LOCAL" />
+      <updated>1791443058873</updated>
+    </task>
+    <task id="LOCAL-00132" summary="fix gh action">
+      <option name="closed" value="true" />
+      <created>1791443321611</created>
+      <option name="number" value="00132" />
+      <option name="presentableId" value="LOCAL-00132" />
+      <option name="project" value="LOCAL" />
+      <updated>1791443321611</updated>
+    </task>
+    <task id="LOCAL-00133" summary="fix gh action">
+      <option name="closed" value="true" />
+      <created>1791443470826</created>
+      <option name="number" value="00133" />
+      <option name="presentableId" value="LOCAL-00133" />
+      <option name="project" value="LOCAL" />
+      <updated>1791443470826</updated>
+    </task>
+    <task id="LOCAL-00134" summary="fix gh action">
+      <option name="closed" value="true" />
+      <created>1791443648959</created>
+      <option name="number" value="00134" />
+      <option name="presentableId" value="LOCAL-00134" />
+      <option name="project" value="LOCAL" />
+      <updated>1791443648959</updated>
+    </task>
+    <task id="LOCAL-00135" summary="fix gh action">
+      <option name="closed" value="true" />
+      <created>1791443779996</created>
+      <option name="number" value="00135" />
+      <option name="presentableId" value="LOCAL-00135" />
+      <option name="project" value="LOCAL" />
+      <updated>1791443779996</updated>
+    </task>
+    <task id="LOCAL-00136" summary="added new stats">
+      <option name="closed" value="true" />
+      <created>1791834414016</created>
+      <option name="number" value="00136" />
+      <option name="presentableId" value="LOCAL-00136" />
+      <option name="project" value="LOCAL" />
+      <updated>1791834414016</updated>
+    </task>
+    <task id="LOCAL-00137" summary="merge heatmaps">
+      <option name="closed" value="true" />
+      <created>1791923860461</created>
+      <option name="number" value="00137" />
+      <option name="presentableId" value="LOCAL-00137" />
+      <option name="project" value="LOCAL" />
+      <updated>1791923860461</updated>
+    </task>
+    <task id="LOCAL-00138" summary="fix wang">
+      <option name="closed" value="true" />
+      <created>1792169372712</created>
+      <option name="number" value="00138" />
+      <option name="presentableId" value="LOCAL-00138" />
+      <option name="project" value="LOCAL" />
+      <updated>1792169372712</updated>
+    </task>
+    <task id="LOCAL-00139" summary="fix wang">
+      <option name="closed" value="true" />
+      <created>1792169420658</created>
+      <option name="number" value="00139" />
+      <option name="presentableId" value="LOCAL-00139" />
+      <option name="project" value="LOCAL" />
+      <updated>1792169420658</updated>
+    </task>
+    <task id="LOCAL-00140" summary="fix decorators">
+      <option name="closed" value="true" />
+      <created>1792173046552</created>
+      <option name="number" value="00140" />
+      <option name="presentableId" value="LOCAL-00140" />
+      <option name="project" value="LOCAL" />
+      <updated>1792173046552</updated>
+    </task>
+    <task id="LOCAL-00141" summary="fix decorators">
+      <option name="closed" value="true" />
+      <created>1792173180498</created>
+      <option name="number" value="00141" />
+      <option name="presentableId" value="LOCAL-00141" />
+      <option name="project" value="LOCAL" />
+      <updated>1792173180498</updated>
+    </task>
+    <task id="LOCAL-00142" summary="fix decorators">
+      <option name="closed" value="true" />
+      <created>1792173423947</created>
+      <option name="number" value="00142" />
+      <option name="presentableId" value="LOCAL-00142" />
+      <option name="project" value="LOCAL" />
+      <updated>1792173423947</updated>
+    </task>
+    <task id="LOCAL-00143" summary="fix wang">
+      <option name="closed" value="true" />
+      <created>1792234990887</created>
+      <option name="number" value="00143" />
+      <option name="presentableId" value="LOCAL-00143" />
+      <option name="project" value="LOCAL" />
+      <updated>1792234990888</updated>
+    </task>
+    <task id="LOCAL-00144" summary="fix main">
+      <option name="closed" value="true" />
+      <created>1792235044382</created>
+      <option name="number" value="00144" />
+      <option name="presentableId" value="LOCAL-00144" />
+      <option name="project" value="LOCAL" />
+      <updated>1792235044382</updated>
+    </task>
+    <task id="LOCAL-00145" summary="fix tests">
+      <option name="closed" value="true" />
+      <created>1792236098371</created>
+      <option name="number" value="00145" />
+      <option name="presentableId" value="LOCAL-00145" />
+      <option name="project" value="LOCAL" />
+      <updated>1792236098371</updated>
+    </task>
+    <task id="LOCAL-00146" summary="fix tests">
+      <option name="closed" value="true" />
+      <created>1792236924169</created>
+      <option name="number" value="00146" />
+      <option name="presentableId" value="LOCAL-00146" />
+      <option name="project" value="LOCAL" />
+      <updated>1792236924169</updated>
+    </task>
+    <task id="LOCAL-00147" summary="added save grads">
+      <option name="closed" value="true" />
+      <created>1792258591875</created>
+      <option name="number" value="00147" />
+      <option name="presentableId" value="LOCAL-00147" />
+      <option name="project" value="LOCAL" />
+      <updated>1792258591875</updated>
+    </task>
+    <task id="LOCAL-00148" summary="fix save grads">
+      <option name="closed" value="true" />
+      <created>1792259533756</created>
+      <option name="number" value="00148" />
+      <option name="presentableId" value="LOCAL-00148" />
+      <option name="project" value="LOCAL" />
+      <updated>1792259533756</updated>
+    </task>
+    <task id="LOCAL-00149" summary="fix save grads">
+      <option name="closed" value="true" />
+      <created>1792259823158</created>
+      <option name="number" value="00149" />
+      <option name="presentableId" value="LOCAL-00149" />
+      <option name="project" value="LOCAL" />
+      <updated>1792259823158</updated>
+    </task>
+    <task id="LOCAL-00150" summary="fix save grads name">
+      <option name="closed" value="true" />
+      <created>1792264394396</created>
+      <option name="number" value="00150" />
+      <option name="presentableId" value="LOCAL-00150" />
+      <option name="project" value="LOCAL" />
+      <updated>1792264394396</updated>
+    </task>
+    <task id="LOCAL-00151" summary="fix save grads name">
+      <option name="closed" value="true" />
+      <created>1792264410283</created>
+      <option name="number" value="00151" />
+      <option name="presentableId" value="LOCAL-00151" />
+      <option name="project" value="LOCAL" />
+      <updated>1792264410283</updated>
+    </task>
+    <task id="LOCAL-00152" summary="fix wang grads">
+      <option name="closed" value="true" />
+      <created>1792265567370</created>
+      <option name="number" value="00152" />
+      <option name="presentableId" value="LOCAL-00152" />
+      <option name="project" value="LOCAL" />
+      <updated>1792265567370</updated>
+    </task>
+    <task id="LOCAL-00153" summary="fix wang grads">
+      <option name="closed" value="true" />
+      <created>1792308533371</created>
+      <option name="number" value="00153" />
+      <option name="presentableId" value="LOCAL-00153" />
+      <option name="project" value="LOCAL" />
+      <updated>1792308533371</updated>
+    </task>
+    <task id="LOCAL-00154" summary="fix wang grads">
+      <option name="closed" value="true" />
+      <created>1792310306977</created>
+      <option name="number" value="00154" />
+      <option name="presentableId" value="LOCAL-00154" />
+      <option name="project" value="LOCAL" />
+      <updated>1792310306977</updated>
+    </task>
+    <task id="LOCAL-00155" summary="fix main">
+      <option name="closed" value="true" />
+      <created>1792311376638</created>
+      <option name="number" value="00155" />
+      <option name="presentableId" value="LOCAL-00155" />
+      <option name="project" value="LOCAL" />
+      <updated>1792311376638</updated>
+    </task>
+    <task id="LOCAL-00156" summary="fix main">
+      <option name="closed" value="true" />
+      <created>1792311402379</created>
+      <option name="number" value="00156" />
+      <option name="presentableId" value="LOCAL-00156" />
+      <option name="project" value="LOCAL" />
+      <updated>1792311402379</updated>
+    </task>
+    <task id="LOCAL-00157" summary="fix tests">
+      <option name="closed" value="true" />
+      <created>1792313467503</created>
+      <option name="number" value="00157" />
+      <option name="presentableId" value="LOCAL-00157" />
+      <option name="project" value="LOCAL" />
+      <updated>1792313467503</updated>
+    </task>
+    <task id="LOCAL-00158" summary="fix wang">
+      <option name="closed" value="true" />
+      <created>1792335338608</created>
+      <option name="number" value="00158" />
+      <option name="presentableId" value="LOCAL-00158" />
+      <option name="project" value="LOCAL" />
+      <updated>1792335338608</updated>
+    </task>
+    <task id="LOCAL-00159" summary="fix non train">
+      <option name="closed" value="true" />
+      <created>1792336088923</created>
+      <option name="number" value="00159" />
+      <option name="presentableId" value="LOCAL-00159" />
+      <option name="project" value="LOCAL" />
+      <updated>1792336088923</updated>
+    </task>
+    <task id="LOCAL-00160" summary="delete print">
+      <option name="closed" value="true" />
+      <created>1792337652207</created>
+      <option name="number" value="00160" />
+      <option name="presentableId" value="LOCAL-00160" />
+      <option name="project" value="LOCAL" />
+      <updated>1792337652207</updated>
+    </task>
+    <task id="LOCAL-00161" summary="change eps in 2 example">
+      <option name="closed" value="true" />
+      <created>1792395958763</created>
+      <option name="number" value="00161" />
+      <option name="presentableId" value="LOCAL-00161" />
+      <option name="project" value="LOCAL" />
+      <updated>1792395958763</updated>
+    </task>
+    <task id="LOCAL-00162" summary="fix eps">
+      <option name="closed" value="true" />
+      <created>1792409540269</created>
+      <option name="number" value="00162" />
+      <option name="presentableId" value="LOCAL-00162" />
+      <option name="project" value="LOCAL" />
+      <updated>1792409540269</updated>
+    </task>
+    <task id="LOCAL-00163" summary="fix eps to e-4">
+      <option name="closed" value="true" />
+      <created>1792496815857</created>
+      <option name="number" value="00163" />
+      <option name="presentableId" value="LOCAL-00163" />
+      <option name="project" value="LOCAL" />
+      <updated>1792496815857</updated>
+    </task>
+    <task id="LOCAL-00164" summary="fix eps to e-4">
+      <option name="closed" value="true" />
+      <created>1792567577432</created>
+      <option name="number" value="00164" />
+      <option name="presentableId" value="LOCAL-00164" />
+      <option name="project" value="LOCAL" />
+      <updated>1792567577432</updated>
+    </task>
+    <task id="LOCAL-00165" summary="fix wang grads">
+      <option name="closed" value="true" />
+      <created>1792572310877</created>
+      <option name="number" value="00165" />
+      <option name="presentableId" value="LOCAL-00165" />
+      <option name="project" value="LOCAL" />
+      <updated>1792572310877</updated>
+    </task>
+    <task id="LOCAL-00166" summary="fix main">
+      <option name="closed" value="true" />
+      <created>1792572444583</created>
+      <option name="number" value="00166" />
+      <option name="presentableId" value="LOCAL-00166" />
+      <option name="project" value="LOCAL" />
+      <updated>1792572444583</updated>
+    </task>
+    <task id="LOCAL-00167" summary="fix main">
+      <option name="closed" value="true" />
+      <created>1792652842217</created>
+      <option name="number" value="00167" />
+      <option name="presentableId" value="LOCAL-00167" />
+      <option name="project" value="LOCAL" />
+      <updated>1792652842217</updated>
+    </task>
+    <option name="localTasksCounter" value="168" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="fix data" />
+    <MESSAGE value="added plots script" />
+    <MESSAGE value="added groups" />
+    <MESSAGE value="added weight pde to 2 example" />
+    <MESSAGE value="added data" />
+    <MESSAGE value="fix 2 eq" />
+    <MESSAGE value="fix heat dir" />
+    <MESSAGE value="added gh action" />
+    <MESSAGE value="fix gh action" />
+    <MESSAGE value="added new stats" />
+    <MESSAGE value="merge heatmaps" />
+    <MESSAGE value="fix decorators" />
+    <MESSAGE value="added save grads" />
+    <MESSAGE value="fix save grads" />
+    <MESSAGE value="fix save grads name" />
+    <MESSAGE value="Revert &quot;fix decorators (#56)&quot; (#61)&#10;&#10;This reverts commit 77bb7b2c2f92d8707a67e31d549bb0d365a8473a." />
+    <MESSAGE value="fix tests" />
+    <MESSAGE value="fix wang" />
+    <MESSAGE value="fix non train" />
+    <MESSAGE value="delete print" />
+    <MESSAGE value="change eps in 2 example" />
+    <MESSAGE value="fix eps" />
+    <MESSAGE value="fix eps to e-4" />
+    <MESSAGE value="fix wang grads" />
+    <MESSAGE value="fix main" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix main" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$Compile_plots.coverage" NAME="Compile_plots Coverage Results" MODIFIED="1792438821176" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bin" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$Main2.coverage" NAME="Main2 Coverage Results" MODIFIED="1791833893726" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$A.coverage" NAME="A Coverage Results" MODIFIED="1792496964937" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$HeatmapHelper.coverage" NAME="HeatmapHelper Coverage Results" MODIFIED="1789322647180" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$HeatmapScript__1_.coverage" NAME="HeatmapScript (1) Coverage Results" MODIFIED="1789382739661" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$GetPlotsPaths.coverage" NAME="GetPlotsPaths Coverage Results" MODIFIED="1791440944361" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bin" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$WangModel.coverage" NAME="WangModel Coverage Results" MODIFIED="1789720766091" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/solvers/models" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$Copy_Plots.coverage" NAME="Copy_Plots Coverage Results" MODIFIED="1791440623505" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bin" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$Main.coverage" NAME="Main Coverage Results" MODIFIED="1792652581017" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$AISolver.coverage" NAME="AISolver Coverage Results" MODIFIED="1788418778015" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/solvers" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$ExampleSimpleFirst2ProblemLossWithWeightTask.coverage" NAME="ExampleSimpleFirst2ProblemLossWithWeightTask Coverage Results" MODIFIED="1792652563784" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tasks/ai/secondDegree/examples/first" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$.coverage" NAME=" Coverage Results" MODIFIED="1792572257616" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$AbstractExampleFirst2Equation.coverage" NAME="AbstractExampleFirst2Equation Coverage Results" MODIFIED="1789070187513" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/equations/ai/secondDegree/examples/first" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$GradsSaveData.coverage" NAME="GradsSaveData Coverage Results" MODIFIED="1792253642800" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/solvers" />
+    <SUITE FILE_PATH="coverage/Differential_Equations_Solver$HeatmapScript.coverage" NAME="HeatmapScript Coverage Results" MODIFIED="1791923681143" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bin" />
+  </component>
+</project>

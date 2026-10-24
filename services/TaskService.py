@@ -59,6 +59,9 @@ class TaskService:
 
         for i in range(equations_amount):
             print(f'{i + 1} / {equations_amount}')
+
+            tensorflow.keras.backend.clear_session()
+
             eq = copy.deepcopy(equation)
             equations.append(eq)
             self.run_solution(eq, epoch, test_space)

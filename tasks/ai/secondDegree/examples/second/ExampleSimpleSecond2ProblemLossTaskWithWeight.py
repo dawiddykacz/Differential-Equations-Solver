@@ -18,7 +18,8 @@ class ExampleSimpleSecond2ProblemLossTaskWithWeightTask(TaskData):
                          f"({get_wang_title(is_calculating_wang_grads)} and"
                          f" weight_data {weight_data}"
                          f" weight_pde {weight_pde})"
-                         f" with noise = {with_noise} alpha = {alpha}")
+                         f" with noise = {with_noise} alpha = {alpha}"
+                         f" eps = {eps}")
         self.with_noise = with_noise
         self.alpha = alpha
         self.weight_pde = weight_pde
