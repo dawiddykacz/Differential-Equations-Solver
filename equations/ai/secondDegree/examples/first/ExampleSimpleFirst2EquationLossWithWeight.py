@@ -1,3 +1,4 @@
+from equations.ai.secondDegree.examples.WangHelper import calculate_wang
 from equations.ai.secondDegree.examples.first.AbstractExampleFirst2Equation import *
 
 
@@ -60,11 +61,13 @@ class LossSimple(Loss):
         max_grad_pde = grads_dict['grad_pde_max']
         mean_grad_data = grads_dict['grad_data_mean']
 
-        w2 = max_grad_pde / (mean_grad_data + self.eps)
-
-        self.__non_trainable_variables.get_variables()[0].assign((1 - self.__alpha) *
-                                                                 self.__non_trainable_variables.get_variables()[0]
-                                                                 + self.__alpha * w2)
+        self.__non_trainable_variables.get_variables()[0].assign(calculate_wang(
+            mean=mean_grad_data,
+            max=max_grad_pde,
+            alpha=self.__alpha,
+            eps=self.eps,
+            old_value=self.__non_trainable_variables.get_variables()[0]
+        ))
 
 
 class LossSimpleWithWeightGrads(LossSimple):

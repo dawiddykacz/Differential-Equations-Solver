@@ -26,12 +26,12 @@ MAPOWANIE = {
     "Grad_PDE_Max": "Maksymalny gradiend reziduum funkcji straty vs l epok",
     "grad_pde_max": "Maksymalny gradiend reziduum funkcji straty vs l epok",
     "Grad PDE Max": "Maksymalny gradiend reziduum funkcji straty vs l epok",
-    "Grad_BC_Max": "Maksymalny gradiend czesci warunkow funkcji straty vs l epok",
-    "grad_bc_max": "Maksymalny gradiend czesci warunkow funkcji straty vs l epok",
-    "Grad BC Max": "Maksymalny gradiend czesci warunkow funkcji straty vs l epok",
-    "Grad_Data_Max": "Maksymalny gradiend czesci pomiarow funkcji straty vs l epok",
-    "grad_data_max": "Maksymalny gradiend czesci pomiarow funkcji straty vs l epok",
-    "Grad Data Max": "Maksymalny gradiend czesci pomiarow funkcji straty vs l epok",
+    "Grad_BC_Mean": "Średni gradiend czesci warunkow funkcji straty vs l epok",
+    "grad_bc_mean": "Średni gradiend czesci warunkow funkcji straty vs l epok",
+    "Grad BC Mean": "Średni gradiend czesci warunkow funkcji straty vs l epok",
+    "Grad_Data_Mean": "Średni gradiend czesci pomiarow funkcji straty vs l epok",
+    "grad_data_mean": "Średni gradiend czesci pomiarow funkcji straty vs l epok",
+    "Grad Data Mean": "Średni gradiend czesci pomiarow funkcji straty vs l epok",
     "Network_Stiffness": "Sztywnosc vs l epok",
     "Network Stiffness": "Sztywnosc vs l epok",
     "Mean square error": "Blad sredniokwadratowy vs l epok",
@@ -42,10 +42,10 @@ MAPOWANIE = {
 }
 
 PLOT_GROUPS = {
-    "1 przyklad Podejscie_1": ["1.1.a", "1.1.b1", "1.1.b2", "1.1.c", "1.1.d1", "1.1.d2"],
-    "1 przyklad Podejscie_2": ["1.2.a", "1.2.b1", "1.2.b2", "1.2.c", "1.2.d1", "1.2.d2"],
-    "2 przyklad Podejscie_1": ["2.1.a", "2.1.b1", "2.1.b2", "2.1.c", "2.1.d1", "2.1.d2"],
-    "2 przyklad Podejscie_2": ["2.2.a", "2.2.b1", "2.2.b2", "2.2.c", "2.2.d1", "2.2.d2"],
+    "1 przyklad Podejscie_1": ["1.1.a", "1.1.b1", "1.1.b2", "1.1.c", "1.1.d1", "1.1.d2", "1.1.e1", "1.1.e2"],
+    "1 przyklad Podejscie_2": ["1.2.a", "1.2.b1", "1.2.b2", "1.2.c", "1.2.d1", "1.2.d2", "1.2.e1", "1.2.e2"],
+    "2 przyklad Podejscie_1": ["2.1.a", "2.1.b1", "2.1.b2", "2.1.c", "2.1.d1", "2.1.d2", "2.1.e1", "2.1.e2"],
+    "2 przyklad Podejscie_2": ["2.2.a", "2.2.b1", "2.2.b2", "2.2.c", "2.2.d1", "2.2.d2", "2.2.e1", "2.2.e2"],
 }
 
 
