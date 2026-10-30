@@ -14,7 +14,7 @@ class ExampleSimpleFirst2ProblemLossWithTrainableVariable(AbstractExampleFirst2P
 class SimpleSolutionFunction(SolutionFunction):
     def calculate(self, *vars):
         x = vars[0]
-        return super().calculate(*vars) * x
+        return super().calculate(*vars) * x * (1 - x)
 
 
 class LossSimple(LossWithTrainableVariable):

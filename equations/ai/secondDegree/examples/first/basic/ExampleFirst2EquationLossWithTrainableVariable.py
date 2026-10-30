@@ -1,3 +1,5 @@
+import tensorflow.python.keras.backend
+
 from equations.ai.secondDegree.examples.first.AbstractExampleFirst2ProblemWithTrainableVariable import *
 
 
@@ -24,8 +26,9 @@ class LossSimple(LossWithTrainableVariable):
 
     def _condition(self, function, *x):
         zero = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
+        one = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
 
-        return function(zero) - zero
+        return tensorflow.abs(function(zero) - zero) + tensorflow.abs(function(one) - zero)
 
     def _pde_weight(self):
         return self.weight_pde

@@ -39,8 +39,9 @@ class LossSimple(Loss):
 
     def _condition(self, function, *x):
         zero = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
+        one = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
 
-        return function(zero) - zero
+        return tensorflow.abs(function(zero) - zero) + tensorflow.abs(function(one) - zero)
 
     def _condition_weight(self):
         return self.weight_conditions * self.__non_trainable_variables.get_variables()[0]

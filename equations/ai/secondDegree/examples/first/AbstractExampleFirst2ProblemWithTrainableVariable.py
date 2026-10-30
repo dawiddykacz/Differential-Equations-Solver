@@ -17,7 +17,7 @@ class LossWithTrainableVariable(Loss):
             w = [0.0, 0.0, 0.0, 0.0, 0.0]
         self.__w = tensorflow.constant(w, dtype=tensorflow.float64)
 
-        self.__points = tensorflow.constant([-1.0, -0.5, 1.0, 0.5, 0.1], dtype=tensorflow.float64)
+        self.__points = tensorflow.constant([-1.0, -0.5, 1.0, 0.95, 0.1], dtype=tensorflow.float64)
 
     def _left_side_of_the_equation(self, function, *x):
         return super()._left_side_of_the_equation(function, *x) * self.__t.get_variables()[0]
