@@ -28,14 +28,14 @@ def configure_solver():
 
 def run_all(learning_rate: float):
     set_learning_rate(learning_rate)
-    set_equations_amount(2)
+    set_equations_amount(10)
     task_repository = TasksRepository()
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
-    test_2(task_repository)
+    test_1(task_repository)
 
-    task_service.solve(10)
+    task_service.solve(5000)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
     error_messages = task_service.get_error_messages()
     if error_messages is not None:
