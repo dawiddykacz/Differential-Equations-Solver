@@ -21,7 +21,7 @@ class ChoosePlot:
         self.__space = space
         self.__plot_data = plot_data
         self.__results = results
-        self.__save_path = "\\\\?\\" + os.path.abspath(save_path)
+        self.__save_path = save_path
 
     def choose(self):
         dimension = self.__space.get_dimension()

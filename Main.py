@@ -33,7 +33,7 @@ def run_all(learning_rate: float):
     task_service = TaskService(task_repository)
     weight_plot_service = WeightPlotService(task_service.get_ms())
 
-    test_1(task_repository)
+    test_2(task_repository)
 
     task_service.solve(10)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
