@@ -1,7 +1,7 @@
-from equations.ai.secondDegree.examples.first.AbstractExampleFirst2Equation import *
+from equations.ai.secondDegree.examples.first.AbstractExampleFirst2ProblemWithTrainableVariable import *
 
 
-class ExampleSimpleFirst2ProblemLoss(AbstractExampleFirst2Problem):
+class ExampleSimpleFirst2ProblemLossWithTrainableVariable(AbstractExampleFirst2ProblemWithTrainableVariable):
     def __init__(self, space: Space, with_noise: bool, weight_pde: float = 1, weight_data: float = 1):
         t = TrainableVariables([1])
         super().__init__(
@@ -14,10 +14,10 @@ class ExampleSimpleFirst2ProblemLoss(AbstractExampleFirst2Problem):
 class SimpleSolutionFunction(SolutionFunction):
     def calculate(self, *vars):
         x = vars[0]
-        return self._ai_solver.calculate(x) * x
+        return super().calculate(*vars) * x
 
 
-class LossSimple(Loss):
+class LossSimple(LossWithTrainableVariable):
     def __init__(self, t: TrainableVariables, with_noise: bool, weight_pde: float = 1, weight_data: float = 1):
         super().__init__(t, with_noise)
 

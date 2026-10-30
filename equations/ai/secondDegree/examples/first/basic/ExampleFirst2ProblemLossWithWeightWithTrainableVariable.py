@@ -1,5 +1,5 @@
 from equations.ai.secondDegree.examples.WangHelper import calculate_wang
-from equations.ai.secondDegree.examples.first.AbstractExampleFirst2Equation import *
+from equations.ai.secondDegree.examples.first.AbstractExampleFirst2ProblemWithTrainableVariable import *
 
 
 def choose_loss(is_calculating_wang_grads: bool):
@@ -8,7 +8,7 @@ def choose_loss(is_calculating_wang_grads: bool):
     return LossSimple
 
 
-class ExampleFirst2EquationLossWithWeight(AbstractExampleFirst2Problem):
+class ExampleFirst2EquationLossWithWeightWithTrainableVariable(AbstractExampleFirst2ProblemWithTrainableVariable):
     def __init__(self, space: Space, with_noise: bool, alpha: float, weight_conditions: float = 1,
                  weight_pde: float = 1, weight_data: float = 1,
                  epsilon: float = 1e-8, is_calculating_wang_grads: bool = False):
@@ -29,7 +29,7 @@ class ExampleFirst2EquationLossWithWeight(AbstractExampleFirst2Problem):
                              exact_trainable_variables=[0.5]))
 
 
-class LossSimple(Loss):
+class LossSimple(LossWithTrainableVariable):
     def __init__(self, trainable_variables: TrainableVariables,
                  non_trainable_variables: TrainableVariables, with_noise: bool,
                  alpha: float, weight_pde: float = 1, weight_conditions: float = 1,

@@ -1,8 +1,9 @@
+from equations.ai.secondDegree.examples.first.basic.ExampleFirst2EquationLossWithTrainableVariable import \
+    ExampleFirst2ProblemLossWithTrainableVariable
 from objects.TaskData import *
-from equations.ai.secondDegree.examples.first.ExampleFirst2EquationLoss import ExampleFirst2ProblemLoss
 
 
-class ExampleFirst2ProblemLossTask(TaskData):
+class ExampleFirst2ProblemLossTaskWithTrainableVariable(TaskData):
     def __init__(self, with_noise: bool, weight_pde: float = 1, weight_conditions: float = 1, weight_data: float = 1):
         super().__init__(SpaceRanges(10, Range(-1, 1)), f"1 example problem loss "
                                                         f"with noise {with_noise} weight_pde {weight_pde} "
@@ -14,8 +15,10 @@ class ExampleFirst2ProblemLossTask(TaskData):
         self.weight_pde = weight_pde
 
     def get_equation(self):
-        return ExampleFirst2ProblemLoss(self.get_space_range().split(), self.with_noise, weight_pde=self.weight_pde,
-                                        weight_conditions=self.weight_conditions, weight_data=self.weight_data)
+        return ExampleFirst2ProblemLossWithTrainableVariable(self.get_space_range().split(), self.with_noise,
+                                                             weight_pde=self.weight_pde,
+                                                             weight_conditions=self.weight_conditions,
+                                                             weight_data=self.weight_data)
 
     def get_plot_title(self):
         return f"1 example problem loss"
