@@ -51,33 +51,40 @@ PLOT_GROUPS = {
 
 def get_name_mapped(name: str) -> str | None:
     first_part = name.split(" ")[0]
-    second_part = ""
-    third_part = ""
 
     if "simple" in name:
         second_part = "1"
     else:
         second_part = "2"
 
-    has_pde_1 = bool(re.search(r"weight_pde 1(?!\d)", name))
-    has_data_1 = bool(re.search(r"weight_data 1(?!\d)", name))
+    is_pde_1 = True
+    if "weight_pde" in name:
+        is_pde_1 = bool(re.search(r"weight_pde 1(?!\d|\.)", name))
 
-    if "wang" in name:
-        if " fix grad" in name:
-            if has_pde_1:
+    is_data_1 = True
+    if "weight_data" in name or "weight_conditions" in name:
+        is_data_1 = bool(re.search(r"(weight_data|weight_conditions) 1(?!\d|\.)", name))
+
+    is_wang = "wang" in name
+    is_fix_grad = "fix grad" in name
+
+    if is_wang:
+        if is_fix_grad:
+            if is_pde_1:
                 third_part = "e2"
             else:
                 third_part = "e1"
-        elif has_pde_1 and has_data_1:
-            third_part = "c"
-        elif has_pde_1:
-            third_part = "d2"
         else:
-            third_part = "d1"
+            if is_pde_1 and is_data_1:
+                third_part = "c"
+            elif is_pde_1:
+                third_part = "d2"
+            else:
+                third_part = "d1"
     else:
-        if has_pde_1 and has_data_1:
+        if is_pde_1 and is_data_1:
             third_part = "a"
-        elif has_pde_1:
+        elif is_pde_1:
             third_part = "b2"
         else:
             third_part = "b1"
@@ -412,6 +419,7 @@ def plot_subplots_for_all_groups(data, groups, output_folder, max_zooms=3):
                 break
 
         gc.collect()
+
 
 def process_all_data(output_folder: str):
     # Krok 3

@@ -31,3 +31,36 @@ class EquationsTest(unittest.TestCase):
         self.assertEqual(
             get_name_mapped("1 example simple problem loss with noise False, weight_pde 1 weight_data 10000"),
             "1.1.b2")
+        self.assertEqual(
+            get_name_mapped("2 example problem loss (wang and weight_pde 0.0001 weight_conditions 1) alpha = 0.1 eps = 0.0001"),
+            "2.2.d1")
+        self.assertEqual(
+            get_name_mapped("2 example simple problem loss"),
+            "2.1.a")
+        self.assertEqual(
+            get_name_mapped("1 example problem loss (wang and weight_pde 0.0001 weight_conditions 1) alpha = 0.1 eps = 0.0001"),
+            "1.2.d1")
+        self.assertEqual(
+            get_name_mapped("1 example problem loss (wang and weight_pde 1 weight_conditions 10000) alpha = 0.1 eps = 0.0001"),
+            "1.2.d2")
+        self.assertEqual(
+            get_name_mapped("1 example problem loss (wang and weight_pde 1 weight_conditions 1) alpha = 0.1 eps = 0.0001"),
+            "1.2.c")
+        self.assertEqual(
+            get_name_mapped("1 example problem loss (wang fix grads and weight_pde 0.0001 weight_conditions 1) alpha = 0.1 eps = 0.0001"),
+            "1.2.e1")
+        self.assertEqual(
+            get_name_mapped("1 example problem loss (wang fix grads and weight_pde 1 weight_conditions 10000) alpha = 0.1 eps = 0.0001"),
+            "1.2.e2")
+        self.assertEqual(
+            get_name_mapped("1 example problem loss weight_pde 0.0001 weight_conditions 1"),
+            "1.2.b1")
+        self.assertEqual(
+            get_name_mapped("1 example problem loss weight_pde 1 weight_conditions 10000"),
+            "1.2.b2")
+        self.assertEqual(
+            get_name_mapped("1 example problem loss weight_pde 1 weight_conditions 1"),
+            "1.2.a")
+        self.assertEqual(
+            get_name_mapped("1 example simple problem loss"),
+            "1.1.a")
