@@ -1,5 +1,3 @@
-import tensorflow.python.keras.backend
-
 from equations.ai.secondDegree.examples.first.AbstractExampleFirst2ProblemWithTrainableVariable import *
 
 
