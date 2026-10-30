@@ -26,7 +26,6 @@ def configure_solver():
                                   ])
 
 
-
 def run_all(learning_rate: float):
     set_learning_rate(learning_rate)
     set_equations_amount(2)
@@ -36,7 +35,7 @@ def run_all(learning_rate: float):
 
     test_1(task_repository)
 
-    task_service.solve(50)
+    task_service.solve(10)
     weight_plot_service.plots(task_service.get_task_dict(), task_service.get_epochs())
     error_messages = task_service.get_error_messages()
     if error_messages is not None:

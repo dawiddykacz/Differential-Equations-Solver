@@ -16,8 +16,10 @@ def add_all_first_degree(task_repository: TaskRepository):
 
 
 def add_all_second_degree(task_repository: TaskRepository):
-    task_repository.add_task(ExampleFirst2ProblemLossTask(with_noise=True))
-    task_repository.add_task(ExampleFirst2ProblemLossWithWeightTask(with_noise=True))
+    task_repository.add_task(ExampleFirst2ProblemLossTask())
+    task_repository.add_task(ExampleFirst2ProblemLossWithWeightTask())
+    task_repository.add_task(ExampleFirst2ProblemLossTaskWithTrainableVariable(with_noise=True))
+    task_repository.add_task(ExampleFirst2ProblemLossWithWeightTaskWithTrainableVariable(with_noise=True))
 
 
 def configure_solver(model_with_optimization: bool, wang_configuration: bool, optimize_condition_weight: bool):

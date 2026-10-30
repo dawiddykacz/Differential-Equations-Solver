@@ -13,20 +13,14 @@ class ExampleFirst2EquationLossWithWeight(AbstractExampleFirst2Problem):
                  weight_conditions: float = 1, epsilon: float = 1e-8, is_calculating_wang_grads: bool = False):
         non_trainable_variables = TrainableVariables([1], trainable=False)
         super().__init__(
-            SimpleSolutionFunction(space,
-                                   loss_function=choose_loss(is_calculating_wang_grads)(
-                                       non_trainable_variables=non_trainable_variables,
-                                       alpha=alpha,
-                                       weight_pde=weight_pde,
-                                       weight_conditions=weight_conditions,
-                                       eps=epsilon),
-                                   non_trainable_variables=non_trainable_variables))
-
-
-class SimpleSolutionFunction(SolutionFunction):
-    def calculate(self, *vars):
-        x = vars[0]
-        return super().calculate(*vars) * x
+            SolutionFunction(space,
+                             loss_function=choose_loss(is_calculating_wang_grads)(
+                                 non_trainable_variables=non_trainable_variables,
+                                 alpha=alpha,
+                                 weight_pde=weight_pde,
+                                 weight_conditions=weight_conditions,
+                                 eps=epsilon),
+                             non_trainable_variables=non_trainable_variables))
 
 
 class LossSimple(Loss):
@@ -42,6 +36,11 @@ class LossSimple(Loss):
 
     def _left_side_of_the_equation(self, function, *x):
         return super()._left_side_of_the_equation(function, *x) / 2
+
+    def _condition(self, function, *x):
+        zero = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
+
+        return function(zero) - zero
 
     def _condition_weight(self):
         return self.weight_conditions * self.__non_trainable_variables.get_variables()[0]

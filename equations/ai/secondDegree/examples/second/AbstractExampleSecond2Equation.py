@@ -40,23 +40,6 @@ class SolutionFunction(AISolution):
 
 
 class Loss(LossFunction):
-    def __init__(self, t: TrainableVariables, with_noise: bool):
-        self.__t = t
-
-        if with_noise:
-            w = [-0.082, 0.016, 0.048, -0.066, 0.042, 0.024, 0.052, 0.067, -0.056, -0.082, 0.089, 0.097, 0.082, 0.020,
-                 0.086, 0.095, -0.042, 0.043, -0.048, -0.030, -0.063, -0.064, -0.043, -0.025, -0.031]
-        else:
-            w = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                 0.0, 0.0, 0.0, 0.0, 0.0]
-        self._w = tensorflow.constant(w, dtype=tensorflow.float64)
-        self._w = tensorflow.reshape(self._w, [-1, 1])
-
-        factors = [-0.9, -0.5, 0.0, 0.5, 0.9]
-        grid_x, grid_y = numpy.meshgrid(factors, factors, indexing='ij')
-
-        self._bc_x = tensorflow.constant(grid_x.reshape(-1, 1), dtype=tensorflow.float64)
-        self._bc_y = tensorflow.constant(grid_y.reshape(-1, 1), dtype=tensorflow.float64)
 
     @tensorflow.function
     def _left_side_of_the_equation(self, function, *x):
@@ -84,9 +67,7 @@ class Loss(LossFunction):
         if differential_y2 is None:
             differential_y2 = tensorflow.zeros_like(y_var)
 
-        a = self.__t.get_variables()[0]
-
-        return a * (differential_x2 + differential_y2) / (pi ** 2)
+        return (differential_x2 + differential_y2) / (pi ** 2)
 
     @tensorflow.function
     def _right_side_of_the_equation(self, function, *x):
@@ -94,16 +75,6 @@ class Loss(LossFunction):
         x = x[0]
 
         return -tensorflow.sin(pi * x) * tensorflow.cos(pi * y)
-
-    @tensorflow.function
-    def _condition_data(self, function, *x):
-        predictions = function(self._bc_x, self._bc_y)
-
-        exact = exact_solution(self._bc_x, self._bc_y)
-
-        errors = tensorflow.square(predictions - exact + self._w)
-
-        return tensorflow.reduce_sum(errors)
 
 
 class ExactSolution(Function):

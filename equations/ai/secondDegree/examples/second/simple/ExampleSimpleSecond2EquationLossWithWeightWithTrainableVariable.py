@@ -1,5 +1,5 @@
 from equations.ai.secondDegree.examples.WangHelper import calculate_wang
-from equations.ai.secondDegree.examples.second.AbstractExampleSecond2Equation import *
+from equations.ai.secondDegree.examples.second.AbstractExampleSecond2EquationWithTrainableVariable import *
 
 
 def choose_loss(is_calculating_wang_grads: bool):
@@ -8,7 +8,8 @@ def choose_loss(is_calculating_wang_grads: bool):
     return LossSimple
 
 
-class ExampleSimpleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation):
+class ExampleSimpleSecond2EquationLossWithWeightWithTrainableVariable(
+    AbstractExampleSecond2EquationWithTrainableVariable):
     def __init__(self, space: Space, with_noise: bool, alpha: float, weight_pde: float = 1,
                  weight_data: float = 1, eps: float = 1e-8,
                  is_calculating_wang_grads: bool = False):
@@ -39,7 +40,7 @@ class SimpleSolutionFunction(SolutionFunction):
         return (tensorflow.square(x) - one) * (tensorflow.square(y) - one) * n + ansatz
 
 
-class LossSimple(Loss):
+class LossSimple(LossWithTrainableVariable):
     def __init__(self, trainable_variables: TrainableVariables,
                  non_trainable_variables: TrainableVariables, with_noise: bool,
                  alpha: float, weight_pde: float = 1,
