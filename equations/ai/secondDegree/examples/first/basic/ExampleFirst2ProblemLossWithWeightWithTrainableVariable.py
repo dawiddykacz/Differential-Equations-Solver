@@ -1,6 +1,5 @@
 from equations.ai.secondDegree.examples.WangHelper import calculate_wang
-from equations.ai.secondDegree.examples.second.AbstractExampleSecond2Equation import *
-import math
+from equations.ai.secondDegree.examples.first.AbstractExampleFirst2ProblemWithTrainableVariable import *
 
 
 def choose_loss(is_calculating_wang_grads: bool):
@@ -9,75 +8,56 @@ def choose_loss(is_calculating_wang_grads: bool):
     return LossSimple
 
 
-class ExampleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation):
-    def __init__(self, space: Space, with_noise: bool, alpha: float,
-                 weight_pde: float = 1,
-                 weight_conditions: float = 1,
-                 weight_data: float = 1,
-                 eps: float = 1e-8,
-                 is_calculating_wang_grads: bool = False):
+class ExampleFirst2EquationLossWithWeightWithTrainableVariable(AbstractExampleFirst2ProblemWithTrainableVariable):
+    def __init__(self, space: Space, with_noise: bool, alpha: float, weight_conditions: float = 1,
+                 weight_pde: float = 1, weight_data: float = 1,
+                 epsilon: float = 1e-8, is_calculating_wang_grads: bool = False):
         trainable_variables = TrainableVariables([1])
         non_trainable_variables = TrainableVariables([1, 1], trainable=False)
         super().__init__(
             SolutionFunction(space,
-                             loss_function=choose_loss(is_calculating_wang_grads)(
+                             loss_function=choose_loss(is_calculating_wang_grads=is_calculating_wang_grads)(
                                  trainable_variables=trainable_variables,
                                  non_trainable_variables=non_trainable_variables,
                                  with_noise=with_noise,
-                                 alpha=alpha,
+                                 alpha=alpha, weight_conditions=weight_conditions,
                                  weight_pde=weight_pde,
-                                 weight_conditions=weight_conditions,
                                  weight_data=weight_data,
-                                 eps=eps),
+                                 eps=epsilon),
                              trainable_variables=trainable_variables,
                              non_trainable_variables=non_trainable_variables,
                              exact_trainable_variables=[0.5]))
 
 
-class LossSimple(Loss):
+class LossSimple(LossWithTrainableVariable):
     def __init__(self, trainable_variables: TrainableVariables,
                  non_trainable_variables: TrainableVariables, with_noise: bool,
-                 alpha: float, weight_pde: float = 1,
-                 weight_conditions: float = 1, weight_data: float = 1,
-                 eps: float = 1e-8):
+                 alpha: float, weight_pde: float = 1, weight_conditions: float = 1,
+                 weight_data: float = 1, eps: float = 1e-8):
         super().__init__(trainable_variables, with_noise)
 
         self.__non_trainable_variables = non_trainable_variables
         self.__alpha = alpha
         self.__first_alpha = alpha
-        self.weight_pde = weight_pde
         self.weight_conditions = weight_conditions
         self.weight_data = weight_data
+        self.weight_pde = weight_pde
         self.eps = eps
 
-    @tensorflow.function
-    def _condition(self, function, *args):
-        x, y = args[0], args[1]
+    def _condition(self, function, *x):
+        zero = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
+        one = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
 
-        ones_x = tensorflow.ones_like(x, dtype=tensorflow.float64)
-        ones_y = tensorflow.ones_like(y, dtype=tensorflow.float64)
-        minus_ones_x = -ones_x
-        minus_ones_y = -ones_y
-
-        w1 = function(minus_ones_x, y)
-        w2 = function(ones_x, y)
-
-        pi = tensorflow.constant(math.pi, dtype=tensorflow.float64)
-        target = -tensorflow.sin(pi * x)
-
-        w3 = function(x, minus_ones_y) - target
-        w4 = function(x, ones_y) - target
-
-        return tensorflow.abs(w1) + tensorflow.abs(w2) + tensorflow.abs(w3) + tensorflow.abs(w4)
-
-    def _pde_weight(self):
-        return self.weight_pde
+        return tensorflow.abs(function(zero) - zero) + tensorflow.abs(function(one) - zero)
 
     def _condition_data_weight(self):
         return self.weight_data * self.__non_trainable_variables.get_variables()[1]
 
     def _condition_weight(self):
         return self.weight_conditions * self.__non_trainable_variables.get_variables()[0]
+
+    def _pde_weight(self):
+        return self.weight_pde
 
     def assign_weights(self, data):
         self.__non_trainable_variables.get_variables()[0].assign(tensorflow.constant(data[0], dtype=tensorflow.float64))
@@ -95,6 +75,7 @@ class LossSimple(Loss):
             eps=self.eps,
             old_value=self.__non_trainable_variables.get_variables()[1]
         ))
+
 
         self.__non_trainable_variables.get_variables()[0].assign(calculate_wang(
             mean=mean_grad_bc,

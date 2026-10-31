@@ -1,3 +1,5 @@
+import os
+
 from objects.space.Space import Space
 from objects.plot.PlotData import PlotData
 from plots.Plot2d import Plot2D

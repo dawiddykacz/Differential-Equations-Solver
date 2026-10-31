@@ -1,5 +1,5 @@
 from equations.ai.secondDegree.examples.WangHelper import calculate_wang
-from equations.ai.secondDegree.examples.second.AbstractExampleSecond2Equation import *
+from equations.ai.secondDegree.examples.first.AbstractExampleFirst2ProblemWithTrainableVariable import *
 
 
 def choose_loss(is_calculating_wang_grads: bool):
@@ -8,10 +8,9 @@ def choose_loss(is_calculating_wang_grads: bool):
     return LossSimple
 
 
-class ExampleSimpleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation):
+class ExampleSimpleFirst2EquationLossWithWeightWithTrainableVariable(AbstractExampleFirst2ProblemWithTrainableVariable):
     def __init__(self, space: Space, with_noise: bool, alpha: float, weight_pde: float = 1,
-                 weight_data: float = 1, eps: float = 1e-8,
-                 is_calculating_wang_grads: bool = False):
+                 weight_data: float = 1, epsilon: float = 1e-8, is_calculating_wang_grads: bool = False):
         trainable_variables = TrainableVariables([1])
         non_trainable_variables = TrainableVariables([1], trainable=False)
         super().__init__(
@@ -21,9 +20,9 @@ class ExampleSimpleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation)
                                        non_trainable_variables=non_trainable_variables,
                                        with_noise=with_noise,
                                        alpha=alpha,
-                                       weight_pde=weight_pde, weight_data=weight_data,
-                                       eps=eps
-                                   ),
+                                       weight_pde=weight_pde,
+                                       weight_data=weight_data,
+                                       eps=epsilon),
                                    trainable_variables=trainable_variables,
                                    non_trainable_variables=non_trainable_variables,
                                    exact_trainable_variables=[0.5]))
@@ -32,35 +31,31 @@ class ExampleSimpleSecond2EquationLossWithWeight(AbstractExampleSecond2Equation)
 class SimpleSolutionFunction(SolutionFunction):
     def calculate(self, *vars):
         x = vars[0]
-        y = vars[1]
-
-        n = super().calculate(x, y)
-        ansatz = -tensorflow.sin(pi * x)
-        return (tensorflow.square(x) - one) * (tensorflow.square(y) - one) * n + ansatz
+        return super().calculate(*vars) * x * (1 - x)
 
 
-class LossSimple(Loss):
+class LossSimple(LossWithTrainableVariable):
     def __init__(self, trainable_variables: TrainableVariables,
                  non_trainable_variables: TrainableVariables, with_noise: bool,
-                 alpha: float, weight_pde: float = 1,
-                 weight_data: float = 1, eps: float = 1e-8):
+                 alpha: float, weight_pde: float = 1, weight_data: float = 1,
+                 eps: float = 1e-8):
         super().__init__(trainable_variables, with_noise)
 
         self.__non_trainable_variables = non_trainable_variables
         self.__alpha = alpha
         self.__first_alpha = alpha
-        self.weight_pde = weight_pde
         self.weight_data = weight_data
+        self.weight_pde = weight_pde
         self.eps = eps
-
-    def _pde_weight(self):
-        return self.weight_pde
 
     def _condition_data_weight(self):
         return self.weight_data * self.__non_trainable_variables.get_variables()[0]
 
     def assign_weights(self, data):
         self.__non_trainable_variables.get_variables()[0].assign(tensorflow.constant(data[0], dtype=tensorflow.float64))
+
+    def _pde_weight(self):
+        return self.weight_pde
 
     def recalculate_weights(self, grads_dict, loss_error):
         max_grad_pde = grads_dict['grad_pde_max']

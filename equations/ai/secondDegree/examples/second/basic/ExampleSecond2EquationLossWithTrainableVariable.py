@@ -1,10 +1,10 @@
 import tensorflow
 import math
 
-from equations.ai.secondDegree.examples.second.AbstractExampleSecond2Equation import *
+from equations.ai.secondDegree.examples.second.AbstractExampleSecond2EquationWithTrainableVariable import *
 
 
-class ExampleSecond2EquationLoss(AbstractExampleSecond2Equation):
+class ExampleSecond2EquationLossWithTrainableVariable(AbstractExampleSecond2EquationWithTrainableVariable):
     def __init__(self, space: Space, with_noise: bool, weight_pde: float = 1,
                  weight_conditions: float = 1, weight_data: float = 1):
         t = TrainableVariables([1])
@@ -17,7 +17,7 @@ class ExampleSecond2EquationLoss(AbstractExampleSecond2Equation):
                              exact_trainable_variables=[0.5]))
 
 
-class LossSimple(Loss):
+class LossSimple(LossWithTrainableVariable):
     def __init__(self, t: TrainableVariables, with_noise: bool, weight_pde: float = 1,
                  weight_conditions: float = 1, weight_data: float = 1):
         super().__init__(t, with_noise)

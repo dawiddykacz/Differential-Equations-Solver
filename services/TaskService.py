@@ -701,7 +701,12 @@ class TaskService:
         return self.__epochs
 
     def __get_plot_path(self, task_name: str, plot_name: str, format: str = "png"):
-        return f'plot/{self.__ms}/{task_name}/{plot_name}.{format}'
+        abs_path = os.path.abspath(f'plot/{self.__ms}/{task_name}/{plot_name}.{format}')
+
+
+        if os.name == 'nt':
+            return "\\\\?\\" + abs_path
+        return abs_path
 
     def save_to_file(self):
         with open('save', "wb") as f:

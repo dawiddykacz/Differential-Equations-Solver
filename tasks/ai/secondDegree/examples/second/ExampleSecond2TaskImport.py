@@ -1,7 +1,13 @@
-from tasks.ai.secondDegree.examples.second.ExampleSecond2TaskLoss import ExampleSecond2ProblemLossTask
-from tasks.ai.secondDegree.examples.second.ExampleSimpleSecond2ProblemLossTask import \
+from tasks.ai.secondDegree.examples.second.basic.ExampleSecond2TaskLossWithTrainableVariable import \
+    ExampleSecond2ProblemLossTaskWithTrainableVariable
+from tasks.ai.secondDegree.examples.second.basic.ExampleSecond2ProblemLossTaskWithWeightWithTrainableVariable import \
+    ExampleSecond2ProblemLossWithWeightTaskWithTrainableVariable
+from tasks.ai.secondDegree.examples.second.basic.ExampleSecond2ProblemLossTask import ExampleSecond2ProblemLossTask
+from tasks.ai.secondDegree.examples.second.basic.ExampleSecond2ProblemLossWithWeightTask import \
+    ExampleSecond2ProblemLossWithWeightTask
+from tasks.ai.secondDegree.examples.second.simple.ExampleSimpleSecond2ProblemLossTaskWithTrainableVariable import \
+    ExampleSimpleSecond2ProblemLossTaskWithTrainableVariable
+from tasks.ai.secondDegree.examples.second.simple.ExampleSimpleSecond2ProblemLossTask import \
     ExampleSimpleSecond2ProblemLossTask
-from tasks.ai.secondDegree.examples.second.ExampleSecond2ProblemLossTaskWithWeight import \
-    ExampleSecond2ProblemLossTaskWithWeightTask
-from tasks.ai.secondDegree.examples.second.ExampleSimpleSecond2ProblemLossTaskWithWeight import \
-    ExampleSimpleSecond2ProblemLossTaskWithWeightTask
+from tasks.ai.secondDegree.examples.second.simple.ExampleSimpleSecond2ProblemLossTaskWithWeightWithTrainableVariable \
+    import ExampleSimpleSecond2ProblemLossWithWeightTaskWithTrainableVariable

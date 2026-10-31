@@ -1,6 +1,6 @@
 from objects.TaskData import *
-from equations.ai.secondDegree.examples.second.ExampleSimpleSecond2EquationLossWithWeight import \
-    ExampleSimpleSecond2EquationLossWithWeight
+from equations.ai.secondDegree.examples.second.simple.ExampleSimpleSecond2EquationLossWithWeightWithTrainableVariable import \
+    ExampleSimpleSecond2EquationLossWithWeightWithTrainableVariable
 
 
 def get_wang_title(is_calculating_wang_grads):
@@ -9,7 +9,7 @@ def get_wang_title(is_calculating_wang_grads):
     return "wang"
 
 
-class ExampleSimpleSecond2ProblemLossTaskWithWeightTask(TaskData):
+class ExampleSimpleSecond2ProblemLossWithWeightTaskWithTrainableVariable(TaskData):
     def __init__(self, with_noise: bool, alpha: float = 0.1, weight_pde: float = 1,
                  weight_data: float = 1, eps: float = 1e-4,
                  is_calculating_wang_grads: bool = False):
@@ -28,12 +28,14 @@ class ExampleSimpleSecond2ProblemLossTaskWithWeightTask(TaskData):
         self.is_calculating_wang_grads = is_calculating_wang_grads
 
     def get_equation(self):
-        return ExampleSimpleSecond2EquationLossWithWeight(self.get_space_range().split(), with_noise=self.with_noise,
-                                                          alpha=self.alpha,
-                                                          weight_pde=self.weight_pde,
-                                                          weight_data=self.weight_data,
-                                                          eps=self.eps,
-                                                          is_calculating_wang_grads=self.is_calculating_wang_grads)
+        return ExampleSimpleSecond2EquationLossWithWeightWithTrainableVariable(self.get_space_range().split(),
+                                                                               with_noise=self.with_noise,
+                                                                               alpha=self.alpha,
+                                                                               weight_pde=self.weight_pde,
+                                                                               weight_data=self.weight_data,
+                                                                               eps=self.eps,
+                                                                               is_calculating_wang_grads=
+                                                                               self.is_calculating_wang_grads)
 
     def get_plot_title(self):
         return f"2 example simple problem loss (weight)"

@@ -1,17 +1,17 @@
-from equations.ai.secondDegree.examples.second.AbstractExampleSecond2Equation import *
+from equations.ai.secondDegree.examples.second.AbstractExampleSecond2EquationWithTrainableVariable import *
 
 
-class ExampleSimpleSecond2EquationLoss(AbstractExampleSecond2Equation):
+class ExampleSimpleSecond2EquationLossWithTrainableVariable(AbstractExampleSecond2EquationWithTrainableVariable):
     def __init__(self, space: Space, with_noise: bool, weight_pde: float = 1,
                  weight_data: float = 1):
         t = TrainableVariables([1])
 
         super().__init__(
-            SolutionFunction(space, loss_function=LossSimple(t, with_noise,
-                                                             weight_pde=weight_pde,
-                                                             weight_data=weight_data),
-                             trainable_variables=t,
-                             exact_trainable_variables=[0.5]))
+            SimpleSolutionFunction(space, loss_function=LossSimple(t, with_noise,
+                                                                   weight_pde=weight_pde,
+                                                                   weight_data=weight_data),
+                                   trainable_variables=t,
+                                   exact_trainable_variables=[0.5]))
 
 
 class SimpleSolutionFunction(SolutionFunction):
@@ -24,7 +24,7 @@ class SimpleSolutionFunction(SolutionFunction):
         return (tensorflow.square(x) - one) * (tensorflow.square(y) - one) * n + ansatz
 
 
-class LossSimple(Loss):
+class LossSimple(LossWithTrainableVariable):
     def __init__(self, t: TrainableVariables, with_noise: bool, weight_pde: float = 1,
                  weight_data: float = 1):
         super().__init__(t, with_noise)
