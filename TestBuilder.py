@@ -6,6 +6,49 @@ def get_is_calculating_wang_grads_by_weight(weight):
         return [False]
     return [True, False]
 
+def test_0(task_repository):
+    d_min = 0.0001
+    range_weight = 10 ** 4
+    alpha = 0.1
+
+    task_repository.add_task(ExampleFirst2ProblemLossTask(weight_pde=1,
+                                                          weight_conditions=1))
+    task_repository.add_task(
+        ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
+                                               weight_pde=1,
+                                               weight_conditions=1,
+                                               is_calculating_wang_grads=False))
+    task_repository.add_task(
+        ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
+                                               weight_pde=1,
+                                               weight_conditions=1,
+                                               is_calculating_wang_grads=False,
+                                               eps=0))
+    task_repository.add_task(
+        ExampleFirst2ProblemLossWithWeightTask(alpha=alpha,
+                                               weight_pde=1,
+                                               weight_conditions=1,
+                                               is_calculating_wang_grads=False,
+                                               eps=1e-6))
+    task_repository.add_task(ExampleSecond2ProblemLossTask(weight_pde=1,
+                                                           weight_conditions=1))
+    task_repository.add_task(
+        ExampleSecond2ProblemLossWithWeightTask(alpha=alpha,
+                                                weight_pde=1,
+                                                weight_conditions=1,
+                                                is_calculating_wang_grads=False))
+    task_repository.add_task(
+        ExampleSecond2ProblemLossWithWeightTask(alpha=alpha,
+                                                weight_pde=1,
+                                                weight_conditions=1,
+                                                is_calculating_wang_grads=False,
+                                                eps=0))
+    task_repository.add_task(
+        ExampleSecond2ProblemLossWithWeightTask(alpha=alpha,
+                                                weight_pde=1,
+                                                weight_conditions=1,
+                                                is_calculating_wang_grads=False,
+                                                eps=1e-6))
 
 def test_1(task_repository):
     d_min = 0.0001
