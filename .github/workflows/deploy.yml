@@ -23,6 +23,7 @@ jobs:
             docker image prune -a -f
             docker builder prune -a -f
             docker container prune -f
+            docker network prune -f
           EOF
 
       - name: Deploy to VPS
