@@ -25,6 +25,9 @@ class LossSimpleWeight(LossSimple):
     def _condition_weight(self):
         return self.__t.get_variables()[0]
 
+    def _condition_grad_weight(self):
+        return self.__t.get_variables()[0]
+
     def recalculate_weights(self, grads_dict, loss_error):
         max_grad_pde_bc = grads_dict['grad_pde_max_bc']
         mean_grad_bc = grads_dict['grad_bc_mean']

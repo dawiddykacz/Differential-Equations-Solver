@@ -79,6 +79,12 @@ class LossSimple(LossWithTrainableVariable):
     def _condition_weight(self):
         return self.weight_conditions * self.__non_trainable_variables.get_variables()[0]
 
+    def _condition_grad_weight(self):
+        return self.__non_trainable_variables.get_variables()[0]
+
+    def _condition_data_grad_weight(self):
+        return self.__non_trainable_variables.get_variables()[1]
+
     def assign_weights(self, data):
         self.__non_trainable_variables.get_variables()[0].assign(tensorflow.constant(data[0], dtype=tensorflow.float64))
         self.__non_trainable_variables.get_variables()[1].assign(tensorflow.constant(data[1], dtype=tensorflow.float64))
@@ -126,7 +132,7 @@ class LossSimpleWithWeightGrads(LossSimple):
         return self.weight_pde
 
     def _condition_grad_weight(self):
-        return self.weight_conditions
+        return super()._condition_grad_weight() * self.weight_conditions
 
     def _condition_data_grad_weight(self):
-        return self.weight_data
+        return super()._condition_data_grad_weight() * self.weight_data
