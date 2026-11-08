@@ -14,7 +14,7 @@ class ExampleSecond2ProblemLossWithWeightTaskWithTrainableVariable(TaskData):
                  weight_pde: float = 1,
                  weight_conditions: float = 1,
                  weight_data: float = 1,
-                 eps: float = 1e-4,
+                 eps: float = 0,
                  is_calculating_wang_grads: bool = False):
         super().__init__(SpaceRanges(10, Range(-1, 1), Range(-1, 1)),
                          f"2 example problem loss "

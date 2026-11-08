@@ -84,13 +84,14 @@ class LossSimple(LossWithTrainableVariable):
         self.__non_trainable_variables.get_variables()[1].assign(tensorflow.constant(data[1], dtype=tensorflow.float64))
 
     def recalculate_weights(self, grads_dict, loss_error):
-        max_grad_pde = grads_dict['grad_pde_max']
+        max_grad_pde_bc = grads_dict['grad_pde_max_bc']
+        max_grad_pde_data = grads_dict['grad_pde_max_data']
         mean_grad_data = grads_dict['grad_data_mean']
         mean_grad_bc = grads_dict['grad_bc_mean']
 
         self.__non_trainable_variables.get_variables()[1].assign(calculate_wang(
             mean=mean_grad_data,
-            max=max_grad_pde,
+            max=max_grad_pde_data,
             alpha=self.__alpha,
             eps=self.eps,
             old_value=self.__non_trainable_variables.get_variables()[1]
@@ -98,7 +99,7 @@ class LossSimple(LossWithTrainableVariable):
 
         self.__non_trainable_variables.get_variables()[0].assign(calculate_wang(
             mean=mean_grad_bc,
-            max=max_grad_pde,
+            max=max_grad_pde_bc,
             alpha=self.__alpha,
             eps=self.eps,
             old_value=self.__non_trainable_variables.get_variables()[0]
