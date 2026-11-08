@@ -26,11 +26,11 @@ class LossSimpleWeight(LossSimple):
         return self.__t.get_variables()[0]
 
     def recalculate_weights(self, grads_dict, loss_error):
-        max_grad_pde = grads_dict['grad_pde_max']
+        max_grad_pde_bc = grads_dict['grad_pde_max_bc']
         mean_grad_bc = grads_dict['grad_bc_mean']
         self.__t.get_variables()[0].assign(calculate_wang(
             mean=mean_grad_bc,
-            max=max_grad_pde,
+            max=max_grad_pde_bc,
             alpha=self.__alpha,
             eps=self.eps,
             old_value=self.__t.get_variables()[0]
