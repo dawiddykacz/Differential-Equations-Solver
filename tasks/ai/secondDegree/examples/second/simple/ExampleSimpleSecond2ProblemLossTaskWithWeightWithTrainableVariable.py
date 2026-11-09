@@ -11,7 +11,7 @@ def get_wang_title(is_calculating_wang_grads):
 
 class ExampleSimpleSecond2ProblemLossWithWeightTaskWithTrainableVariable(TaskData):
     def __init__(self, with_noise: bool, alpha: float = 0.1, weight_pde: float = 1,
-                 weight_data: float = 1, eps: float = 1e-4,
+                 weight_data: float = 1, eps: float = 0,
                  is_calculating_wang_grads: bool = False):
         super().__init__(SpaceRanges(10, Range(-1, 1), Range(-1, 1)),
                          f"2 example simple problem loss "

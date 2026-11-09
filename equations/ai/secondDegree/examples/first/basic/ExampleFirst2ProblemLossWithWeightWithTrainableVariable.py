@@ -48,13 +48,22 @@ class LossSimple(LossWithTrainableVariable):
         zero = tensorflow.zeros_like(x[0], dtype=tensorflow.float64)
         one = tensorflow.ones_like(x[0], dtype=tensorflow.float64)
 
-        return tensorflow.abs(function(zero) - zero) + tensorflow.abs(function(one) - zero)
+        w1 = function(zero) - zero
+        w2 = function(one) - zero
+
+        return tensorflow.concat([w1, w2], axis=0)
 
     def _condition_data_weight(self):
         return self.weight_data * self.__non_trainable_variables.get_variables()[1]
 
     def _condition_weight(self):
         return self.weight_conditions * self.__non_trainable_variables.get_variables()[0]
+
+    def _condition_grad_weight(self):
+        return self.__non_trainable_variables.get_variables()[0]
+
+    def _condition_data_grad_weight(self):
+        return self.__non_trainable_variables.get_variables()[1]
 
     def _pde_weight(self):
         return self.weight_pde
@@ -64,22 +73,22 @@ class LossSimple(LossWithTrainableVariable):
         self.__non_trainable_variables.get_variables()[1].assign(tensorflow.constant(data[1], dtype=tensorflow.float64))
 
     def recalculate_weights(self, grads_dict, loss_error):
-        max_grad_pde = grads_dict['grad_pde_max']
+        max_grad_pde_bc = grads_dict['grad_pde_max_bc']
+        max_grad_pde_data = grads_dict['grad_pde_max_data']
         mean_grad_data = grads_dict['grad_data_mean']
         mean_grad_bc = grads_dict['grad_bc_mean']
 
         self.__non_trainable_variables.get_variables()[1].assign(calculate_wang(
             mean=mean_grad_data,
-            max=max_grad_pde,
+            max=max_grad_pde_data,
             alpha=self.__alpha,
             eps=self.eps,
             old_value=self.__non_trainable_variables.get_variables()[1]
         ))
 
-
         self.__non_trainable_variables.get_variables()[0].assign(calculate_wang(
             mean=mean_grad_bc,
-            max=max_grad_pde,
+            max=max_grad_pde_bc,
             alpha=self.__alpha,
             eps=self.eps,
             old_value=self.__non_trainable_variables.get_variables()[0]
@@ -106,7 +115,7 @@ class LossSimpleWithWeightGrads(LossSimple):
         return self.weight_pde
 
     def _condition_grad_weight(self):
-        return self.weight_conditions
+        return super()._condition_grad_weight() * self.weight_conditions
 
     def _condition_data_grad_weight(self):
-        return self.weight_data
+        return super()._condition_data_grad_weight() * self.weight_data

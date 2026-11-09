@@ -11,7 +11,7 @@ def get_wang_title(is_calculating_wang_grads):
 
 class ExampleFirst2ProblemLossWithWeightTask(TaskData):
     def __init__(self, alpha: float = 0.1, weight_pde: float = 1, weight_conditions: float = 1,
-                 eps: float = 1e-4,
+                 eps: float = 0,
                  is_calculating_wang_grads: bool = False):
         super().__init__(SpaceRanges(10, Range(-1, 1)), f"1 example problem loss "
                                                         f"({get_wang_title(is_calculating_wang_grads)} and"

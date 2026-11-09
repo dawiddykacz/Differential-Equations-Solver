@@ -1,7 +1,7 @@
 import copy
 import tensorflow
 from objects.TrainableVariables import TrainableVariables
-from objects.functions.loss.LossFunction import LossFunction
+from solvers.GradsCalculator import calculate_grads
 
 
 class WangModel(tensorflow.keras.Model):
@@ -54,41 +54,21 @@ class WangModel(tensorflow.keras.Model):
         self.optimizer.apply_gradients(zip(grads, variables_to_train))
 
         layers = list(self.layers_Z) + [self.out_dense]
+
         kernels = [layer.kernel for layer in layers if hasattr(layer, 'kernel')]
 
-        grad_data = tape.gradient(conditions_data, kernels)
-        grad_pde = tape.gradient(loss_pde, kernels)
-        grad_bc = tape.gradient(conditions, kernels)
-
+        grads_data = tape.gradient(conditions_data, kernels)
+        grads_pde = tape.gradient(loss_pde, kernels)
+        grads_bc = tape.gradient(conditions, kernels)
         del tape
 
-        grad_data = [
-            tensorflow.reshape(g, [-1]) if g is not None else None
-            for g in grad_data
-        ]
-
-        grad_pde = [
-            tensorflow.reshape(g, [-1]) if g is not None else None
-            for g in grad_pde
-        ]
-
-        grad_bc = [
-            tensorflow.reshape(g, [-1]) if g is not None else None
-            for g in grad_bc
-        ]
-
-        return {
-            'loss': current_loss,
-            'loss_pde': loss_pde,
-            'loss_conditions': conditions,
-            'loss_conditions_data': conditions_data,
-            'grad_pde_max': LossFunction.max_abs_grads(grad_pde),
-            'grad_bc_max': LossFunction.max_abs_grads(grad_bc),
-            'grad_data_max': LossFunction.max_abs_grads(grad_data),
-            'grad_pde_mean': LossFunction.mean_abs_grads(grad_pde),
-            'grad_data_mean': LossFunction.mean_abs_grads(grad_data),
-            'grad_bc_mean': LossFunction.mean_abs_grads(grad_bc),
-        }
+        return calculate_grads(current_loss=current_loss,
+                               loss_pde=loss_pde,
+                               loss_conditions=conditions,
+                               loss_conditions_data=conditions_data,
+                               grads_pde=grads_pde,
+                               grads_bc=grads_bc,
+                               grads_data=grads_data)
 
     @tensorflow.function
     def estimate_stiffness(self, num_iters=3):

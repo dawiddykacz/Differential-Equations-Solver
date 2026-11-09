@@ -7,7 +7,7 @@ from tasks.ai.article.examples.ArticleExamplesImport import *
 from solvers.AISolver import set_learning_rate
 from services.TaskService import set_equations_amount
 
-from TestBuilder import test_1
+from TestBuilder import test_1, test_0
 from TestBuilder import test_2
 
 model_configuration = None

@@ -67,14 +67,14 @@ class Loss(LossFunction):
         if differential_y2 is None:
             differential_y2 = tensorflow.zeros_like(y_var)
 
-        return (differential_x2 + differential_y2) / (pi ** 2)
+        return differential_x2 + differential_y2
 
     @tensorflow.function
     def _right_side_of_the_equation(self, function, *x):
         y = x[1]
         x = x[0]
 
-        return -tensorflow.sin(pi * x) * tensorflow.cos(pi * y)
+        return -(pi ** 2) * tensorflow.sin(pi * x) * tensorflow.cos(pi * y)
 
 
 class ExactSolution(Function):

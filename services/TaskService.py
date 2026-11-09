@@ -110,10 +110,14 @@ class TaskService:
             for i in range(len(loss_conditions_data_array)):
                 loss_conditions_data_array[i] = 0
 
-        grad_pde_max_array = copy.deepcopy(equations[0].get_solution_function().get_grad_pde_max_array())
-        if grad_pde_max_array is not None:
-            for i in range(len(grad_pde_max_array)):
-                grad_pde_max_array[i] = 0
+        grad_pde_max_bc_array = copy.deepcopy(equations[0].get_solution_function().get_grad_pde_max_bc_array())
+        if grad_pde_max_bc_array is not None:
+            for i in range(len(grad_pde_max_bc_array)):
+                grad_pde_max_bc_array[i] = 0
+        grad_pde_max_data_array = copy.deepcopy(equations[0].get_solution_function().get_grad_pde_max_data_array())
+        if grad_pde_max_data_array is not None:
+            for i in range(len(grad_pde_max_data_array)):
+                grad_pde_max_data_array[i] = 0
 
         grad_bc_max_array = copy.deepcopy(equations[0].get_solution_function().get_grad_bc_max_array())
         if grad_bc_max_array is not None:
@@ -125,10 +129,14 @@ class TaskService:
             for i in range(len(grad_data_max_array)):
                 grad_data_max_array[i] = 0
 
-        grad_pde_mean_array = copy.deepcopy(equations[0].get_solution_function().get_grad_pde_mean_array())
-        if grad_pde_mean_array is not None:
-            for i in range(len(grad_pde_mean_array)):
-                grad_pde_mean_array[i] = 0
+        grad_pde_mean_bc_array = copy.deepcopy(equations[0].get_solution_function().get_grad_pde_mean_bc_array())
+        if grad_pde_mean_bc_array is not None:
+            for i in range(len(grad_pde_mean_bc_array)):
+                grad_pde_mean_bc_array[i] = 0
+        grad_pde_mean_data_array = copy.deepcopy(equations[0].get_solution_function().get_grad_pde_mean_data_array())
+        if grad_pde_mean_data_array is not None:
+            for i in range(len(grad_pde_mean_bc_array)):
+                grad_pde_mean_bc_array[i] = 0
 
         grad_data_mean_array = copy.deepcopy(equations[0].get_solution_function().get_grad_data_mean_array())
         if grad_data_mean_array is not None:
@@ -173,8 +181,10 @@ class TaskService:
             if loss_conditions_data_array is not None:
                 loss_conditions_data_array += copy.deepcopy(eq.get_solution_function().get_loss_conditions_data_array())
 
-            if grad_pde_max_array is not None:
-                grad_pde_max_array += copy.deepcopy(eq.get_solution_function().get_grad_pde_max_array())
+            if grad_pde_max_bc_array is not None:
+                grad_pde_max_bc_array += copy.deepcopy(eq.get_solution_function().get_grad_pde_max_bc_array())
+            if grad_pde_max_data_array is not None:
+                grad_pde_max_data_array += copy.deepcopy(eq.get_solution_function().get_grad_pde_max_data_array())
 
             if grad_bc_max_array is not None:
                 grad_bc_max_array += copy.deepcopy(eq.get_solution_function().get_grad_bc_max_array())
@@ -182,8 +192,10 @@ class TaskService:
             if grad_data_max_array is not None:
                 grad_data_max_array += copy.deepcopy(eq.get_solution_function().get_grad_data_max_array())
 
-            if grad_pde_mean_array is not None:
-                grad_pde_mean_array += copy.deepcopy(eq.get_solution_function().get_grad_pde_mean_array())
+            if grad_pde_mean_bc_array is not None:
+                grad_pde_mean_bc_array += copy.deepcopy(eq.get_solution_function().get_grad_pde_mean_bc_array())
+            if grad_pde_mean_data_array is not None:
+                grad_pde_mean_data_array += copy.deepcopy(eq.get_solution_function().get_grad_pde_mean_data_array())
 
             if grad_data_mean_array is not None:
                 grad_data_mean_array += copy.deepcopy(eq.get_solution_function().get_grad_data_mean_array())
@@ -295,21 +307,37 @@ class TaskService:
                               x=numpy.linspace(1, epoch, epoch),
                               y=loss_conditions_data_array)
 
-        if grad_pde_max_array is not None and len(grad_pde_max_array) > 0:
-            grad_pde_max_array /= equations_amount
+        if grad_pde_max_bc_array is not None and len(grad_pde_max_bc_array) > 0:
+            grad_pde_max_bc_array /= equations_amount
             space = Space([numpy.linspace(1, epoch, epoch)])
-            choose_plot = ChoosePlot(space, grad_pde_max_array,
-                                     self.__get_plot_path(task.get_task_name(), "Grad_PDE_Max"),
-                                     PlotData("Grad PDE Max", ["epoch", "grad_pde_max"]))
+            choose_plot = ChoosePlot(space, grad_pde_max_bc_array,
+                                     self.__get_plot_path(task.get_task_name(), "Grad_PDE_Max_BC"),
+                                     PlotData("Grad PDE Max (BC)", ["epoch", "grad_pde_max (bc)"]))
             choose_plot.choose().plot()
 
-            self.plot_convergence_intervals(loss_array=grad_pde_max_array, task=task, plot_title="Grad PDE Max",
+            self.plot_convergence_intervals(loss_array=grad_pde_max_bc_array, task=task, plot_title="Grad PDE (BC) Max",
                                             epoch=epoch,
-                                            value_name="grad_pde_max")
+                                            value_name="grad_pde_max (bc)")
             self.save_to_data(data=save_data,
-                              title="grad_pde_max",
+                              title="grad_pde_max (bc)",
                               x=numpy.linspace(1, epoch, epoch),
-                              y=grad_pde_max_array)
+                              y=grad_pde_max_bc_array)
+        if grad_pde_max_data_array is not None and len(grad_pde_max_data_array) > 0:
+            grad_pde_max_data_array /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            choose_plot = ChoosePlot(space, grad_pde_max_data_array,
+                                     self.__get_plot_path(task.get_task_name(), "Grad_PDE_Max_Data"),
+                                     PlotData("Grad PDE Max (Data)", ["epoch", "grad_pde_max_data"]))
+            choose_plot.choose().plot()
+
+            self.plot_convergence_intervals(loss_array=grad_pde_max_data_array, task=task,
+                                            plot_title="Grad PDE Max (Data)",
+                                            epoch=epoch,
+                                            value_name="grad_pde_max_data")
+            self.save_to_data(data=save_data,
+                              title="grad_pde_max_data",
+                              x=numpy.linspace(1, epoch, epoch),
+                              y=grad_pde_max_data_array)
 
         if grad_bc_max_array is not None and len(grad_bc_max_array) > 0:
             grad_bc_max_array /= equations_amount
@@ -343,21 +371,38 @@ class TaskService:
                               x=numpy.linspace(1, epoch, epoch),
                               y=grad_data_max_array)
 
-        if grad_pde_mean_array is not None and len(grad_pde_mean_array) > 0:
-            grad_pde_mean_array /= equations_amount
+        if grad_pde_mean_bc_array is not None and len(grad_pde_mean_bc_array) > 0:
+            grad_pde_mean_bc_array /= equations_amount
             space = Space([numpy.linspace(1, epoch, epoch)])
-            choose_plot = ChoosePlot(space, grad_pde_mean_array,
-                                     self.__get_plot_path(task.get_task_name(), "Grad_PDE_Mean"),
-                                     PlotData("Grad PDE Mean", ["epoch", "grad_pde_mean"]))
+            choose_plot = ChoosePlot(space, grad_pde_mean_bc_array,
+                                     self.__get_plot_path(task.get_task_name(), "Grad_PDE_Mean_BC"),
+                                     PlotData("Grad PDE Mean (BC)", ["epoch", "grad_pde_mean_bc"]))
             choose_plot.choose().plot()
 
-            self.plot_convergence_intervals(loss_array=grad_pde_mean_array, task=task, plot_title="Grad PDE Mean",
+            self.plot_convergence_intervals(loss_array=grad_pde_mean_bc_array, task=task,
+                                            plot_title="Grad PDE Mean (BC)",
                                             epoch=epoch,
-                                            value_name="grad_pde_mean")
+                                            value_name="grad_pde_mean_bc")
             self.save_to_data(data=save_data,
-                              title="grad_pde_mean",
+                              title="grad_pde_mean_bc",
                               x=numpy.linspace(1, epoch, epoch),
-                              y=grad_pde_mean_array)
+                              y=grad_pde_mean_bc_array)
+        if grad_pde_mean_data_array is not None and len(grad_pde_mean_data_array) > 0:
+            grad_pde_mean_data_array /= equations_amount
+            space = Space([numpy.linspace(1, epoch, epoch)])
+            choose_plot = ChoosePlot(space, grad_pde_mean_data_array,
+                                     self.__get_plot_path(task.get_task_name(), "Grad_PDE_Mean_Data"),
+                                     PlotData("Grad PDE Mean (Data)", ["epoch", "grad_pde_mean_data"]))
+            choose_plot.choose().plot()
+
+            self.plot_convergence_intervals(loss_array=grad_pde_mean_data_array, task=task,
+                                            plot_title="Grad PDE Mean (Data)",
+                                            epoch=epoch,
+                                            value_name="grad_pde_mean_data")
+            self.save_to_data(data=save_data,
+                              title="grad_pde_mean_data",
+                              x=numpy.linspace(1, epoch, epoch),
+                              y=grad_pde_mean_data_array)
 
         if grad_data_mean_array is not None and len(grad_data_mean_array) > 0:
             grad_data_mean_array /= equations_amount
@@ -432,8 +477,10 @@ class TaskService:
             train_var_data['last_loss_conditions_data'] = loss_conditions_data_array[
                 len(loss_conditions_data_array) - 1]
 
-        if grad_pde_max_array is not None and len(grad_pde_max_array) > 0:
-            train_var_data['last_grad_pde_max'] = grad_pde_max_array[len(grad_pde_max_array) - 1]
+        if grad_pde_max_bc_array is not None and len(grad_pde_max_bc_array) > 0:
+            train_var_data['last_grad_pde_max_bc'] = grad_pde_max_bc_array[len(grad_pde_max_bc_array) - 1]
+        if grad_pde_max_data_array is not None and len(grad_pde_max_data_array) > 0:
+            train_var_data['last_grad_pde_max'] = grad_pde_max_data_array[len(grad_pde_max_data_array) - 1]
 
         if grad_bc_max_array is not None and len(grad_bc_max_array) > 0:
             train_var_data['last_grad_bc_max'] = grad_bc_max_array[len(grad_bc_max_array) - 1]
@@ -441,8 +488,10 @@ class TaskService:
         if grad_data_max_array is not None and len(grad_data_max_array) > 0:
             train_var_data['last_grad_data_max'] = grad_data_max_array[len(grad_data_max_array) - 1]
 
-        if grad_pde_mean_array is not None and len(grad_pde_mean_array) > 0:
-            train_var_data['last_grad_pde_mean'] = grad_pde_mean_array[len(grad_pde_mean_array) - 1]
+        if grad_pde_mean_bc_array is not None and len(grad_pde_mean_bc_array) > 0:
+            train_var_data['last_grad_pde_mean'] = grad_pde_mean_bc_array[len(grad_pde_mean_bc_array) - 1]
+        if grad_pde_mean_data_array is not None and len(grad_pde_mean_data_array) > 0:
+            train_var_data['last_grad_pde_mean'] = grad_pde_mean_data_array[len(grad_pde_mean_data_array) - 1]
 
         if grad_data_mean_array is not None and len(grad_data_mean_array) > 0:
             train_var_data['last_grad_data_mean'] = grad_data_mean_array[len(grad_data_mean_array) - 1]
@@ -702,7 +751,6 @@ class TaskService:
 
     def __get_plot_path(self, task_name: str, plot_name: str, format: str = "png"):
         abs_path = os.path.abspath(f'plot/{self.__ms}/{task_name}/{plot_name}.{format}')
-
 
         if os.name == 'nt':
             return "\\\\?\\" + abs_path
