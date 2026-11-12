@@ -27,6 +27,7 @@ MAPOWANIE = {
     "grad_pde_max_data": "Maksymalny gradiend (czesc pomiarow) reziduum funkcji straty vs l epok",
     "Grad_PDE_Max_BC": "Maksymalny gradiend (czesc warunkow) reziduum funkcji straty vs l epok",
     "grad_pde_max_bc": "Maksymalny gradiend (czesc warunkow) reziduum funkcji straty vs l epok",
+    "grad_pde_max (bc)": "Maksymalny gradiend (czesc warunkow) reziduum funkcji straty vs l epok",
     "Grad PDE Max (BC)": "Maksymalny gradiend (czesc warunkow) reziduum funkcji straty vs l epok",
     "Grad PDE Max (Data)": "Maksymalny gradiend (czesc pomiarow) reziduum funkcji straty vs l epok",
     "Grad_BC_Mean": "Średni gradiend czesci warunkow funkcji straty vs l epok",
